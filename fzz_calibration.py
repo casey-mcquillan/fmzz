@@ -16,7 +16,7 @@ os.chdir(folder)
 #%%  Define Class #%%
 class economy:
     def __init__(self, alpha_c, alpha_n,
-                         tau, wages1_c, wages1_n, 
+                         tau, w1_c, w1_n, 
                          share_workers1_c, share_pop_c, 
                          epop_ratio1, pop_count,
                          t_epsilon=1e-20):
@@ -24,14 +24,13 @@ class economy:
         self.alpha_c = alpha_c
         self.alpha_n = alpha_n
         self.tau = tau
-        self.wages1_c = wages1_c
-        self.wages1_n = wages1_n
+        self.w1_c = w1_c
+        self.w1_n = w1_n
         self.share_workers1_c = share_workers1_c
         self.share_pop_c = share_pop_c
         self.epop_ratio1 = epop_ratio1
         self.pop_count = pop_count
         self.t_epsilon = t_epsilon
-        
         # Save variables implicitly defined by inputs
         self.share_workers1_n = 1-share_workers1_c
         self.share_pop_n = 1-share_pop_c
@@ -42,8 +41,8 @@ class economy:
         alpha_c = self.alpha_c
         alpha_n = self.alpha_n
         tau = self.tau
-        wages1_c = self.wages1_c
-        wages1_n = self.wages1_n
+        w1_c = self.w1_c
+        w1_n = self.w1_n
         share_workers1_c = self.share_workers1_c
         share_workers1_n = self.share_workers1_n
         share_pop_c = self.share_pop_c
@@ -54,11 +53,11 @@ class economy:
         
         ## Head Tax Equilibrium & General Parameters ##
         # Solve for productivity
-        A_c = wages1_c + tau
-        A_n = wages1_n + tau
+        A_c = w1_c + tau
+        A_n = w1_n + tau
         # Solve for Value in Head Tax Eq
-        V1_c = wages1_c + alpha_c * tau
-        V1_n = wages1_n + alpha_n * tau
+        V1_c = w1_c + alpha_c * tau
+        V1_n = w1_n + alpha_n * tau
         # Solve for Prob of working in Head Tax Eq
         P1_c = epop_ratio1 * (share_workers1_c/share_pop_c)
         P1_n = epop_ratio1 * (share_workers1_n/share_pop_n)
@@ -72,20 +71,20 @@ class economy:
         # Solve for average productivity in Head Tax Eq
         avg_prod1 = share_workers1_c * A_c + share_workers1_n * A_n
         # Solve for wage bill share
-        share_wage_bill1_c = (L1_c * wages1_c) / (L1_c * wages1_c + L1_n * wages1_n)
-        share_wage_bill1_n = (L1_n * wages1_n) / (L1_c * wages1_c + L1_n * wages1_n)
+        share_wage_bill1_c = (L1_c * w1_c) / (L1_c * w1_c + L1_n * w1_n)
+        share_wage_bill1_n = (L1_n * w1_n) / (L1_c * w1_c + L1_n * w1_n)
         # Solve for employment levels
         employment1 = (L1_c + L1_n) * pop_count 
         employment1_c = L1_c * pop_count 
         employment1_n = L1_n * pop_count
         
         ## No ESHI Equilibrium ##
-        # Solve for wages in No ESHI Eq
-        wages0_c = A_c
-        wages0_n = A_n
+        # Solve for w in No ESHI Eq
+        w0_c = A_c
+        w0_n = A_n
         # Solve for Value in No ESHI Eq
-        V0_c = wages0_c
-        V0_n = wages0_n
+        V0_c = w0_c
+        V0_n = w0_n
         # Solve for Prob of working in No ESHI Eq
         P0_c = (V0_c - kappa_lb) / kappa_dist
         P0_n = (V0_n - kappa_lb) / kappa_dist
@@ -100,8 +99,8 @@ class economy:
         # Solve for e-pop ratio in No ESHI Eq
         epop_ratio0 = L0_c + L0_n
         # Solve for wage bill share
-        share_wage_bill0_c = (L0_c * wages0_c) / (L0_c * wages0_c + L0_n * wages0_n)
-        share_wage_bill0_n = (L0_n * wages0_n) / (L0_c * wages0_c + L0_n * wages0_n)
+        share_wage_bill0_c = (L0_c * w0_c) / (L0_c * w0_c + L0_n * w0_n)
+        share_wage_bill0_n = (L0_n * w0_n) / (L0_c * w0_c + L0_n * w0_n)
         # Solve for employment levels
         employment0 = (L0_c + L0_n) * pop_count 
         employment0_c = L0_c * pop_count 
@@ -119,10 +118,10 @@ class economy:
             #If not initial guess, use last realized value
             if iteration>0: t_guess = t_realized
             #Calculate equilibrium values
-            wages2_c = A_c / (1+t_guess)
-            wages2_n = A_n / (1+t_guess)
-            V2_c = wages2_c + alpha_c * tau
-            V2_n = wages2_n + alpha_n * tau
+            w2_c = A_c / (1+t_guess)
+            w2_n = A_n / (1+t_guess)
+            V2_c = w2_c + alpha_c * tau
+            V2_n = w2_n + alpha_n * tau
             P2_c = (V2_c - kappa_lb) / kappa_dist
             P2_n = (V2_n - kappa_lb) / kappa_dist
             L2_c = P2_c * share_pop_c
@@ -138,8 +137,8 @@ class economy:
         # Solve for e-pop ratio in Payroll Tax Eq
         epop_ratio2 = L2_c + L2_n
         # Solve for wage bill share
-        share_wage_bill2_c = (L2_c * wages2_c) / (L2_c * wages2_c + L2_n * wages2_n)
-        share_wage_bill2_n = (L2_n * wages2_n) / (L2_c * wages2_c + L2_n * wages2_n)
+        share_wage_bill2_c = (L2_c * w2_c) / (L2_c * w2_c + L2_n * w2_n)
+        share_wage_bill2_n = (L2_n * w2_n) / (L2_c * w2_c + L2_n * w2_n)
         # Solve for employment levels
         employment2 = (L2_c + L2_n) * pop_count 
         employment2_c = L2_c * pop_count 
@@ -150,7 +149,7 @@ class economy:
         for var in general_params:
             exec("self."+var+"="+var)
             
-        eq_values_w_type = ['wages', 'V', 'P', 'L', 'share_workers', 'share_wage_bill', 'employment']
+        eq_values_w_type = ['w', 'V', 'P', 'L', 'share_workers', 'share_wage_bill', 'employment']
         for var in eq_values_w_type:
             for eq_num in ['0', '1', '2']:
                 for _type in ['_c','_n']:        
@@ -162,9 +161,10 @@ class economy:
                 exec("self."+var+eq_num+'='+var+eq_num)
             
     
+    
 #%%  Create Instance #%%        
 model = economy(alpha_c=1, alpha_n=1,
-                tau=8569, wages1_c=88381, wages1_n=47373, 
+                tau=8569, w1_c=88381, w1_n=47373, 
                 share_workers1_c=0.395, share_pop_c=0.331, 
                 epop_ratio1=0.624, pop_count=1)
 model.calibrate()
@@ -181,5 +181,4 @@ values = ['w_c', 'w_n', 'w_c/w_n', 'w_c-w_n',
           'avg_prod',
           'share_wage_bill_C', 'share_wage_bill_n',
           'employment', 'employment_c','employment_n']
-
 equibrium_values = pd.DataFrame(index=values, columns=equilibria)
