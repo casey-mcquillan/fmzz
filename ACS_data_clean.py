@@ -72,7 +72,14 @@ for year in years:
 df.loc[:, 'pop_25_65'] = df.loc[:, 'pop_25plus'] - df.loc[:, 'pop_65plus']
 df.loc[:, 'pop_25_65_college'] = df.loc[:, 'pop_25plus_college'] - df.loc[:, 'pop_65plus_college']
 df.loc[:, 'share_pop_c'] = df.loc[:, 'pop_25_65_college'] / df.loc[:, 'pop_25_65']
-    
+
+'''
+NOTE:
+For years 2010-2012, the dictionary used for ID_code_dict is somewhat fragile 
+because the ID is 'Total!!Estimate!!Bachelor's degree or higher' and this ID
+shows up multiple times in the meta data, but it works because it shows up last
+for the 65+ demo that we care about.    
+'''
 
 #%%  Visualization: share_pop_c for 25 and older versus ages 25-64 #%%
 ## Import graph packages
