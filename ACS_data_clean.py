@@ -15,7 +15,7 @@ import pandas as pd
 code_folder = "/Users/caseymcquillan/Desktop/Research/FZZ/code"
 data_folder = "/Users/caseymcquillan/Desktop/Research/FZZ/data"
 ACS_data_folder = data_folder + '/ACS Educational Attainment Data'
-
+output_folder = "/Users/caseymcquillan/Desktop/Research/FZZ/output"
 os.chdir(code_folder)
 
 
@@ -95,6 +95,8 @@ plt.plot(df['share_25plus_c']/100, \
 plt.title('Share of Population with Bachelor\'s Degree or More')
 plt.ylim([0,0.4])
 plt.legend()
+os.chdir(output_folder)
+plt.savefig('share_pop_c.png', dpi=500)
 plt.show()
 
 

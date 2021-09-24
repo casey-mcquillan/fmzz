@@ -14,12 +14,12 @@ folder = "/Users/caseymcquillan/Desktop/Research/FZZ/code"
 os.chdir(folder)
 
 #%%  Define Class #%%
-class economy:
+class calibration_model:
     def __init__(self, alpha_c, alpha_n,
                          tau, w1_c, w1_n, 
                          share_workers1_c, share_pop_c, 
                          epop_ratio1, pop_count,
-                         t_epsilon=1e-20):
+                         t_epsilon=1e-30):
         # Store inputs as attributes of object
         self.alpha_c = alpha_c
         self.alpha_n = alpha_n
@@ -35,7 +35,6 @@ class economy:
         self.share_workers1_n = 1-share_workers1_c
         self.share_pop_n = 1-share_pop_c
         
-    
     def calibrate(self):
         # Define variables based on attributes of object
         alpha_c = self.alpha_c
@@ -163,7 +162,7 @@ class economy:
     
     
 #%%  Create Instance #%%        
-model = economy(alpha_c=1, alpha_n=1,
+model = calibration_model(alpha_c=1, alpha_n=1,
                 tau=8569, w1_c=88381, w1_n=47373, 
                 share_workers1_c=0.395, share_pop_c=0.331, 
                 epop_ratio1=0.624, pop_count=1)
