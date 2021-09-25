@@ -100,11 +100,10 @@ plt.savefig('share_pop_c.png', dpi=500)
 plt.show()
 
 
-
 #%%  Data Export #%%
 ## Select relevant variables
 data_export = df[['share_pop_c']]
 
 ## Export data
 os.chdir(data_folder)
-data_export.to_csv('share_pop_c.csv')
+data_export.to_csv('share_pop_c_ACS.csv')

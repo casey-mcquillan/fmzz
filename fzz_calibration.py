@@ -164,10 +164,9 @@ class calibration_model:
 #%%  Create Instance #%%        
 model = calibration_model(alpha_c=1, alpha_n=1,
                 tau=8569, w1_c=88381, w1_n=47373, 
-                share_workers1_c=0.395, share_pop_c=0.331, 
-                epop_ratio1=0.624, pop_count=1)
+                share_workers1_c=0.395, share_pop_c=0.357, 
+                epop_ratio1=0.624, pop_count=1e6)
 model.calibrate()
-
 
 
 #%%  Format Results #%% 
