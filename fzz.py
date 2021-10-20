@@ -26,16 +26,16 @@ df_observed = pd.read_csv('observed_data.csv', index_col=0)
 
 
 #%%  Calibration Over Time #%% 
-
 # Parameter assumptions:
 alpha_c=1
 alpha_n=1
 
 # Outcomes to track
-y_series = []
+years = [1977,1987] + list(range(1996, 2019))
+results_variables = ['Percent Reduction in College Wage Premium']
+df_results = pd.DataFrame(columns=results_variables, index=years)
 
 # Loop through and calibrate model each year
-years = range(1977, 2019)
 for year in years:
     
     #Define and calibrate model
@@ -63,4 +63,4 @@ for year in years:
     college_wage_premium1 = (model.w1_c - model.w1_n)
     college_wage_premium2 = (model.w2_c - model.w2_n)
     y = (college_wage_premium2 - college_wage_premium1) / college_wage_premium1
-    y_series.append(y)
+    df_results.loc[year, 'Percent Reduction in College Wage Premium'] = y

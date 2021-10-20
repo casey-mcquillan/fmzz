@@ -71,19 +71,17 @@ import seaborn as sns
 sns.set_style("darkgrid")
 
 groups = ['Bachelor\'s Degree or More',
-       'Some College or More', 'HS Degree or Less',
-       'Some College, but no Bachelor\'s Degree',
-       'Less than a Bachelor\'s Degree']
+       'Some College or More', 'HS Degree or Less']
 for group in groups:
     plt.plot(income_data[group], label= group)
-    plt.title("Income")
+    plt.title("Average Income By Education Level")
 plt.legend()
 plt.show()
 
 for group in groups:
     plt.plot(worker_share_data[group], label= group)
-    plt.title("Shares")
-plt.legend()
+    plt.title("Share of Workforce By Education Level")
+plt.legend(loc='lower right')
 plt.show()
 
 
