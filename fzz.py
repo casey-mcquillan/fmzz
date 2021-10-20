@@ -64,3 +64,38 @@ for year in years:
     college_wage_premium2 = (model.w2_c - model.w2_n)
     y = (college_wage_premium2 - college_wage_premium1) / college_wage_premium1
     df_results.loc[year, 'Percent Reduction in College Wage Premium'] = y
+    
+    
+#%%  Summary Table Over Time #%% 
+    
+output_path = '/Users/caseymcquillan/Desktop/Research/FZZ/output/Tables'
+
+for year in years:
+    
+    #Define and calibrate model
+    model = calibration_model(alpha_c, alpha_n,
+                tau=df_observed.loc[year, 'tau_high'], 
+                w1_c=df_observed.loc[year, 'wage_c'], 
+                w1_n=df_observed.loc[year, 'wage_n'],
+                share_workers1_c=df_observed.loc[year, 'share_workers1_c'],
+                share_pop_c=df_observed.loc[year, 'share_pop_c'],
+                epop_ratio1=df_observed.loc[year, 'epop_ratio'],
+                pop_count=df_observed.loc[year, 'pop_count'])
+
+
+        #Make sure there are no NANs in model before calibration
+    if any(np.isnan([vars(model)[x] for x in vars(model).keys()])):
+        print("NAN value entered into calibration model for:")
+        for var in vars(model).keys():
+            if np.isnan(vars(model)[var])==True: print("    "+var)
+        print("for year: " + str(year))
+        continue
+    
+    #Calibrate Model
+    model.calibrate()
+    
+    #Generate LaTeX Summary Table
+    model.generate_table(file_name='SummaryTable'+str(year), year=year, 
+                         table_type="equilibrium summary", 
+                         table_label="SummaryTable"+str(year), 
+                         location=output_path)

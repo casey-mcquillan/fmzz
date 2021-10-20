@@ -34,7 +34,8 @@ class calibration_model:
         # Save variables implicitly defined by inputs
         self.share_workers1_n = 1-share_workers1_c
         self.share_pop_n = 1-share_pop_c
-        
+    
+    ### Calibrate the Model ###
     def calibrate(self):
         # Define variables based on attributes of object
         alpha_c = self.alpha_c
@@ -158,25 +159,86 @@ class calibration_model:
         for var in eq_values_wo_type:
             for eq_num in ['0', '1', '2']:
                 exec("self."+var+eq_num+'='+var+eq_num)
+
+    ### Generate Tables in Tex ###
+    def generate_table(self, file_name, year, table_type, table_label, location):
+        
+        ## Generate Summary Table
+        if table_type=="equilibrium summary":
+        
+            ## Generate Strings that will be written into .tex file as a list
+            header = [f'\ctable[caption={{Equilibrium Calibration for {year} with $\\alpha_C = {self.alpha_c}, \\alpha_N = {self.alpha_n}$}},', '\n',
+            f'    label={table_label}, pos=h!]', '\n',
+            '{cccccccc}{^{*}&{This represents an observed value.}}', '\n',
+            '{\FL &&&&& \multicolumn{3}{c}{Equilibrium Values}  \\\\', '\n',
+            '\cmidrule{6-8}', '\n',
+            '   \multicolumn{2}{c}{General Parameters} &&&&  No ESHI  &  Head Tax  & Payroll Tax  \\\\', '\n',
+            '\cmidrule{1-8}', '\n']
+    
+            table_values = [f'$A_C$ & {self.A_c:,.0f} &&&', '\n',
+                f'$w_C$ & {self.w0_c:,.0f} & {self.w1_c:,.0f}\\tmark[*] & {self.w2_c:,.0f} \\\\', '\n',
+                f'$A_N$ & {self.A_n:,.0f} &&&', '\n',
+                f'$w_N$ & {self.w0_n:,.0f} & {self.w1_n:,.0f}\\tmark[*] & {self.w2_n:,.0f} \\\\', '\n',
+                f'$\\tau$ & {self.tau:,.0f}\\tmark[*] &&&', '\n',
+                f'$w_C/w_N$ & {self.w0_c/self.w0_n:,.3f} & {self.w1_c/self.w1_n:,.3f} & {self.w2_c/self.w2_n:,.3f} \\\\', '\n',
+                '\\\\\n',
+                f'$N_C$ & {self.share_pop_c:,.3f}\\tmark[*] &&&', '\n',
+                f'$P_C$ & {self.P0_c:,.3f} & {self.P1_c:,.3f} & {self.P2_c:,.3f} \\\\', '\n',
+                f'$N_N$ & {self.share_pop_n:,.3f}  &&&', '\n',
+                f'$P_N$ & {self.P0_n:,.3f} & {self.P1_n:,.3f} & {self.P2_n:,.3f} \\\\', '\n',
+                '\\\\\n',
+                f'$\\overline{{\kappa}}$ & {self.kappa_ub:,.0f} &&&', '\n',
+                f'$L_C$ & {self.L0_c:,.3f} & {self.L1_c:,.3f} & {self.L2_c:,.3f} \\\\', '\n',
+                f'$\\underline{{\kappa}}$ &  {self.kappa_lb:,.0f} &&&', '\n',
+                f'$L_N$ & {self.L0_n:,.3f} & {self.L1_n:,.3f} & {self.L2_n:,.3f} \\\\', '\n',
+                f'$(\\overline{{\kappa}} - \\underline{{\kappa}})$ & {self.kappa_dist:,.0f} &&&', '\n',
+                f'$L_C/L_N$ & {self.L0_c/self.L0_n:,.3f} & {self.L1_c/self.L1_n:,.3f} & {self.L2_c/self.L2_n:,.3f}  \\\\', '\n',
+                '\\\\\n',
+                f'Payroll Tax & {self.t * 100:,.2f}\\% &&&', '\n',
+                f'$\\tilde{{A}}$ & {self.avg_prod0:,.0f} & {self.avg_prod1:,.0f} & {self.avg_prod2:,.0f} \\\\', '\n',
+                '\\\\\n',
+                f'Pop. Count & {self.pop_count:,.0f}\\tmark[*] &&&', '\n',
+                f'E:P Ratio & {self.epop_ratio0:,.3f} & {self.epop_ratio1:,.3f}\\tmark[*] & {self.epop_ratio2:,.3f} \\\\', '\n', 
+                '\\\\\n',
+                '& &&& Share of Workforce \\\\', '\n',
+                f'& &&& \\indent \\footnotesize College & {self.share_workers0_c:,.3f} & {self.share_workers1_c:,.3f}\\tmark[*] & {self.share_workers2_c:,.3f} \\\\', '\n',
+                f'& &&& \\indent \\footnotesize Non-college & {self.share_workers0_n:,.3f} & {self.share_workers1_n:,.3f} & {self.share_workers2_n:,.3f} \\\\', '\n',
+                '\\\\\n',
+                '& &&& Share of Wage Bill \\\\', '\n',
+                f'& &&& \\indent \\footnotesize College & {self.share_wage_bill0_c:,.3f} & {self.share_wage_bill1_c:,.3f} & {self.share_wage_bill2_c:,.3f} \\\\', '\n',
+                f'& &&& \\indent \\footnotesize Non-college & {self.share_wage_bill0_n:,.3f} & {self.share_wage_bill1_n:,.3f} & {self.share_wage_bill2_n:,.3f} \\\\', '\n',
+                '\\\\\n',
+                '& &&& Employment (Thous.) \\\\', '\n',
+                f'& &&& \\indent \\footnotesize College & {self.employment0_c/1000:,.0f} & {self.employment1_c/1000:,.0f} & {self.employment2_c/1000:,.0f} \\\\', '\n',
+                f'& &&& \\indent \\footnotesize Non-college & {self.employment0_n/1000:,.0f} & {self.employment1_n/1000:,.0f} & {self.employment2_n/1000:,.0f} \\\\', '\n']
+
+            closer = ['\\bottomrule}']
+    
+            #Create, write, and close file
+            cwd = os.getcwd()
+            os.chdir(location)
+            file = open(file_name+".tex","w")
+            file.writelines(header) 
+            file.writelines(table_values)   
+            file.writelines(closer)   
+            file.close()
             
+            #Return to previous directory
+            os.chdir(cwd)
+            
+            
+        ## Generate Comparison Table
+        if table_type=="equilibrium comparison":
+            print("Fix this")
     
     
 #%%  Create Instance #%%        
 model = calibration_model(alpha_c=1, alpha_n=1,
-                tau=8569, w1_c=88381, w1_n=47373, 
-                share_workers1_c=0.395, share_pop_c=0.357, 
+                tau=8569, w1_c=88381, w1_n=47373,
+                share_workers1_c=0.395, share_pop_c=0.357,
                 epop_ratio1=0.624, pop_count=1e6)
 model.calibrate()
 
-
-#%%  Format Results #%% 
-equilibria = ['No ESHI', 'Head Tax', 'Payroll Tax']
-values = ['w_c', 'w_n', 'w_c/w_n', 'w_c-w_n',
-          'V_c', 'V_n', 'V_c/V_n', 'V_c-V_n',
-          'P_c', 'P_n',
-          'L_c', 'L_n', 'L_c/L_n',
-          'share_workers_c', 'share_workers_n',
-          'avg_prod',
-          'share_wage_bill_C', 'share_wage_bill_n',
-          'employment', 'employment_c','employment_n']
-equibrium_values = pd.DataFrame(index=values, columns=equilibria)
+model.generate_table(file_name='SummaryTable2018', year=2018, 
+                     table_type="equilibrium summary", table_label="SummaryTable2018", 
+                     location="/Users/caseymcquillan/Desktop")
