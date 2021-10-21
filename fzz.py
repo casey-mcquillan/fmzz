@@ -103,3 +103,7 @@ for year in years:
                          table_type="equilibrium summary", 
                          table_label="SummaryTable"+str(year), 
                          location=output_path)
+    
+    model.generate_table(file_name='EqComparison'+str(year), year=year, 
+                     table_type="equilibrium comparison", table_label="EqComparison"+str(year), 
+                     location=output_path)
