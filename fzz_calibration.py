@@ -169,7 +169,7 @@ class calibration_model:
             ## Generate Strings that will be written into .tex file as a list
             header = [f'\ctable[caption={{Equilibrium Calibration for {year} with $\\alpha_C = {self.alpha_c}, \\alpha_N = {self.alpha_n}$}},', '\n',
             f'    label={table_label}, pos=h!]', '\n',
-            '{cccccccc}{^{*}&{This represents an observed value.}}', '\n',
+            '{rcccrccc}{^{*}&{This represents an observed value.}}', '\n',
             '{\FL &&&&& \multicolumn{3}{c}{Equilibrium Values}  \\\\', '\n',
             '\cmidrule{6-8}', '\n',
             '   \multicolumn{2}{c}{General Parameters} &&&&  No ESHI  &  Head Tax  & Payroll Tax  \\\\', '\n',
@@ -195,22 +195,22 @@ class calibration_model:
                 f'$L_C/L_N$ & {self.L0_c/self.L0_n:,.3f} & {self.L1_c/self.L1_n:,.3f} & {self.L2_c/self.L2_n:,.3f}  \\\\', '\n',
                 '\\\\\n',
                 f'Payroll Tax & {self.t * 100:,.2f}\\% &&&', '\n',
-                f'$\\tilde{{A}}$ & {self.avg_prod0:,.0f} & {self.avg_prod1:,.0f} & {self.avg_prod2:,.0f} \\\\', '\n',
+                f'Avg. Productivity & {self.avg_prod0:,.0f} & {self.avg_prod1:,.0f} & {self.avg_prod2:,.0f} \\\\', '\n',
                 '\\\\\n',
                 f'Pop. Count & {self.pop_count:,.0f}\\tmark[*] &&&', '\n',
                 f'E:P Ratio & {self.epop_ratio0:,.3f} & {self.epop_ratio1:,.3f}\\tmark[*] & {self.epop_ratio2:,.3f} \\\\', '\n', 
                 '\\\\\n',
                 '& &&& Share of Workforce \\\\', '\n',
-                f'& &&& \\indent \\footnotesize College & {self.share_workers0_c:,.3f} & {self.share_workers1_c:,.3f}\\tmark[*] & {self.share_workers2_c:,.3f} \\\\', '\n',
-                f'& &&& \\indent \\footnotesize Non-college & {self.share_workers0_n:,.3f} & {self.share_workers1_n:,.3f} & {self.share_workers2_n:,.3f} \\\\', '\n',
+                f'& &&& \\indent \\small College & {self.share_workers0_c:,.3f} & {self.share_workers1_c:,.3f}\\tmark[*] & {self.share_workers2_c:,.3f} \\\\', '\n',
+                f'& &&& \\indent \\small Non-college & {self.share_workers0_n:,.3f} & {self.share_workers1_n:,.3f} & {self.share_workers2_n:,.3f} \\\\', '\n',
                 '\\\\\n',
                 '& &&& Share of Wage Bill \\\\', '\n',
-                f'& &&& \\indent \\footnotesize College & {self.share_wage_bill0_c:,.3f} & {self.share_wage_bill1_c:,.3f} & {self.share_wage_bill2_c:,.3f} \\\\', '\n',
-                f'& &&& \\indent \\footnotesize Non-college & {self.share_wage_bill0_n:,.3f} & {self.share_wage_bill1_n:,.3f} & {self.share_wage_bill2_n:,.3f} \\\\', '\n',
+                f'& &&& \\indent \\small College & {self.share_wage_bill0_c:,.3f} & {self.share_wage_bill1_c:,.3f} & {self.share_wage_bill2_c:,.3f} \\\\', '\n',
+                f'& &&& \\indent \\small Non-college & {self.share_wage_bill0_n:,.3f} & {self.share_wage_bill1_n:,.3f} & {self.share_wage_bill2_n:,.3f} \\\\', '\n',
                 '\\\\\n',
                 '& &&& Employment (Thous.) \\\\', '\n',
-                f'& &&& \\indent \\footnotesize College & {self.employment0_c/1000:,.0f} & {self.employment1_c/1000:,.0f} & {self.employment2_c/1000:,.0f} \\\\', '\n',
-                f'& &&& \\indent \\footnotesize Non-college & {self.employment0_n/1000:,.0f} & {self.employment1_n/1000:,.0f} & {self.employment2_n/1000:,.0f} \\\\', '\n']
+                f'& &&& \\indent \\small College & {self.employment0_c/1000:,.0f} & {self.employment1_c/1000:,.0f} & {self.employment2_c/1000:,.0f} \\\\', '\n',
+                f'& &&& \\indent \\small Non-college & {self.employment0_n/1000:,.0f} & {self.employment1_n/1000:,.0f} & {self.employment2_n/1000:,.0f} \\\\', '\n']
 
             closer = ['\\bottomrule}']
     
@@ -232,142 +232,59 @@ class calibration_model:
 
             header = [f'\ctable[caption={{Equilibrium Comparison for {year} with $\\alpha_C = {self.alpha_c}, \\alpha_N = {self.alpha_n}$}},', '\n',
                         f'    label={table_label}, pos=h!]', '\n',
-                        '{lccc}{}{\\FL', '\n',
-                        '&  \\footnotesize Head Tax vs. No ESHI', '\n',
-                        '   & \\footnotesize Payroll Tax vs. Head Tax', '\n',
-                        '   & \\footnotesize Payroll Tax vs. No ESHI  \\\\', '\n',
-                        '\cmidrule{1-4}', '\n']
+                        '{lcc}{}{\\FL', '\n',
+                        '&  \\small (No ESHI $\\Rightarrow$ Head Tax)', '\n',
+                        '   & \\small (Head Tax $\\Rightarrow$ Payroll Tax)  \\\\', '\n',
+                        '\cmidrule{1-3}', '\n']
 
             table_values = ['\\underline{Wages:}', ' \\\\\n',
                 f'\\ \\ $\\Delta(w_C)$'
                     f' & {self.w1_c-self.w0_c:,.0f}',
                     f' & {self.w2_c-self.w1_c:,.0f}',
-                    f' & {self.w2_c-self.w0_c:,.0f}', 
                     ' \\\\\n',
                 f'\\ \\ $\\Delta(w_N)$',
                     f' & {self.w1_n-self.w0_n:,.0f}',
                     f' & {self.w2_n-self.w1_n:,.0f}',
-                    f' & {self.w2_n-self.w0_n:,.0f} ',
-                    ' \\\\\n',
-                f'\\ \\ $\\Delta(w_C / w_N)$'
-                    f' & {(self.w1_c/self.w1_n)-(self.w0_c/self.w0_n):,.3f}',
-                    f' & {(self.w2_c/self.w2_n)-(self.w1_c/self.w1_n):,.3f}',
-                    f' & {(self.w2_c/self.w2_n)-(self.w0_c/self.w0_n):,.3f}',
                     ' \\\\\n',
                 f'\\ \\ $\\Delta(w_C - w_N)$'
                     f' & {(self.w1_c-self.w1_n)-(self.w0_c-self.w0_n):,.0f}',
                     f' & {(self.w2_c-self.w2_n)-(self.w1_c-self.w1_n):,.0f}',
-                    f' & {(self.w2_c-self.w2_n)-(self.w0_c-self.w0_n):,.0f}',
-                    ' \\\\\n',
-                    ' \\\\\n',
-                f'\\ \\ $\\%\\Delta(w_C)$'
-                    f' & {100*(self.w1_c-self.w0_c)/self.w0_c:,.2f}\\%',
-                    f' & {100*(self.w2_c-self.w1_c)/self.w1_c:,.2f}\\%',
-                    f' & {100*(self.w2_c-self.w0_c)/self.w0_c:,.2f}\\%',
-                    ' \\\\\n'
-                f'\\ \\ $\\%\\Delta(w_N)$'
-                    f' & {100*(self.w1_n-self.w0_n)/self.w0_n:,.2f}\\%',
-                    f' & {100*(self.w2_n-self.w1_n)/self.w1_n:,.2f}\\%',
-                    f' & {100*(self.w2_n-self.w0_n)/self.w0_n:,.2f}\\%',
-                    ' \\\\\n',
-                f'\\ \\ $\\%\\Delta(w_C / w_N)$'
-                    f' & {100*((self.w1_c/self.w1_n)-(self.w0_c/self.w0_n))/(self.w0_c/self.w0_n):,.2f}\\%',
-                    f' & {100*((self.w2_c/self.w2_n)-(self.w1_c/self.w1_n))/(self.w1_c/self.w1_n):,.2f}\\%',
-                    f' & {100*((self.w2_c/self.w2_n)-(self.w0_c/self.w0_n))/(self.w0_c/self.w0_n):,.2f}\\%',
                     ' \\\\\n',
                 f'\\ \\ $\\%\\Delta(w_C - w_N)$'
                     f' & {100*((self.w1_c-self.w1_n)-(self.w0_c-self.w0_n))/(self.w0_c-self.w0_n):,.2f}\\%',
                     f' & {100*((self.w2_c-self.w2_n)-(self.w1_c-self.w1_n))/(self.w1_c-self.w1_n):,.2f}\\%',
-                    f' & {100*((self.w2_c-self.w2_n)-(self.w0_c-self.w0_n))/(self.w0_c-self.w0_n):,.2f}\\%',
                     ' \\\\\n',
                     '\\\\\n',
-            '\\underline{Value of Employment:}', ' \\\\\n',
-                f'\\ \\ $\\Delta(V_C)$'
-                    f' & {self.V1_c-self.V0_c:,.0f}',
-                    f' & {self.V2_c-self.V1_c:,.0f}',
-                    f' & {self.V2_c-self.V0_c:,.0f}',
-                    ' \\\\\n'
-                f'\\ \\ $\\Delta(V_N)$'
-                    f' & {self.V1_n-self.V0_n:,.0f}',
-                    f' & {self.V2_n-self.V1_n:,.0f}',
-                    f' & {self.V2_n-self.V0_n:,.0f}',
-                    ' \\\\\n',
-                f'\\ \\ $\\Delta(V_C - V_N)$'
-                    f' & {(self.V1_c-self.V1_n)-(self.V0_c-self.V0_n):,.0f}',
-                    f' & {(self.V2_c-self.V2_n)-(self.V1_c-self.V1_n):,.0f}',
-                    f' & {(self.V2_c-self.V2_n)-(self.V0_c-self.V0_n):,.0f}',
-                    ' \\\\\n',
-                    '\\\\\n',
-                f'\\ \\ $\\%\\Delta(V_C)$'
-                    f' & {100*(self.V1_c-self.V0_c)/self.V0_c:,.2f}\\%',
-                    f' & {100*(self.V2_c-self.V1_c)/self.V1_c:,.2f}\\%',
-                    f' & {100*(self.V2_c-self.V0_c)/self.V0_c:,.2f}\\%',
-                    ' \\\\\n'
-                f'\\ \\ $\\%\\Delta(V_N)$'
-                    f' & {100*(self.V1_n-self.V0_n)/self.V0_n:,.2f}\\%',
-                    f' & {100*(self.V2_n-self.V1_n)/self.V1_n:,.2f}\\%',
-                    f' & {100*(self.V2_n-self.V0_n)/self.V0_n:,.2f}\\%',
-                    ' \\\\\n',
-                f'\\ \\ $\\%\\Delta(V_C - V_N)$'
-                    f' & {100*((self.V1_c-self.V1_n)-(self.V0_c-self.V0_n))/(self.V0_c-self.V0_n):,.2f}\\%',
-                    f' & {100*((self.V2_c-self.V2_n)-(self.V1_c-self.V1_n))/(self.V1_c-self.V1_n):,.2f}\\%',
-                    f' & {100*((self.V2_c-self.V2_n)-(self.V0_c-self.V0_n))/(self.V0_c-self.V0_n):,.2f}\\%',
-                    ' \\\\\n',
             '\\underline{Labor Supply:}', ' \\\\\n',
+                f'\\ \\ $\\%\\Delta(L_C+L_N)$'
+                    f' & {100*((self.L1_c+self.L1_n)-(self.L0_c+self.L0_n))/(self.L0_c+self.L0_n):,.2f}\\%',
+                    f' & {100*((self.L2_c+self.L2_n)-(self.L1_c+self.L1_n))/(self.L1_c+self.L1_n):,.2f}\\%',
+                    ' \\\\\n'
                 f'\\ \\ $\\%\\Delta(L_C)$'
                     f' & {100*(self.L1_c-self.L0_c)/self.L0_c:,.2f}\\%',
                     f' & {100*(self.L2_c-self.L1_c)/self.L1_c:,.2f}\\%',
-                    f' & {100*(self.L2_c-self.L0_c)/self.L0_c:,.2f}\\%',
                     ' \\\\\n'
                 f'\\ \\ $\\%\\Delta(L_N)$'
                     f' & {100*(self.L1_n-self.L0_n)/self.L0_n:,.2f}\\%',
                     f' & {100*(self.L2_n-self.L1_n)/self.L1_n:,.2f}\\%',
-                    f' & {100*(self.L2_n-self.L0_n)/self.L0_n:,.2f}\\%',
                     ' \\\\\n',
-                f'\\ \\ $\\%\\Delta(L_C / L_N)$'
-                    f' & {100*((self.L1_c/self.L1_n)-(self.L0_c/self.L0_n))/(self.L0_c/self.L0_n):,.2f}\\%',
-                    f' & {100*((self.L2_c/self.L2_n)-(self.L1_c/self.L1_n))/(self.L1_c/self.L1_n):,.2f}\\%',
-                    f' & {100*((self.L2_c/self.L2_n)-(self.L0_c/self.L0_n))/(self.L0_c/self.L0_n):,.2f}\\%',
-                    ' \\\\\n',
-                    '\\\\\n',
-            '\\underline{Change in Employment:}', 
+            '$\\Delta($Employment$)$:', 
                     f' & {(self.employment1_c+self.employment1_n)-(self.employment0_c+self.employment0_n):,.0f}',
                     f' & {(self.employment2_c+self.employment2_n)-(self.employment1_c+self.employment1_n):,.0f}',
-                    f' & {(self.employment2_c+self.employment2_n)-(self.employment0_c+self.employment0_n):,.0f}',
                     ' \\\\\n',
-                'College',
+                '\\ \\ College',
                     f' & {self.employment1_c-self.employment0_c:,.0f}',
                     f' & {self.employment2_c-self.employment1_c:,.0f}',
-                    f' & {self.employment2_c-self.employment0_c:,.0f}',
                     ' \\\\\n',
-                'Non-College',
+                '\\ \\ Non-College',
                     f' & {self.employment1_n-self.employment0_n:,.0f}',
                     f' & {self.employment2_n-self.employment1_n:,.0f}',
-                    f' & {self.employment2_n-self.employment0_n:,.0f}',
                     ' \\\\\n',
                     '\\\\\n',
-            '\\underline{Elasticity (College):}', ' \\\\\n',
-                'Nominal Wages',
-                    f' & {((self.L1_c-self.L0_c)/self.L0_c) / ((self.w1_c-self.w0_c)/self.w0_c):,.2f}' if ((self.w1_c-self.w0_c)/self.w0_c)!=0 else ' & NA',
-                    f' & {((self.L2_c-self.L1_c)/self.L1_c) / ((self.w2_c-self.w1_c)/self.w1_c):,.2f}' if ((self.w2_c-self.w1_c)/self.w1_c)!=0 else ' & NA',
-                    f' & {((self.L2_c-self.L0_c)/self.L0_c) / ((self.w2_c-self.w0_c)/self.w0_c):,.2f}' if ((self.w2_c-self.w0_c)/self.w0_c)!=0 else ' & NA',
-                    ' \\\\\n',
-                'Value of Employment',
-                    f' & {((self.L1_c-self.L0_c)/self.L0_c) / ((self.V1_c-self.V0_c)/self.V0_c):,.2f}' if ((self.V1_c-self.V0_c)/self.V0_c)!=0 else ' & NA',
-                    f' & {((self.L2_c-self.L1_c)/self.L1_c) / ((self.V2_c-self.V1_c)/self.V1_c):,.2f}' if ((self.V2_c-self.V1_c)/self.V1_c)!=0 else ' & NA',
-                    f' & {((self.L2_c-self.L0_c)/self.L0_c) / ((self.V2_c-self.V0_c)/self.V0_c):,.2f}' if ((self.V2_c-self.V0_c)/self.V0_c)!=0 else ' & NA',
-                    ' \\\\\n',
-                    '\\\\\n',
-            '\\underline{Elasticity (Non-college):}', ' \\\\\n',    
-                'Nominal Wages', 
-                    f' & {((self.L1_n-self.L0_n)/self.L0_n) / ((self.w1_n-self.w0_n)/self.w0_n):,.2f}' if ((self.w1_n-self.w0_n)/self.w0_n)!=0 else ' & NA',
-                    f' & {((self.L2_n-self.L1_n)/self.L1_n) / ((self.w2_n-self.w1_n)/self.w1_n):,.2f}' if ((self.w2_n-self.w1_n)/self.w1_n)!=0 else ' & NA',
-                    f' & {((self.L2_n-self.L0_n)/self.L0_n) / ((self.w2_n-self.w0_n)/self.w0_n):,.2f}' if ((self.w2_n-self.w0_n)/self.w0_n)!=0 else ' & NA',
-                    ' \\\\\n',
-                'Value of Employment',
-                    f' & {((self.L1_n-self.L0_n)/self.L0_n) / ((self.V1_n-self.V0_n)/self.V0_n):,.2f}' if ((self.V1_n-self.V0_n)/self.V0_n)!=0 else ' & NA',
-                    f' & {((self.L2_n-self.L1_n)/self.L1_n) / ((self.V2_n-self.V1_n)/self.V1_n):,.2f}' if ((self.V2_n-self.V1_n)/self.V1_n)!=0 else ' & NA',
-                    f' & {((self.L2_n-self.L0_n)/self.L0_n) / ((self.V2_n-self.V0_n)/self.V0_n):,.2f}' if ((self.V2_n-self.V0_n)/self.V0_n)!=0 else ' & NA',
+            '\\underline{Wage Bill:}', ' \\\\\n',
+                '\\small $\\Delta($College Share$)$',
+                    f' & {100*(((self.L1_c*self.w1_c)/(self.L1_c*self.w1_c + self.L1_n*self.w1_n))-((self.L0_c*self.w0_c)/(self.L0_c*self.w0_c + self.L0_n*self.w0_n))):,.2f}pp',
+                    f' & {100*(((self.L2_c*self.w2_c)/(self.L2_c*self.w2_c + self.L2_n*self.w2_n))-((self.L1_c*self.w1_c)/(self.L1_c*self.w1_c + self.L1_n*self.w1_n))):,.2f}pp',
                     ' \\\\\n']
 
             closer = ['\\bottomrule}']
@@ -399,3 +316,5 @@ model.generate_table(file_name='SummaryTable2018', year=2018,
 model.generate_table(file_name='EqComparison2018', year=2018, 
                      table_type="equilibrium comparison", table_label="EqComparison2018", 
                      location="/Users/caseymcquillan/Desktop")
+
+
