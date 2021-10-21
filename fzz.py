@@ -67,9 +67,13 @@ for year in years:
     
     
 #%%  Summary Table Over Time #%% 
-    
-output_path = '/Users/caseymcquillan/Desktop/Research/FZZ/output/Tables'
+# Parameter assumptions:
+alpha_c=1
+alpha_n=1
 
+#Output path and define years
+output_path = '/Users/caseymcquillan/Desktop/Research/FZZ/output/Tables'
+years = [1977,1987] + list(range(1996, 2019))
 for year in years:
     
     #Define and calibrate model
