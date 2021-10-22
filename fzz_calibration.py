@@ -283,8 +283,8 @@ class calibration_model:
                     '\\\\\n',
             '\\underline{Wage Bill:}', ' \\\\\n',
                 '\\small $\\Delta($College Share$)$',
-                    f' & {100*(((self.L1_c*self.w1_c)/(self.L1_c*self.w1_c + self.L1_n*self.w1_n))-((self.L0_c*self.w0_c)/(self.L0_c*self.w0_c + self.L0_n*self.w0_n))):,.2f}pp',
-                    f' & {100*(((self.L2_c*self.w2_c)/(self.L2_c*self.w2_c + self.L2_n*self.w2_n))-((self.L1_c*self.w1_c)/(self.L1_c*self.w1_c + self.L1_n*self.w1_n))):,.2f}pp',
+                    f' & {100*(((self.L1_c*self.w1_c)/(self.L1_c*self.w1_c + self.L1_n*self.w1_n))-((self.L0_c*self.w0_c)/(self.L0_c*self.w0_c + self.L0_n*self.w0_n))):,.2f} pp',
+                    f' & {100*(((self.L2_c*self.w2_c)/(self.L2_c*self.w2_c + self.L2_n*self.w2_n))-((self.L1_c*self.w1_c)/(self.L1_c*self.w1_c + self.L1_n*self.w1_n))):,.2f} pp',
                     ' \\\\\n']
 
             closer = ['\\bottomrule}']
