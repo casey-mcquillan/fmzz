@@ -92,7 +92,7 @@ for alphas in alpha_values:
 
 #Generate header and close 
 header = [f'\ctable[caption={{Calibration Results Across $\\alpha$ for {year} }},', '\n',
-        f'    label=ResultsAcrossTau{year}, pos=h!]', '\n',
+        f'    label=ResultsAcrossAlpha{year}, pos=h!]', '\n',
         '{lcc}{}{\\FL', '\n',
         '&  \\small (No ESHI $\\Rightarrow$ Head Tax)', '\n',
         '   & \\small (Head Tax $\\Rightarrow$ Payroll Tax)  \\\\', '\n',
