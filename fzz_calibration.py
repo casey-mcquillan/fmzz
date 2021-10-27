@@ -19,7 +19,7 @@ class calibration_model:
                          tau, w1_c, w1_n, 
                          share_workers1_c, share_pop_c, 
                          epop_ratio1, pop_count,
-                         t_epsilon=1e-30):
+                         t_epsilon=1e-15):
         # Store inputs as attributes of object
         self.alpha_c = alpha_c
         self.alpha_n = alpha_n
