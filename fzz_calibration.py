@@ -301,7 +301,7 @@ class calibration_model:
             #Return to previous directory
             os.chdir(cwd)
     
-    
+'''
 #%%  Create Instance #%%        
 model = calibration_model(alpha_c=1, alpha_n=1,
                 tau=8569, w1_c=88381, w1_n=47373,
@@ -317,4 +317,4 @@ model.generate_table(file_name='EqComparison2018', year=2018,
                      table_type="equilibrium comparison", table_label="EqComparison2018", 
                      location="/Users/caseymcquillan/Desktop")
 
-
+'''

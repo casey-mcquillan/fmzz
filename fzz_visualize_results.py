@@ -36,11 +36,10 @@ alpha_c, alpha_n, = 1, 1
 # Parameter to be varied:
 tau_params = np.linspace(0, 12000, 1201)
 
-#Output path and define years
-#output_path = '/Users/caseymcquillan/Desktop/Research/FZZ/output/'
-output_path = '/Users/caseymcquillan/Desktop/'
+#Output path 
+output_path = '/Users/caseymcquillan/Desktop/Research/FZZ/output/Graphs/Visualize Results'
 
-
+#Define variables and empty dataframe for results
 variables = ["Pct. Chg. in College Wage Premium (O to H)", 
              "Pct. Chg. in College Wage Premium (H to P)", 
              "Change in College Share of Wage Bill  (O to H)",
@@ -86,29 +85,41 @@ for tau in tau_params:
     df_varying_tau.loc[tau, "Change in College Share of Wage Bill  (H to P)"] = pp_chg_wage_bill_12
 
 #Generate Graphs
+os.chdir(output_path)
+
+plt.figure(figsize=(6,4))
 plt.plot(df_varying_tau["Pct. Chg. in College Wage Premium (O to H)"])
 plt.xlabel(r'Value of $\tau$')
 plt.ylabel("Pct. Chg. in College Wage Premium")
 plt.ylim(-20,5)
-plt.show()
+plt.savefig('varyTau_1.png', dpi=500)
+plt.clf()
 
+plt.figure(figsize=(6,4))
 plt.plot(df_varying_tau["Pct. Chg. in College Wage Premium (H to P)"], color='maroon')
 plt.xlabel(r'Value of $\tau$')
 plt.ylabel("Pct. Chg. in College Wage Premium")
 plt.ylim(-20,5)
-plt.show()
+plt.savefig('varyTau_2.png', dpi=500)
+plt.clf()
 
+plt.figure(figsize=(6,4))
 plt.plot(df_varying_tau["Change in College Share of Wage Bill  (O to H)"])
 plt.xlabel(r'Value of $\tau$')
 plt.ylabel("Change in College Share of Wage Bill")
 plt.ylim(-4,4)
-plt.show()
+plt.savefig('varyTau_3.png', dpi=500)
+plt.clf()
 
+plt.figure(figsize=(6,4))
 plt.plot(df_varying_tau["Change in College Share of Wage Bill  (H to P)"], color='maroon')
 plt.xlabel(r'Value of $\tau$')
 plt.ylabel("Change in College Share of Wage Bill")
 plt.ylim(-4,4)
-plt.show()
+plt.savefig('varyTau_4.png', dpi=500)
+plt.clf()
+
+os.chdir(code_folder)
 
 
 #%%  Varying Alphas #%% 
@@ -120,10 +131,8 @@ N = 36
 # Parameter to be varied:
 alpha_range = np.linspace(0.25, 2, N)
 
-
-#Output path and define years
-#output_path = '/Users/caseymcquillan/Desktop/Research/FZZ/output/'
-output_path = '/Users/caseymcquillan/Desktop/'
+#Output path 
+output_path = '/Users/caseymcquillan/Desktop/Research/FZZ/output/Graphs/Visualize Results'
 
 #Create arrays to store data
 array_pct_chg_wage_premium_01 = np.empty([N,N])
@@ -174,38 +183,49 @@ for i in range(N):
         array_pp_chg_wage_bill_12[i,j] = pp_chg_wage_bill_12
         
 #Generate Graphs
+os.chdir(output_path)
+
+plt.figure(figsize=(6,4))
 plt.imshow(array_pct_chg_wage_premium_01, cmap='Blues', extent=[0.25,2,2,0.25])
 plt.colorbar() 
 plt.xlabel(r'$\alpha_N$')
 plt.ylabel(r'$\alpha_C$')
 plt.gca().invert_yaxis()
 plt.yticks(np.arange(0.25, 2.01, step=0.25))
-plt.show()
+plt.savefig('varyAlpha_1.png', dpi=500)
+plt.clf()
 
+plt.figure(figsize=(6,4))
 plt.imshow(array_pct_chg_wage_premium_12, cmap='Reds', extent=[0.25,2,2,0.25])
 plt.colorbar()
 plt.xlabel(r'$\alpha_N$')
 plt.ylabel(r'$\alpha_C$')
 plt.gca().invert_yaxis()
 plt.yticks(np.arange(0.25, 2.01, step=0.25))
-plt.show()
+plt.savefig('varyAlpha_2.png', dpi=500)
+plt.clf()
 
+plt.figure(figsize=(6,4))
 plt.imshow(array_pp_chg_wage_bill_01, cmap='Blues', extent=[0.25,2,2,0.25])
 plt.colorbar()
 plt.xlabel(r'$\alpha_N$')
 plt.ylabel(r'$\alpha_C$')
 plt.gca().invert_yaxis()
 plt.yticks(np.arange(0.25, 2.01, step=0.25))
-plt.show()
+plt.savefig('varyAlpha_3.png', dpi=500)
+plt.clf()
 
+plt.figure(figsize=(6,4))
 plt.imshow(array_pp_chg_wage_bill_12, cmap='Reds', extent=[0.25,2,2,0.25])
 plt.colorbar()
 plt.xlabel(r'$\alpha_N$')
 plt.ylabel(r'$\alpha_C$')
 plt.gca().invert_yaxis()
 plt.yticks(np.arange(0.25, 2.01, step=0.25))
-plt.show()
+plt.savefig('varyAlpha_4.png', dpi=500)
+plt.clf()
 
+os.chdir(code_folder)
 
 
 #%%  Varying Tau over Time #%% 
@@ -219,10 +239,10 @@ tau2specification_Dict ={'tau_high':'Total Cost and Complete Take-up',
                          'tau_med':'Cost to Employer and Complete Take-up',
                          'tau_low':'Cost to Employer and Incomplete Take-up'}
 
-#Output path
-#output_path = '/Users/caseymcquillan/Desktop/Research/FZZ/output/'
-output_path = '/Users/caseymcquillan/Desktop/'
+#Output path 
+output_path = '/Users/caseymcquillan/Desktop/Research/FZZ/output/Graphs/Visualize Results'
 
+#Define varibables
 variables = ["Pct. Chg. in College Wage Premium (O to H)", 
              "Pct. Chg. in College Wage Premium (H to P)", 
              "Change in College Share of Wage Bill  (O to H)",
@@ -283,9 +303,12 @@ for tau in tau_params:
                     [new_row1, new_row2, new_row3, new_row4], ignore_index=True)
             
 #Generate Graphs
+os.chdir(output_path)
+
 for var in variables:
-    df_graph = df_varying_tau_byYear[df_varying_tau_byYear['variable']==var]        
-    
+    df_graph = df_varying_tau_byYear[df_varying_tau_byYear['variable']==var]
+
+    plt.figure(figsize=(6,4))     
     for tau in tau_params:    
         df_series = df_graph[[x == tau for x in df_graph['tau']]]
         plt.plot(df_series['year'], df_series['value'], label=tau2specification_Dict[tau])
@@ -294,8 +317,10 @@ for var in variables:
     plt.title(var)
     if var == "Pct. Chg. in College Wage Premium (O to H)":
         plt.ylim(-1,1)
-    plt.show()     
+    plt.savefig('varyTau_byYear_'+str(variables.index(var) + 1)+'.png', dpi=500)
+    plt.clf()  
 
+os.chdir(code_folder)
     
             
  #%%  Varying alphas over Time #%% 
@@ -306,10 +331,10 @@ tau_param = 'tau_high'
 years = [1977,1987] + list(range(1996, 2019))
 alpha_values = [[1,1], [1.2,1.2], [0.8,0.8], [0.9,0.7]]
 
-#Output path
-#output_path = '/Users/caseymcquillan/Desktop/Research/FZZ/output/'
-output_path = '/Users/caseymcquillan/Desktop/'
+#Output path 
+output_path = '/Users/caseymcquillan/Desktop/Research/FZZ/output/Graphs/Visualize Results'
 
+#Define varibables
 variables = ["Pct. Chg. in College Wage Premium (O to H)", 
              "Pct. Chg. in College Wage Premium (H to P)", 
              "Change in College Share of Wage Bill  (O to H)",
@@ -372,14 +397,19 @@ for alphas in alpha_values:
                     [new_row1, new_row2, new_row3, new_row4], ignore_index=True)
             
 #Generate Graphs
+os.chdir(output_path)
+
 for var in variables:
     df_graph = df_varying_alphas_byYear[df_varying_alphas_byYear['variable']==var]        
     
+    plt.figure(figsize=(6,4))
     for alphas in alpha_values:    
         df_series = df_graph[[x == alphas for x in df_graph['alphas']]]
         plt.plot(df_series['year'], df_series['value'], label=str(alphas))
     plt.legend(title = r'$[\alpha_c, \alpha_c]$')
     plt.xlabel("Year")
     plt.title(var)
-    plt.show()
-    
+    plt.savefig('varyAlpha_byYear_'+str(variables.index(var) + 1)+'.png', dpi=500)
+    plt.clf() 
+
+os.chdir(code_folder)
