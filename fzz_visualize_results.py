@@ -12,6 +12,8 @@ import pandas as pd
 import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt
+import seaborn as sns
+sns.set_style("darkgrid")
 
 ### Set working directory
 code_folder = "/Users/caseymcquillan/Desktop/Research/FZZ/code"
@@ -413,3 +415,65 @@ for var in variables:
     plt.clf() 
 
 os.chdir(code_folder)
+
+
+#%%  Share of College Wage Premium due to ESHI over Time #%% 
+# Parameter assumptions:
+tau_param = 'tau_high'
+alpha_c, alpha_n = 1, 1
+
+# Parameter to be varied:
+years = [1977,1987] + list(range(1996, 2019))
+
+#Output path 
+output_path = '/Users/caseymcquillan/Desktop/Research/FZZ/output/Graphs/Visualize Results'
+
+#Loop through years
+df_byYear = pd.DataFrame(index=years, columns = ['College Wage Premium (H)', 'Chg. in College Wage Premium (P to H)', 'Share of College Wage Premium due to ESHI'])
+
+for year in years:
+    #Define and calibrate model
+    model = calibration_model(alpha_c, alpha_n,
+                tau=df_observed.loc[year, tau_param], 
+                w1_c=df_observed.loc[year, 'wage_c'], 
+                w1_n=df_observed.loc[year, 'wage_n'],
+                share_workers1_c=df_observed.loc[year, 'share_workers1_c'],
+                share_pop_c=df_observed.loc[year, 'share_pop_c'],
+                epop_ratio1=df_observed.loc[year, 'epop_ratio'],
+                pop_count=df_observed.loc[year, 'pop_count'])
+
+    #Make sure there are no NANs in model before calibration
+    if any(np.isnan([vars(model)[x] for x in vars(model).keys()])):
+        print("NAN value entered into calibration model for:")
+        for var in vars(model).keys():
+            if np.isnan(vars(model)[var])==True: print("    "+var)
+        print("for year: " + str(year))
+        continue
+    
+    #Calibrate Model
+    model.calibrate()
+    
+    #Calculate variables of interest
+    df_byYear.loc[year, 'College Wage Premium (H)'] = model.w1_c-model.w1_n
+    df_byYear.loc[year, 'Chg. in College Wage Premium (P to H)'] = (model.w1_c-model.w1_n)-(model.w2_c-model.w2_n)
+        
+df_byYear['Share of College Wage Premium due to ESHI'] = df_byYear['Chg. in College Wage Premium (P to H)']/df_byYear['College Wage Premium (H)']
+
+
+for year in [1977,1987,1997,2007]:
+    chg_college_wage_premium = df_byYear.loc[2017, 'College Wage Premium (H)'] - df_byYear.loc[year, 'College Wage Premium (H)']
+    chg_ESHI_contrib = df_byYear.loc[2017, 'Chg. in College Wage Premium (P to H)'] - df_byYear.loc[year, 'Chg. in College Wage Premium (P to H)'] 
+    share_ESHI = chg_ESHI_contrib/chg_college_wage_premium
+    
+    print(f'Year {year}:')
+    print(f'The college wage premium increased by ${chg_college_wage_premium:,.0f} from {year} to 2017 and ESHI accounts for ${chg_ESHI_contrib:,.0f} of this change or {share_ESHI:,.2%}')
+    print('')
+
+plt.plot(df_byYear['College Wage Premium (H)'])
+plt.suptitle('College Wage Premium', y=1.03, fontsize=18)
+plt.title(r'$(w^H_C - w^H_N)$', fontsize=10)
+
+plt.plot(df_byYear['Chg. in College Wage Premium (P to H)'])
+plt.suptitle('Contribution of ESHI to the College Wage Premium', y=1.03, fontsize=18)
+plt.title(r'$\left[(w^H_C - w^H_N) - (w^P_C - w^P_N)\right]$', fontsize=10)
+
