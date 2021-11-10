@@ -103,7 +103,7 @@ data = data.groupby('year').mean()
 data_export = data[['Employment Rate (25-64)','Population (25-64)']]
 
 ## Export data
-os.chdir(code_folder)
+os.chdir(data_folder)
 data_export.to_csv('OECD_data.csv')
 
 
