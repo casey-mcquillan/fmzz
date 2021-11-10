@@ -15,20 +15,21 @@ os.chdir(folder)
 
 #%%  Define Class #%%
 class calibration_model:
-    def __init__(self, alpha_c, alpha_n,
-                         tau, w1_c, w1_n, 
-                         share_workers1_c, share_pop_c, 
-                         epop_ratio1, pop_count,
-                         t_epsilon=1e-15):
+    def __init__(self, alpha_c, alpha_n, tau, 
+                     w1_c, w1_n, P1_c, P1_n,
+                     share_workers1_c, share_pop_c, 
+                     pop_count, t_epsilon=1e-15):
+        
         # Store inputs as attributes of object
         self.alpha_c = alpha_c
         self.alpha_n = alpha_n
         self.tau = tau
         self.w1_c = w1_c
         self.w1_n = w1_n
+        self.P1_c = P1_c
+        self.P1_n = P1_n
         self.share_workers1_c = share_workers1_c
         self.share_pop_c = share_pop_c
-        self.epop_ratio1 = epop_ratio1
         self.pop_count = pop_count
         self.t_epsilon = t_epsilon
         # Save variables implicitly defined by inputs
@@ -43,11 +44,12 @@ class calibration_model:
         tau = self.tau
         w1_c = self.w1_c
         w1_n = self.w1_n
+        P1_c = self.P1_c
+        P1_n = self.P1_n
         share_workers1_c = self.share_workers1_c
         share_workers1_n = self.share_workers1_n
         share_pop_c = self.share_pop_c
         share_pop_n = self.share_pop_n
-        epop_ratio1 = self.epop_ratio1
         pop_count = self.pop_count
         t_epsilon = self.t_epsilon
         
@@ -58,9 +60,8 @@ class calibration_model:
         # Solve for Value in Head Tax Eq
         V1_c = w1_c + alpha_c * tau
         V1_n = w1_n + alpha_n * tau
-        # Solve for Prob of working in Head Tax Eq
-        P1_c = epop_ratio1 * (share_workers1_c/share_pop_c)
-        P1_n = epop_ratio1 * (share_workers1_n/share_pop_n)
+        # Solve for epop ratio in Head Tax Eq
+        epop_ratio1 = (P1_c*share_pop_c + P1_n*share_pop_n)
         # Solve for Labor Supply in Head Tax Eq
         L1_c = P1_c * share_pop_c
         L1_n = P1_n * share_pop_n
@@ -183,9 +184,9 @@ class calibration_model:
                 f'$w_C/w_N$ & {self.w0_c/self.w0_n:,.3f} & {self.w1_c/self.w1_n:,.3f} & {self.w2_c/self.w2_n:,.3f} \\\\', '\n',
                 '\\\\\n',
                 f'$N_C$ & {self.share_pop_c:,.3f}\\tmark[*] &&&', '\n',
-                f'$P_C$ & {self.P0_c:,.3f} & {self.P1_c:,.3f} & {self.P2_c:,.3f} \\\\', '\n',
+                f'$P_C$ & {self.P0_c:,.3f} & {self.P1_c:,.3f}\\tmark[*] & {self.P2_c:,.3f} \\\\', '\n',
                 f'$N_N$ & {self.share_pop_n:,.3f}  &&&', '\n',
-                f'$P_N$ & {self.P0_n:,.3f} & {self.P1_n:,.3f} & {self.P2_n:,.3f} \\\\', '\n',
+                f'$P_N$ & {self.P0_n:,.3f} & {self.P1_n:,.3f}\\tmark[*] & {self.P2_n:,.3f} \\\\', '\n',
                 '\\\\\n',
                 f'$\\overline{{\kappa}}$ & {self.kappa_ub:,.0f} &&&', '\n',
                 f'$L_C$ & {self.L0_c:,.3f} & {self.L1_c:,.3f} & {self.L2_c:,.3f} \\\\', '\n',
@@ -198,7 +199,7 @@ class calibration_model:
                 f'Avg. Productivity & {self.avg_prod0:,.0f} & {self.avg_prod1:,.0f} & {self.avg_prod2:,.0f} \\\\', '\n',
                 '\\\\\n',
                 f'Pop. Count & {self.pop_count:,.0f}\\tmark[*] &&&', '\n',
-                f'E:P Ratio & {self.epop_ratio0:,.3f} & {self.epop_ratio1:,.3f}\\tmark[*] & {self.epop_ratio2:,.3f} \\\\', '\n', 
+                f'E:P Ratio & {self.epop_ratio0:,.3f} & {self.epop_ratio1:,.3f} & {self.epop_ratio2:,.3f} \\\\', '\n', 
                 '\\\\\n',
                 '& &&& Share of Workforce \\\\', '\n',
                 f'& &&& \\indent \\small College & {self.share_workers0_c:,.3f} & {self.share_workers1_c:,.3f}\\tmark[*] & {self.share_workers2_c:,.3f} \\\\', '\n',
