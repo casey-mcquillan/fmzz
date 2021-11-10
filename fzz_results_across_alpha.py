@@ -46,11 +46,12 @@ for alphas in alpha_values:
     #Define and calibrate model
     model = calibration_model(alpha_c, alpha_n,
                 tau=df_observed.loc[year, tau_param], 
-                w1_c=df_observed.loc[year, 'wage_c'], 
-                w1_n=df_observed.loc[year, 'wage_n'],
+                w1_c=df_observed.loc[year, 'wage1_c'], 
+                w1_n=df_observed.loc[year, 'wage1_n'],
+                P1_c=df_observed.loc[year, 'P1_c'], 
+                P1_n=df_observed.loc[year, 'P1_n'],
                 share_workers1_c=df_observed.loc[year, 'share_workers1_c'],
                 share_pop_c=df_observed.loc[year, 'share_pop_c'],
-                epop_ratio1=df_observed.loc[year, 'epop_ratio'],
                 pop_count=df_observed.loc[year, 'pop_count'])
 
     #Make sure there are no NANs in model before calibration
