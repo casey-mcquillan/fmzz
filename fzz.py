@@ -58,12 +58,12 @@ model.calibrate()
 output_path = '/Users/caseymcquillan/Desktop/Research/FZZ/output/Tables/Baseline'
 model.generate_table(file_name='SummaryTable'+str(year)+"_baseline", year=year, 
                      table_type="equilibrium summary", 
-                     table_label="SummaryTable"+str(year)+"_baseline", 
+                     table_label="SummaryTable"+str(year)+"baseline", 
                      location=output_path)
 
 model.generate_table(file_name='EqComparison'+str(year)+"_baseline", year=year, 
                  table_type="equilibrium comparison", 
-                 table_label="EqComparison"+str(year)+"_baseline", 
+                 table_label="EqComparison"+str(year)+"baseline", 
                  location=output_path)
     
     
