@@ -78,6 +78,10 @@ class calibration_model:
         employment1 = (L1_c + L1_n) * pop_count 
         employment1_c = L1_c * pop_count 
         employment1_n = L1_n * pop_count
+        # solve for welfare
+        welfare1_c = ((V1_c-kappa_lb)**2)/(2*kappa_dist)
+        welfare1_n = ((V1_n-kappa_lb)**2)/(2*kappa_dist)
+        welfare1 = share_pop_c*welfare1_c + share_pop_n*welfare1_n
         
         ## No ESHI Equilibrium ##
         # Solve for w in No ESHI Eq
@@ -106,6 +110,10 @@ class calibration_model:
         employment0 = (L0_c + L0_n) * pop_count 
         employment0_c = L0_c * pop_count 
         employment0_n = L0_n * pop_count
+        # Solve for welfare
+        welfare0_c = ((V0_c-kappa_lb)**2)/(2*kappa_dist)
+        welfare0_n = ((V0_n-kappa_lb)**2)/(2*kappa_dist)
+        welfare0 = share_pop_c*welfare0_c + share_pop_n*welfare0_n
         
         ## Payroll Tax Equilibrium ##
         #Solve for Payroll Tax rate
@@ -144,19 +152,23 @@ class calibration_model:
         employment2 = (L2_c + L2_n) * pop_count 
         employment2_c = L2_c * pop_count 
         employment2_n = L2_n * pop_count
+        # Solve for welfare
+        welfare2_c = ((V2_c-kappa_lb)**2)/(2*kappa_dist)
+        welfare2_n = ((V2_n-kappa_lb)**2)/(2*kappa_dist)
+        welfare2 = share_pop_c*welfare2_c + share_pop_n*welfare2_n
                         
         # Store variables as attributes of object
         general_params = ['A_c', 'A_n', 'kappa_dist', 'kappa_lb', 'kappa_ub', 't']
         for var in general_params:
             exec("self."+var+"="+var)
             
-        eq_values_w_type = ['w', 'V', 'P', 'L', 'share_workers', 'share_wage_bill', 'employment']
+        eq_values_w_type = ['w', 'V', 'P', 'L', 'share_workers', 'share_wage_bill', 'employment', 'welfare']
         for var in eq_values_w_type:
             for eq_num in ['0', '1', '2']:
                 for _type in ['_c','_n']:        
                     exec("self."+var+eq_num+_type+'='+var+eq_num+_type)
         
-        eq_values_wo_type = ['avg_prod', 'epop_ratio', 'employment']
+        eq_values_wo_type = ['avg_prod', 'epop_ratio', 'employment', 'welfare']
         for var in eq_values_wo_type:
             for eq_num in ['0', '1', '2']:
                 exec("self."+var+eq_num+'='+var+eq_num)
@@ -209,9 +221,13 @@ class calibration_model:
                 f'& &&& \\indent \\small College & {self.share_wage_bill0_c:,.3f} & {self.share_wage_bill1_c:,.3f} & {self.share_wage_bill2_c:,.3f} \\\\', '\n',
                 f'& &&& \\indent \\small Non-college & {self.share_wage_bill0_n:,.3f} & {self.share_wage_bill1_n:,.3f} & {self.share_wage_bill2_n:,.3f} \\\\', '\n',
                 '\\\\\n',
-                '& &&& Employment (Thous.) \\\\', '\n',
+                f'& &&& Employment (Thous.) & {self.employment0/1000:,.0f} & {self.employment1/1000:,.0f} & {self.employment2/1000:,.0f} \\\\', '\n',
                 f'& &&& \\indent \\small College & {self.employment0_c/1000:,.0f} & {self.employment1_c/1000:,.0f} & {self.employment2_c/1000:,.0f} \\\\', '\n',
-                f'& &&& \\indent \\small Non-college & {self.employment0_n/1000:,.0f} & {self.employment1_n/1000:,.0f} & {self.employment2_n/1000:,.0f} \\\\', '\n']
+                f'& &&& \\indent \\small Non-college & {self.employment0_n/1000:,.0f} & {self.employment1_n/1000:,.0f} & {self.employment2_n/1000:,.0f} \\\\', '\n',
+                '\\\\\n',
+                f'& &&& Welfare & {self.welfare0:,.0f} & {self.welfare1:,.0f} & {self.welfare2:,.0f} \\\\', '\n',
+                f'& &&& \\indent \\small College & {self.welfare0_c:,.0f} & {self.welfare1_c:,.0f} & {self.welfare2_c:,.0f} \\\\', '\n',
+                f'& &&& \\indent \\small Non-college & {self.welfare0_n:,.0f} & {self.welfare1_n:,.0f} & {self.welfare2_n:,.0f} \\\\', '\n']
 
             closer = ['\\bottomrule}']
     
