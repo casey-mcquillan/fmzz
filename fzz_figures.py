@@ -36,7 +36,7 @@ alpha_c=1
 alpha_n=1
 
 #Output path and define years
-years = [1977,1987] + list(range(1996, 2019))
+years = [1977,1987] + list(range(1996, 2020))
 
 
 outcome_variables = ['wage_premium1', 'wage_premium2',
@@ -117,7 +117,7 @@ plt.savefig('share_pop_c.png', dpi=500)
 plt.clf() 
 
 
-#  Share of workeforce with a college degree
+#  Share of workforce with a college degree
 plt.plot(df_observed['share_workers1_c'])
 plt.ylim([0,0.5])
 plt.title("Share of Workers with Bachelor's Degree or More", fontsize=14)
@@ -134,10 +134,11 @@ plt.clf()
 
 
 #  Both shares
-plt.plot(df_observed['share_workers1_c'], label="Share of Workforce with College Degree")
-plt.plot(df_observed['share_pop_c'], label="Share of Population with College Degree")
+plt.plot(df_observed['share_workers1_c'], label="Workforce")
+plt.plot(df_observed['share_pop_c'], label="Population")
 plt.legend()
 plt.ylim([0,0.5])
+plt.title("Share with Bachelor's Degree or More", fontsize=14)
 plt.savefig('share_college.png', dpi=500)
 plt.clf() 
 
@@ -145,7 +146,7 @@ plt.clf()
 plt.plot(df_observed['P1_c'], label="College", color='darkred')
 plt.plot(df_observed['P1_n'], label="Non-college", color='navy')
 plt.legend()
-plt.ylim([0.5,0.8])
+plt.ylim([0.4,0.75])
 plt.title("Labor Force Participation by Group", fontsize=14)
 plt.savefig('LFP_observed.png', dpi=500)
 plt.clf() 
@@ -153,7 +154,7 @@ plt.clf()
 plt.plot(df_results['P1_c'], label="Head Tax Equilibrium", color='darkred')
 plt.plot(df_results['P2_c'], label="Payroll Tax Equilibrium", color='indianred')
 plt.legend()
-plt.ylim([0.65,0.8])
+plt.ylim([0.55,0.75])
 plt.title("Labor Force Participation for College Workers", fontsize=14)
 plt.savefig('LFP_c.png', dpi=500)
 plt.clf() 
@@ -161,7 +162,7 @@ plt.clf()
 plt.plot(df_results['P1_n'], label="Head Tax Equilibrium", color='navy')
 plt.plot(df_results['P2_n'], label="Payroll Tax Equilibrium", color='steelblue')
 plt.legend()
-plt.ylim([0.5,0.70])
+plt.ylim([0.45,0.65])
 plt.title("Labor Force Participation for Non-college Workers", fontsize=14)
 plt.savefig('LFP_n.png', dpi=500)
 plt.clf() 
@@ -171,7 +172,7 @@ plt.plot(df_results['P2_c'], label="College, Payroll Tax", color='indianred')
 plt.plot(df_results['P1_n'], label="Non-college, Head Tax", color='navy')
 plt.plot(df_results['P2_n'], label="Non-college, Payroll Tax", color='steelblue')
 plt.legend()
-plt.ylim([0.5,0.8])
+plt.ylim([0.45,0.75])
 plt.title("Labor Force Participation by Group", fontsize=14)
 plt.savefig('LFP.png', dpi=500)
 plt.clf() 

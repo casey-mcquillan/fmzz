@@ -29,7 +29,7 @@ df_observed = pd.read_csv('observed_data.csv', index_col=0)
 # Parameter assumptions:
 alpha_c=1
 alpha_n=1
-year = 2018
+year = 2019
 
 #Output path and define years
 output_path = '/Users/caseymcquillan/Desktop/Research/FZZ/output/Tables/Different Tau'

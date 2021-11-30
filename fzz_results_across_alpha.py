@@ -27,7 +27,7 @@ df_observed = pd.read_csv('observed_data.csv', index_col=0)
 
 #%%  Calibration Over Time #%% 
 # Parameter assumptions:
-year = 2018
+year = 2019
 tau_param = 'tau_high'
 alpha_values = [[1,1], [1.2,1.2], [0.8,0.8], [0.9,0.7]]
 

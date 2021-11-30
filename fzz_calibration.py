@@ -8,6 +8,7 @@ Created on Mon Aug 30 15:01:21 2021
 ### Import Packages
 import os
 import pandas as pd
+import numpy as np
 
 ### Set working directory
 folder = "/Users/caseymcquillan/Desktop/Research/FZZ/code"
@@ -225,9 +226,12 @@ class calibration_model:
                 f'& &&& \\indent \\small College & {self.employment0_c/1000:,.0f} & {self.employment1_c/1000:,.0f} & {self.employment2_c/1000:,.0f} \\\\', '\n',
                 f'& &&& \\indent \\small Non-college & {self.employment0_n/1000:,.0f} & {self.employment1_n/1000:,.0f} & {self.employment2_n/1000:,.0f} \\\\', '\n',
                 '\\\\\n',
-                f'& &&& Welfare & {self.welfare0:,.0f} & {self.welfare1:,.0f} & {self.welfare2:,.0f} \\\\', '\n',
+                f'& &&& Average Welfare & {self.welfare0:,.0f} & {self.welfare1:,.0f} & {self.welfare2:,.0f} \\\\', '\n',
                 f'& &&& \\indent \\small College & {self.welfare0_c:,.0f} & {self.welfare1_c:,.0f} & {self.welfare2_c:,.0f} \\\\', '\n',
-                f'& &&& \\indent \\small Non-college & {self.welfare0_n:,.0f} & {self.welfare1_n:,.0f} & {self.welfare2_n:,.0f} \\\\', '\n']
+                f'& &&& \\indent \\small Non-college & {self.welfare0_n:,.0f} & {self.welfare1_n:,.0f} & {self.welfare2_n:,.0f} \\\\', '\n',
+                f'& &&& \\indent \\small Difference & {self.welfare0_c-self.welfare0_n:,.0f} ',
+                    f'& {self.welfare1_c-self.welfare1_n:,.0f} ',
+                    f'& {self.welfare2_c-self.welfare2_n:,.0f} \\\\', '\n']
 
             closer = ['\\bottomrule}']
     
@@ -318,20 +322,49 @@ class calibration_model:
             #Return to previous directory
             os.chdir(cwd)
     
-'''
-#%%  Create Instance #%%        
-model = calibration_model(alpha_c=1, alpha_n=1,
-                tau=8569, w1_c=88381, w1_n=47373,
-                share_workers1_c=0.395, share_pop_c=0.357,
-                epop_ratio1=0.624, pop_count=1e6)
+
+#%%  Create Instance #%%
+# Importing Data
+data_folder = "/Users/caseymcquillan/Desktop/Research/FZZ/data"
+os.chdir(data_folder)
+df_observed = pd.read_csv('observed_data.csv', index_col=0)
+
+# Parameter assumptions:
+alpha_c=1
+alpha_n=1
+year = 2019
+
+#Define and calibrate model
+model = calibration_model(alpha_c, alpha_n,
+            tau=df_observed.loc[year, 'tau_high'], 
+            w1_c=df_observed.loc[year, 'wage1_c'], 
+            w1_n=df_observed.loc[year, 'wage1_n'],
+            P1_c=df_observed.loc[year, 'P1_c'], 
+            P1_n=df_observed.loc[year, 'P1_n'],
+            share_workers1_c=df_observed.loc[year, 'share_workers1_c'],
+            share_pop_c=df_observed.loc[year, 'share_pop_c'],
+            pop_count=df_observed.loc[year, 'pop_count'])
+
+#Make sure there are no NANs in model before calibration
+if any(np.isnan([vars(model)[x] for x in vars(model).keys()])):
+    print("NAN value entered into calibration model for:")
+    for var in vars(model).keys():
+        if np.isnan(vars(model)[var])==True: print("    "+var)
+    print("for year: " + str(year))
+
+#Calibrate Model
 model.calibrate()
 
-model.generate_table(file_name='SummaryTable2018', year=2018, 
-                     table_type="equilibrium summary", table_label="SummaryTable2018", 
-                     location="/Users/caseymcquillan/Desktop")
+#Output LaTeX Tables
+output_path = '/Users/caseymcquillan/Desktop/Research/FZZ/output/Tables/Baseline'
+model.generate_table(file_name='SummaryTable'+str(year)+"_baseline", year=year, 
+                     table_type="equilibrium summary", 
+                     table_label="SummaryTable"+str(year)+"baseline", 
+                     location=output_path)
 
-model.generate_table(file_name='EqComparison2018', year=2018, 
-                     table_type="equilibrium comparison", table_label="EqComparison2018", 
-                     location="/Users/caseymcquillan/Desktop")
+model.generate_table(file_name='EqComparison'+str(year)+"_baseline", year=year, 
+                 table_type="equilibrium comparison", 
+                 table_label="EqComparison"+str(year)+"baseline", 
+                 location=output_path)
 
-'''
+

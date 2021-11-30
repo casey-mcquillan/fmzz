@@ -25,7 +25,7 @@ OECD_data = pd.read_csv('OECD_data.csv', index_col='year')
 ASEC_data = pd.read_csv('CPS_ASEC_clean.csv', index_col=0)
 
 # Import time series data on wages, tau from Patrick Collard:
-os.chdir(data_folder + "/Time Series from Patrick")
+os.chdir(data_folder + "/Time Series from Emily")
 premium_data = pd.read_excel('premium_series.xlsx', index_col=0)
 
 # Create dataframe with necessary observed variables
@@ -38,9 +38,9 @@ df_observed = pd.DataFrame({
                 'wage1_n': ASEC_data['wage1_n (weighted)'],
                 'P1_c': ASEC_data['P1_c (weighted)'],
                 'P1_n': ASEC_data['P1_n (weighted)'],
-                'tau_high': premium_data['Average Cost per Enrollee'],
-                'tau_med': premium_data['Average Cost to Employer per enrollee'],
-                'tau_low': premium_data['Employer cost X Take Up'],
+                'tau_high': premium_data['Avg Enr Cost'],
+                'tau_med': premium_data['Avg Emp Cost'],
+                'tau_low': premium_data['Emp Cost * Takeup'],
             })
 
 #%%  Data Export #%%

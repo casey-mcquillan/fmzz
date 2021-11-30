@@ -14,9 +14,9 @@ import numpy as np
 ### Set working directory
 code_folder = "/Users/caseymcquillan/Desktop/Research/FZZ/code"
 data_folder = "/Users/caseymcquillan/Desktop/Research/FZZ/data"
-os.chdir(code_folder)
 
 ### Import calibration class
+os.chdir(code_folder)
 from fzz_calibration import calibration_model 
 
 
@@ -29,9 +29,7 @@ df_observed = pd.read_csv('observed_data.csv', index_col=0)
 # Parameter assumptions:
 alpha_c=1
 alpha_n=1
-
-# Outcomes to track
-year = 2018
+year = 2019
 
 #Define and calibrate model
 model = calibration_model(alpha_c, alpha_n,
@@ -73,9 +71,8 @@ alpha_c=1
 alpha_n=1
 
 #Output path and define years
-
 output_path = '/Users/caseymcquillan/Desktop/Research/FZZ/output/Tables'
-years = [1977,1987] + list(range(1996, 2019))
+years = [1977,1987] + list(range(1996, 2020))
 P1_c= pd.DataFrame(index=years)
 P1_n= pd.DataFrame(index=years)
 for year in years:
