@@ -528,8 +528,22 @@ for cat in categories:
     data[f'share_pop_{cat}'] = data[f'N_{cat}'] / data['N']
     data[f'share_pop_{cat} (weighted)'] = data[f'ASECWT_{cat}'] / data['ASECWT']
 
-#Plot (unweighted)
+#Plot
+categories2labels = {'less_than_HS':"Less than HS", 
+                     'HS': "High School",
+                     'some_college': "Some College", 
+                     'associates': "Associate's Degree", 
+                     'bachelors': "Bachelor's Degree", 
+                     'adv_degree': "Avanced Degree"}
+
+output_path = '/Users/caseymcquillan/Desktop/Research/FZZ/output/Graphs/RC1_college'
+os.chdir(output_path)
 for cat in categories:  
-    plt.plot(data[f'share_pop_{cat}'], label=f'{cat}')
+    plt.plot(data[f'share_pop_{cat} (weighted)'], label=categories2labels[cat])
 plt.legend()
+plt.title("Share of Population", fontsize=14)
+plt.savefig('EducationalAttainment.png', dpi=500)
+plt.clf()  
+
+os.chdir(code_folder)
     
