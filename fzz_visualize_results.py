@@ -32,7 +32,7 @@ os.chdir(code_folder)
 
 #%%  Varying Tau #%% 
 # Parameter assumptions:
-year = 2018
+year = 2019
 alpha_c, alpha_n, = 1, 1
 
 # Parameter to be varied:
@@ -237,7 +237,7 @@ os.chdir(code_folder)
 alpha_c, alpha_n, = 1, 1
 
 # Parameter to be varied:
-years = [1977,1987] + list(range(1996, 2019))
+years = [1977,1987] + list(range(1996, 2020))
 tau_params = ['tau_high', 'tau_med', 'tau_low']
 tau2specification_Dict ={'tau_high':'Total Cost and Complete Take-up',
                          'tau_med':'Cost to Employer and Complete Take-up',
