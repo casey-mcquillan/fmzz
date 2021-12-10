@@ -12,7 +12,7 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
-sns.set_style("darkgrid")
+sns.set_style("white")
 
 ### Set working directory and folders
 code_folder = "/Users/caseymcquillan/Desktop/Research/FZZ/code"
@@ -274,6 +274,10 @@ plt.clf()
 os.chdir(code_folder)
 
 #%%  4. Results Across College Definition #%%
+# Importing Data
+os.chdir(data_folder)
+df_observed = pd.read_csv('observed_data_RC1.csv', index_col=0)
+
 # Parameter assumptions:
 year = 2019
 tau_param = 'tau_high'
@@ -313,35 +317,34 @@ for def_num in [1,2,3]:
     model.generate_table(file_name='SummaryTable'+str(year)+"college"+str(def_num), year=year, 
                          table_type="equilibrium summary", 
                          table_label="SummaryTable"+str(year)+"college"+str(def_num), 
-                         location=output_path)
+                         location=output_path, subtitle=f' with College Definition {def_num}')
     
     model.generate_table(file_name='EqComparison'+str(year)+"college"+str(def_num), year=year, 
                      table_type="equilibrium comparison", 
                      table_label="EqComparison"+str(year)+"college"+str(def_num), 
-                     location=output_path)
+                     location=output_path, subtitle=f' with College Definition {def_num}')
     
     #Create list with comparison table values for this section
     table_values_section = [f'\\underline{{ College Definition {def_num} }} \\\\', '\n',
     f'\\ \\ \\small Pct. Chg. in College Wage Premium',
-        f' & {100*((model.w1_c-model.w1_n)-(model.w0_c-model.w0_n))/(model.w0_c-model.w0_n):,.2f}\\%',
         f' & {100*((model.w2_c-model.w2_n)-(model.w1_c-model.w1_n))/(model.w1_c-model.w1_n):,.2f}\\%',
         ' \\\\\n',
     f'\\ \\ \\small Change in College Share of Wage Bill', 
-        f' & {100*(((model.L1_c*model.w1_c)/(model.L1_c*model.w1_c + model.L1_n*model.w1_n))-((model.L0_c*model.w0_c)/(model.L0_c*model.w0_c + model.L0_n*model.w0_n))):,.2f} pp',
         f' & {100*(((model.L2_c*model.w2_c)/(model.L2_c*model.w2_c + model.L2_n*model.w2_n))-((model.L1_c*model.w1_c)/(model.L1_c*model.w1_c + model.L1_n*model.w1_n))):,.2f} pp',
+        ' \\\\\n',
+    f'\\ \\ \\small Change in College Share of Workforce', 
+        f' & {100*(((model.L2_c)/(model.L2_c + model.L2_n))-((model.L1_c)/(model.L1_c + model.L1_n))):,.2f} pp',
         ' \\\\\n',
         '\\\\\n']
     #Append this to the existing list
     comparison_table_values.extend(table_values_section)
 
-
 #Generate header and closer
 header = [f'\ctable[caption={{Calibration Results Across College Definition for {year} }},', '\n',
         f'    label=ResultsAcrossCollegeDefinition{year}, pos=h!]', '\n',
-        '{lcc}{}{\\FL', '\n',
-        '&  \\small (No ESHI $\\Rightarrow$ Head Tax)', '\n',
+        '{lc}{}{\\FL', '\n',
         '   & \\small (Head Tax $\\Rightarrow$ Payroll Tax)  \\\\', '\n',
-        '\\cmidrule{1-3}', '\n']
+        '\\cmidrule{1-2}', '\n']
 closer = ['\\bottomrule}']
 cwd = os.getcwd()
 os.chdir(output_path)
@@ -354,13 +357,16 @@ os.chdir(cwd)
 
 
 #%%  5. Visualizing Results Across College Definition and Time #%%
+# Importing Data
+os.chdir(data_folder)
+df_observed = pd.read_csv('observed_data_RC1.csv', index_col=0)
+
 # Parameter assumptions:
 alpha_c, alpha_n, = 1, 1
 tau = 'tau_high'
 # Parameter to be varied:
 years = [1977,1987] + list(range(1996, 2020))
 def_num = [1,2,3]
-
 
 #Output path 
 output_path = '/Users/caseymcquillan/Desktop/Research/FZZ/output/Graphs/RC1_college'
@@ -373,13 +379,13 @@ variables = ["Pct. Chg. in College Wage Premium (O to H)",
              "Change in College Share of Wage Bill  (H to P)"]
 
 #Loop through values of tau and year
-df_varying_CollegeDef_byYear = pd.DataFrame(columns = ['year', 'college definition', 'variable', 'value'])
+df_outcomes = pd.DataFrame(columns = ['year', 'college definition', 'variable', 'value'])
 
 for def_num in [1,2,3]:   
     for year in years:
         #Define and calibrate model
         model = calibration_model(alpha_c, alpha_n,
-                    tau=df_observed.loc[year, tau_param], 
+                    tau=df_observed.loc[year, tau], 
                     w1_c=df_observed.loc[year, f'wage1_c [college definition {def_num}]'], 
                     w1_n=df_observed.loc[year, f'wage1_n [college definition {def_num}]'],
                     P1_c=df_observed.loc[year, f'P1_c [college definition {def_num}]'], 
@@ -424,14 +430,14 @@ for def_num in [1,2,3]:
         new_row5 = {'year':year, 'college definition':def_num, \
                     'variable':"Change in College Share of Wage Bill  (H to P)", \
                     'value':pp_chg_wage_bill_12}
-        df_varying_CollegeDef_byYear = df_varying_CollegeDef_byYear.append(\
+        df_outcomes = df_outcomes.append(\
                     [new_row1, new_row2, new_row3, new_row4, new_row5], ignore_index=True)
             
 #Generate Graphs
 os.chdir(output_path)
 
 for var in variables:
-    df_graph = df_varying_CollegeDef_byYear[df_varying_CollegeDef_byYear['variable']==var]
+    df_graph = df_outcomes[df_outcomes['variable']==var]
 
     plt.figure(figsize=(6,4))     
     for def_num in [1,2,3]: 
@@ -439,7 +445,7 @@ for var in variables:
         plt.plot(df_series['year'], df_series['value'], label=f'College Definition {def_num}')
     plt.legend()
     plt.xlabel("Year")
-    plt.title(var)
+    plt.title(var, fontsize=14)
     if var == "Pct. Chg. in College Wage Premium (O to H)":
         plt.ylim(-1,1)
     plt.savefig('varyCollegeDef_byYear_'+str(variables.index(var) + 1)+'.png', dpi=500)
@@ -448,7 +454,118 @@ for var in variables:
 os.chdir(code_folder)
 
 
-#%%  6. Technical Note: Composition of Some College Around 1992 #%%
+#%%  6. Contribution of ESHI to College Wage Premium over time #%%
+# Importing Data
+os.chdir(data_folder)
+df_observed = pd.read_csv('observed_data_RC1.csv', index_col=0)
+
+# Parameter assumptions:
+alpha_c, alpha_n, = 1, 1
+tau_param = 'tau_high'
+# Parameter to be varied:
+years = [1977,1987] + list(range(1996, 2020))
+def_num = [1,2,3]
+
+#Output path 
+output_path = '/Users/caseymcquillan/Desktop/Research/FZZ/output/Graphs/RC1_college'
+
+#Define varibables
+variables = ["College Wage Premium", 
+             "Potential Reduction in College Wage Premium",
+             "Percentage reduction in CWP (H to P)"]
+
+#Loop through values of tau and year
+df_outcomes = pd.DataFrame(columns = ['year', 'college definition', 
+                                      "College Wage Premium", 
+                                      "Potential Reduction in College Wage Premium",
+                                      "Pct. Reduction in CWP (H to P)"])
+
+for def_num in [1,2,3]:   
+    for year in years:
+        #Define and calibrate model
+        model = calibration_model(alpha_c, alpha_n,
+                    tau=df_observed.loc[year, tau_param], 
+                    w1_c=df_observed.loc[year, f'wage1_c [college definition {def_num}]'], 
+                    w1_n=df_observed.loc[year, f'wage1_n [college definition {def_num}]'],
+                    P1_c=df_observed.loc[year, f'P1_c [college definition {def_num}]'], 
+                    P1_n=df_observed.loc[year, f'P1_n [college definition {def_num}]'],
+                    share_workers1_c=df_observed.loc[year, f'share_workers1_c [college definition {def_num}]'],
+                    share_pop_c=df_observed.loc[year, f'share_pop_c [college definition {def_num}]'],
+                    pop_count=df_observed.loc[year, 'pop_count'])
+    
+        #Make sure there are no NANs in model before calibration
+        if any(np.isnan([vars(model)[x] for x in vars(model).keys()])):
+            print("NAN value entered into calibration model for:")
+            for var in vars(model).keys():
+                if np.isnan(vars(model)[var])==True: print("    "+var)
+            print("for year: " + str(year))
+            continue
+        
+        #Calibrate Model
+        model.calibrate()
+        
+        #Calculate variables of interest
+        cwp = model.w1_c - model.w1_n
+        contrib_ESHI_cwp = (model.w1_c - model.w1_n) - (model.w2_c - model.w2_n)        
+        
+        #Create rows for dataframe and append them
+        new_row = {'year':year, 'college definition':def_num, \
+                    "College Wage Premium": cwp, \
+                    "Potential Reduction in College Wage Premium": contrib_ESHI_cwp,
+                    "Pct. Reduction in CWP (H to P)": 100* (contrib_ESHI_cwp/cwp)}    
+        df_outcomes = df_outcomes.append(\
+                    [new_row], ignore_index=True)
+#Set year as index
+df_outcomes=df_outcomes.set_index('year')   
+
+#Create subsets based on college definition
+for def_num in [1,2,3]: 
+    exec(f'df_outcomes_college{def_num} = df_outcomes[df_outcomes[\'college definition\']=={def_num}]') 
+
+#Create graphs
+os.chdir(output_path)
+
+for def_num in [1,2,3]: 
+    exec(f'plt.plot(df_outcomes_college{def_num}[\'College Wage Premium\']'+\
+         f', label=\'College Definititon {def_num}\')')
+plt.gca().yaxis.set_major_formatter(plt.matplotlib.ticker.StrMethodFormatter('{x:,.0f}'))
+plt.grid(color='gainsboro')
+plt.suptitle('College Wage Premium', y=0.98, fontsize=14)
+plt.title(r'($w^H_C - w^H_N$)', fontsize=10)
+plt.legend()
+plt.savefig('varyCollegeDef_CollegeWagePremium_RC1.png', dpi=500)
+plt.clf()
+
+for def_num in [1,2,3]: 
+    exec(f'plt.plot(df_outcomes_college{def_num}[\'Potential Reduction in College Wage Premium\']'+\
+         f', label=\'College Definititon {def_num}\')')
+plt.gca().yaxis.set_major_formatter(plt.matplotlib.ticker.StrMethodFormatter('{x:,.0f}'))
+plt.grid(color='gainsboro')
+plt.suptitle('Potential Reduction in College Wage Premium', y=0.98, fontsize=14)
+plt.title(r'($w^H_C - w^H_N$) - ($w^P_C - w^P_N$)', fontsize=10)
+plt.legend()
+plt.savefig('varyCollegeDef_PotentialReduction_RC1.png', dpi=500)
+plt.clf()
+
+os.chdir(code_folder)
+
+
+# How has wedge changed over time:
+ref_year = 2019
+for def_num in [1,2,3]:
+    print(f'College Definition {def_num}:')
+    for year in [1977,1987,1997,2007]:
+        exec(f'chg_cwp = df_outcomes_college{def_num}.loc[ref_year,\'College Wage Premium\'] -' +\
+                    f'df_outcomes_college{def_num}.loc[year,\'College Wage Premium\']')
+        exec(f'chg_ESHI_contrib = df_outcomes_college{def_num}.loc[ref_year,\'Potential Reduction in College Wage Premium\'] -' +\
+                    f'df_outcomes_college{def_num}.loc[year,\'Potential Reduction in College Wage Premium\']')
+        share_ESHI_contrib = chg_ESHI_contrib / chg_cwp
+        print(f'Since {year}, '+\
+                f'the college wage premium increased by ${chg_cwp:,.0f} from '+\
+                f'and ESHI accounts for ${chg_ESHI_contrib:,.0f} of this change or {100*share_ESHI_contrib:,.2f}%.')
+    print()
+    
+#%%  A1. Technical Note: Composition of Some College Around 1992 #%%
 #Import Data
 os.chdir(data_folder)
 df = pd.read_csv('cps_00009.csv')
@@ -546,4 +663,9 @@ plt.savefig('EducationalAttainment.png', dpi=500)
 plt.clf()  
 
 os.chdir(code_folder)
-    
+
+
+
+
+
+
