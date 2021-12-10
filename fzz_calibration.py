@@ -175,13 +175,13 @@ class calibration_model:
                 exec("self."+var+eq_num+'='+var+eq_num)
 
     ### Generate Tables in Tex ###
-    def generate_table(self, file_name, year, table_type, table_label, location):
+    def generate_table(self, file_name, year, table_type, table_label, location, subtitle=''):
         
         ## Generate Summary Table
         if table_type=="equilibrium summary":
         
             ## Generate Strings that will be written into .tex file as a list
-            header = [f'\ctable[caption={{Equilibrium Calibration for {year} with $\\alpha_C = {self.alpha_c}, \\alpha_N = {self.alpha_n}$}},', '\n',
+            header = [f'\ctable[caption={{Equilibrium Summary for {year}', subtitle, '},', '\n',
             f'    label={table_label}, pos=h!]', '\n',
             '{rcccrccc}{^{*}&{This represents an observed value.}}', '\n',
             '{\FL &&&&& \multicolumn{3}{c}{Equilibrium Values}  \\\\', '\n',
@@ -251,60 +251,53 @@ class calibration_model:
         ## Generate Comparison Table
         if table_type=="equilibrium comparison":
 
-            header = [f'\ctable[caption={{Equilibrium Comparison for {year} with $\\alpha_C = {self.alpha_c}, \\alpha_N = {self.alpha_n}$}},', '\n',
+            header = [f'\ctable[caption={{Equilibrium Comparison for {year}', subtitle, '},', '\n',
                         f'    label={table_label}, pos=h!]', '\n',
-                        '{lcc}{}{\\FL', '\n',
-                        '&  \\small (No ESHI $\\Rightarrow$ Head Tax)', '\n',
+                        '{lc}{}{\\FL', '\n',
                         '   & \\small (Head Tax $\\Rightarrow$ Payroll Tax)  \\\\', '\n',
-                        '\cmidrule{1-3}', '\n']
+                        '\cmidrule{1-2}', '\n']
 
             table_values = ['\\underline{Wages:}', ' \\\\\n',
                 f'\\ \\ $\\Delta(w_C)$'
-                    f' & {self.w1_c-self.w0_c:,.0f}',
                     f' & {self.w2_c-self.w1_c:,.0f}',
                     ' \\\\\n',
                 f'\\ \\ $\\Delta(w_N)$',
-                    f' & {self.w1_n-self.w0_n:,.0f}',
                     f' & {self.w2_n-self.w1_n:,.0f}',
                     ' \\\\\n',
                 f'\\ \\ $\\Delta(w_C - w_N)$'
-                    f' & {(self.w1_c-self.w1_n)-(self.w0_c-self.w0_n):,.0f}',
                     f' & {(self.w2_c-self.w2_n)-(self.w1_c-self.w1_n):,.0f}',
                     ' \\\\\n',
                 f'\\ \\ $\\%\\Delta(w_C - w_N)$'
-                    f' & {100*((self.w1_c-self.w1_n)-(self.w0_c-self.w0_n))/(self.w0_c-self.w0_n):,.2f}\\%',
                     f' & {100*((self.w2_c-self.w2_n)-(self.w1_c-self.w1_n))/(self.w1_c-self.w1_n):,.2f}\\%',
                     ' \\\\\n',
                     '\\\\\n',
             '\\underline{Labor Supply:}', ' \\\\\n',
                 f'\\ \\ $\\%\\Delta(L_C+L_N)$'
-                    f' & {100*((self.L1_c+self.L1_n)-(self.L0_c+self.L0_n))/(self.L0_c+self.L0_n):,.2f}\\%',
                     f' & {100*((self.L2_c+self.L2_n)-(self.L1_c+self.L1_n))/(self.L1_c+self.L1_n):,.2f}\\%',
                     ' \\\\\n'
                 f'\\ \\ $\\%\\Delta(L_C)$'
-                    f' & {100*(self.L1_c-self.L0_c)/self.L0_c:,.2f}\\%',
                     f' & {100*(self.L2_c-self.L1_c)/self.L1_c:,.2f}\\%',
                     ' \\\\\n'
                 f'\\ \\ $\\%\\Delta(L_N)$'
-                    f' & {100*(self.L1_n-self.L0_n)/self.L0_n:,.2f}\\%',
                     f' & {100*(self.L2_n-self.L1_n)/self.L1_n:,.2f}\\%',
                     ' \\\\\n',
-            '$\\Delta($Employment$)$:', 
-                    f' & {(self.employment1_c+self.employment1_n)-(self.employment0_c+self.employment0_n):,.0f}',
+                    '\\\\\n',
+            '\\underline{Employment:}', ' \\\\\n',
+            '$\\Delta$(\\small College Share):', 
+                    f' & {100*(((self.L2_c)/(self.L2_c+self.L2_n))-((self.L1_c)/(self.L1_c+self.L1_n))):,.2f} pp',
+                    ' \\\\\n',
+            '$\\Delta$(\\small Total Employment):',
                     f' & {(self.employment2_c+self.employment2_n)-(self.employment1_c+self.employment1_n):,.0f}',
                     ' \\\\\n',
-                '\\ \\ College',
-                    f' & {self.employment1_c-self.employment0_c:,.0f}',
+                '\\ \\ \\small College',
                     f' & {self.employment2_c-self.employment1_c:,.0f}',
                     ' \\\\\n',
-                '\\ \\ Non-College',
-                    f' & {self.employment1_n-self.employment0_n:,.0f}',
+                '\\ \\ \\small Non-College',
                     f' & {self.employment2_n-self.employment1_n:,.0f}',
                     ' \\\\\n',
                     '\\\\\n',
             '\\underline{Wage Bill:}', ' \\\\\n',
                 '\\small $\\Delta($College Share$)$',
-                    f' & {100*(((self.L1_c*self.w1_c)/(self.L1_c*self.w1_c + self.L1_n*self.w1_n))-((self.L0_c*self.w0_c)/(self.L0_c*self.w0_c + self.L0_n*self.w0_n))):,.2f} pp',
                     f' & {100*(((self.L2_c*self.w2_c)/(self.L2_c*self.w2_c + self.L2_n*self.w2_n))-((self.L1_c*self.w1_c)/(self.L1_c*self.w1_c + self.L1_n*self.w1_n))):,.2f} pp',
                     ' \\\\\n']
 
@@ -356,15 +349,15 @@ if any(np.isnan([vars(model)[x] for x in vars(model).keys()])):
 model.calibrate()
 
 #Output LaTeX Tables
-output_path = '/Users/caseymcquillan/Desktop/Research/FZZ/output/Tables/Baseline'
+output_path = '/Users/caseymcquillan/Desktop/'
 model.generate_table(file_name='SummaryTable'+str(year)+"_baseline", year=year, 
-                     table_type="equilibrium summary", 
+                     table_type="equilibrium summary",
                      table_label="SummaryTable"+str(year)+"baseline", 
-                     location=output_path)
+                     location=output_path, subtitle=" for Baseline")
 
 model.generate_table(file_name='EqComparison'+str(year)+"_baseline", year=year, 
                  table_type="equilibrium comparison", 
                  table_label="EqComparison"+str(year)+"baseline", 
-                 location=output_path)
+                 location=output_path, subtitle=" for Baseline")
 
 
