@@ -76,12 +76,13 @@ for year in year_values:
     #Create list with comparison table values for this section
     table_values_section = [f'\\underline{{ Calibration for {year} }} \\\\', '\n',
     f'\\ \\ \\small Pct. Chg. in College Wage Premium',
-        f' & {100*((model.w1_c-model.w1_n)-(model.w0_c-model.w0_n))/(model.w0_c-model.w0_n):,.2f}\\%',
         f' & {100*((model.w2_c-model.w2_n)-(model.w1_c-model.w1_n))/(model.w1_c-model.w1_n):,.2f}\\%',
         ' \\\\\n',
     f'\\ \\ \\small Change in College Share of Wage Bill', 
-        f' & {100*(((model.L1_c*model.w1_c)/(model.L1_c*model.w1_c + model.L1_n*model.w1_n))-((model.L0_c*model.w0_c)/(model.L0_c*model.w0_c + model.L0_n*model.w0_n))):,.2f} pp',
         f' & {100*(((model.L2_c*model.w2_c)/(model.L2_c*model.w2_c + model.L2_n*model.w2_n))-((model.L1_c*model.w1_c)/(model.L1_c*model.w1_c + model.L1_n*model.w1_n))):,.2f} pp',
+        ' \\\\\n',
+    f'\\ \\ \\small Change in College Share of Workforce', 
+        f' & {100*(((model.L2_c)/(model.L2_c + model.L2_n))-((model.L1_c)/(model.L1_c + model.L1_n))):,.2f} pp',
         ' \\\\\n',
         '\\\\\n']
     #Append this to the existing list
@@ -89,14 +90,13 @@ for year in year_values:
 
 
 #Generate header and close 
-header = [f'\ctable[caption={{Calibration Results over Time with $\\alpha_C =\\alpha_N = 1$  }},', '\n',
+header = [f'\ctable[caption={{Calibration Results over Time}},', '\n',
         f'    label=ResultsOverTime, pos=h!]', '\n',
-        '{lcc}{', '\n',
+        '{lc}{', '\n',
         '$^{*}$& These calibrations use the value of $\\tau$ based on the total cost with complete take-up.',  '\n',
         '}{\\FL', '\n',
-        '&  \\small (No ESHI $\\Rightarrow$ Head Tax)', '\n',
         '   & \\small (Head Tax $\\Rightarrow$ Payroll Tax)  \\\\', '\n',
-        '\\cmidrule{1-3}', '\n']
+        '\\cmidrule{1-2}', '\n']
 
 closer = ['\\bottomrule}']
 
