@@ -118,7 +118,6 @@ plt.plot(df_observed['share_pop_c'])
 plt.ylim([0,0.55])
 plt.title("Share of Population with Bachelor's Degree or More", fontsize=14)
 plt.grid(axis='y', color='gainsboro')
-
 plt.savefig('share_pop_c.png', dpi=500)
 plt.clf() 
 
@@ -143,7 +142,6 @@ plt.grid(axis='y', color='gainsboro')
 plt.savefig('share_workers_c_acrossEq.png', dpi=500)
 plt.clf() 
 
-
 #  Both shares
 plt.plot(df_observed['share_workers1_c'], label="Workforce")
 plt.plot(df_observed['share_pop_c'], label="Population")
@@ -158,8 +156,9 @@ plt.plot(df_observed['P1_c'], label="College", color='darkred')
 plt.plot(df_observed['P1_n'], label="Non-college", color='navy')
 plt.legend()
 plt.ylim([0.4,0.75])
-plt.title("Labor Force Participation by Group", fontsize=14)
-plt.savefig('LFP_observed.png', dpi=500)
+plt.title("Employment Rate by Group", fontsize=14)
+plt.grid(axis='y', color='gainsboro')
+plt.savefig('EmploymentRate_observed.png', dpi=500)
 plt.clf() 
 
 plt.plot(df_results['P1_c'], label="Head Tax Equilibrium",
@@ -171,7 +170,7 @@ plt.ylim([0.50,0.75])
 plt.title("Employment Rate for College Workers", fontsize=14)
 plt.tick_params(bottom=True, left=True)
 plt.grid(axis='y', color='gainsboro')
-plt.savefig('EmploymentRate_c.png', dpi=500)
+plt.savefig('EmploymentRate_c_acrossEq.png', dpi=500)
 plt.clf() 
 
 plt.plot(df_results['P1_n'], label="Head Tax Equilibrium",
@@ -183,7 +182,7 @@ plt.ylim([0.45,0.65])
 plt.title("Employment Rate for Non-college Workers", fontsize=14)
 plt.tick_params(bottom=True, left=True)
 plt.grid(axis='y', color='gainsboro')
-plt.savefig('EmploymentRate_n.png', dpi=500)
+plt.savefig('EmploymentRate_n_acrossEq.png', dpi=500)
 plt.clf() 
 
 
@@ -194,7 +193,7 @@ plt.plot(df_results['P2_n'], label="Non-college, Payroll Tax", color='steelblue'
 plt.legend()
 plt.ylim([0.45,0.75])
 plt.title("Employment Rate by Group", fontsize=14)
-plt.savefig('LFP.png', dpi=500)
+plt.savefig('EmploymentRate_acrossEq.png', dpi=500)
 plt.clf() 
 
 
