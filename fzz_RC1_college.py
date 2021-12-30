@@ -142,46 +142,24 @@ for year in data.index:
 #%% 1d. Export Data #%%
 os.chdir(data_folder)
 
-data_export = data[['N', 'N_working',
-                    'N_college1', 'N_college1_working',                    
-                    'share_pop_c [college definition 1]', 
-                    'share_pop_c (weighted) [college definition 1]', 
-                    'share_workers1_c [college definition 1]', 
-                    'share_workers1_c (weighted) [college definition 1]',
-                    'P1_c [college definition 1]', 
-                    'P1_c (weighted) [college definition 1]',
-                    'P1_n [college definition 1]',
-                    'P1_n (weighted) [college definition 1]',
-                    'wage1_c [college definition 1]', 
-                    'wage1_c (weighted) [college definition 1]',
-                    'wage1_n [college definition 1]', 
-                    'wage1_n (weighted) [college definition 1]',
-                    'N_college2', 'N_college1_working',                    
-                    'share_pop_c [college definition 2]', 
-                    'share_pop_c (weighted) [college definition 2]', 
-                    'share_workers1_c [college definition 2]', 
-                    'share_workers1_c (weighted) [college definition 2]',
-                    'P1_c [college definition 2]', 
-                    'P1_c (weighted) [college definition 2]',
-                    'P1_n [college definition 2]',
-                    'P1_n (weighted) [college definition 2]',
-                    'wage1_c [college definition 2]', 
-                    'wage1_c (weighted) [college definition 2]',
-                    'wage1_n [college definition 2]', 
-                    'wage1_n (weighted) [college definition 2]',
-                    'N_college3', 'N_college1_working',                    
-                    'share_pop_c [college definition 3]', 
-                    'share_pop_c (weighted) [college definition 3]', 
-                    'share_workers1_c [college definition 3]', 
-                    'share_workers1_c (weighted) [college definition 3]',
-                    'P1_c [college definition 3]', 
-                    'P1_c (weighted) [college definition 3]',
-                    'P1_n [college definition 3]',
-                    'P1_n (weighted) [college definition 3]',
-                    'wage1_c [college definition 3]', 
-                    'wage1_c (weighted) [college definition 3]',
-                    'wage1_n [college definition 3]', 
-                    'wage1_n (weighted) [college definition 3]']]
+variables = ['N', 'N_working']
+for def_num in [1,2,3]:
+    variables_def = [f'N_college{def_num}', f'N_college{def_num}_working',                    
+                        f'share_pop_c [college definition {def_num}]', 
+                        f'share_pop_c (weighted) [college definition {def_num}]', 
+                        f'share_workers1_c [college definition {def_num}]', 
+                        f'share_workers1_c (weighted) [college definition {def_num}]',
+                        f'P1_c [college definition {def_num}]', 
+                        f'P1_c (weighted) [college definition {def_num}]',
+                        f'P1_n [college definition {def_num}]',
+                        f'P1_n (weighted) [college definition {def_num}]',
+                        f'wage1_c [college definition {def_num}]', 
+                        f'wage1_c (weighted) [college definition {def_num}]',
+                        f'wage1_n [college definition {def_num}]', 
+                        f'wage1_n (weighted) [college definition {def_num}]']
+    variables = variables + variables_def
+
+data_export = data[variables]
 
 data_export.to_csv('CPS_ASEC_clean_RC1.csv')
 
@@ -201,28 +179,17 @@ premium_data = pd.read_excel('premium_series.xlsx', index_col=0)
 df_observed = pd.DataFrame({
                 'epop_ratio': OECD_data['Employment Rate (25-64)']/100,
                 'pop_count': OECD_data['Population (25-64)'],
-                'share_pop_c [college definition 1]': ASEC_data['share_pop_c (weighted) [college definition 1]'],
-                'share_workers1_c [college definition 1]': ASEC_data['share_workers1_c (weighted) [college definition 1]'],
-                'wage1_c [college definition 1]': ASEC_data['wage1_c (weighted) [college definition 1]'],
-                'wage1_n [college definition 1]': ASEC_data['wage1_n (weighted) [college definition 1]'],
-                'P1_c [college definition 1]': ASEC_data['P1_c (weighted) [college definition 1]'],
-                'P1_n [college definition 1]': ASEC_data['P1_n (weighted) [college definition 1]'],
-                'share_pop_c [college definition 2]': ASEC_data['share_pop_c (weighted) [college definition 2]'],
-                'share_workers1_c [college definition 2]': ASEC_data['share_workers1_c (weighted) [college definition 2]'],
-                'wage1_c [college definition 2]': ASEC_data['wage1_c (weighted) [college definition 2]'],
-                'wage1_n [college definition 2]': ASEC_data['wage1_n (weighted) [college definition 2]'],
-                'P1_c [college definition 2]': ASEC_data['P1_c (weighted) [college definition 2]'],
-                'P1_n [college definition 2]': ASEC_data['P1_n (weighted) [college definition 2]'],
-                'share_pop_c [college definition 3]': ASEC_data['share_pop_c (weighted) [college definition 3]'],
-                'share_workers1_c [college definition 3]': ASEC_data['share_workers1_c (weighted) [college definition 3]'],
-                'wage1_c [college definition 3]': ASEC_data['wage1_c (weighted) [college definition 3]'],
-                'wage1_n [college definition 3]': ASEC_data['wage1_n (weighted) [college definition 3]'],
-                'P1_c [college definition 3]': ASEC_data['P1_c (weighted) [college definition 3]'],
-                'P1_n [college definition 3]': ASEC_data['P1_n (weighted) [college definition 3]'],
                 'tau_high': premium_data['Avg Enr Cost'],
                 'tau_med': premium_data['Avg Emp Cost'],
-                'tau_low': premium_data['Emp Cost * Takeup'],
-            })
+                'tau_low': premium_data['Emp Cost * Takeup']})
+                
+for def_num in [1,2,3]:              
+    df_observed[f'share_pop_c [college definition {def_num}]'] = ASEC_data[f'share_pop_c (weighted) [college definition {def_num}]']
+    df_observed[f'share_workers1_c [college definition {def_num}]'] = ASEC_data[f'share_workers1_c (weighted) [college definition {def_num}]']
+    df_observed[f'wage1_c [college definition {def_num}]'] = ASEC_data[f'wage1_c (weighted) [college definition {def_num}]']
+    df_observed[f'wage1_n [college definition {def_num}]'] = ASEC_data[f'wage1_n (weighted) [college definition {def_num}]']
+    df_observed[f'P1_c [college definition {def_num}]'] = ASEC_data[f'P1_c (weighted) [college definition {def_num}]']
+    df_observed[f'P1_n [college definition {def_num}]'] = ASEC_data[f'P1_n (weighted) [college definition {def_num}]']
 
 ## Select relevant variables
 data_export = df_observed
@@ -469,17 +436,11 @@ def_num = [1,2,3]
 #Output path 
 output_path = '/Users/caseymcquillan/Desktop/Research/FZZ/output/Graphs/RC1_college'
 
-#Define varibables
-variables = ["College Wage Premium", 
-             "Potential Reduction in College Wage Premium",
-             "Percentage reduction in CWP (H to P)"]
-
 #Loop through values of tau and year
 df_outcomes = pd.DataFrame(columns = ['year', 'college definition', 
                                       "College Wage Premium", 
                                       "Potential Reduction in College Wage Premium",
                                       "Pct. Reduction in CWP (H to P)"])
-
 for def_num in [1,2,3]:   
     for year in years:
         #Define and calibrate model
@@ -548,7 +509,6 @@ plt.savefig('varyCollegeDef_PotentialReduction_RC1.png', dpi=500)
 plt.clf()
 
 os.chdir(code_folder)
-
 
 # How has wedge changed over time:
 ref_year = 2019
