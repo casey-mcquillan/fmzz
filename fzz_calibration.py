@@ -9,6 +9,7 @@ Created on Mon Aug 30 15:01:21 2021
 import os
 import pandas as pd
 import numpy as np
+from scipy.optimize import fsolve
 
 ### Set working directory
 folder = "/Users/caseymcquillan/Desktop/Research/FZZ/code"
@@ -118,32 +119,36 @@ class calibration_model:
         
         ## Payroll Tax Equilibrium ##
         #Solve for Payroll Tax rate
+        #Solve using nonlinear equation solver 
+        def equations(vars):
+            w2_n, w2_c, L2_n, L2_c, t = vars
+            #equations
+            eq1 = w2_n - A_n/(1+t)
+            eq2 = w2_c - A_c/(1+t)
+            eq3 = L2_n - share_pop_n*((w2_n+alpha_n*tau-kappa_lb)/(kappa_ub-kappa_lb))
+            eq4 = L2_c - share_pop_c*((w2_c+alpha_c*tau-kappa_lb)/(kappa_ub-kappa_lb))
+            A_tilde = (L2_n/(L2_n+L2_c))*A_n + (L2_c/(L2_n+L2_c))*A_c
+            eq5 = t - (tau/(A_tilde-tau))
+            return [eq1, eq2, eq3, eq4, eq5]
         #Let initial guess be based on Head Tax Wq
-        t_guess = tau /(avg_prod1 - tau)
-        #Define realized to fail condition at first
-        t_realized = t_guess + t_epsilon + 1
-        #Iterative algorithm to determine t
-        iteration = 0
-        while abs(t_guess - t_realized) >= t_epsilon:
-            #If not initial guess, use last realized value
-            if iteration>0: t_guess = t_realized
-            #Calculate equilibrium values
-            w2_c = A_c / (1+t_guess)
-            w2_n = A_n / (1+t_guess)
-            V2_c = w2_c + alpha_c * tau
-            V2_n = w2_n + alpha_n * tau
-            P2_c = (V2_c - kappa_lb) / kappa_dist
-            P2_n = (V2_n - kappa_lb) / kappa_dist
-            L2_c = P2_c * share_pop_c
-            L2_n = P2_n * share_pop_n
-            share_workers2_c = L2_c / (L2_c + L2_n)
-            share_workers2_n =  L2_n / (L2_c + L2_n)
-            avg_prod2 = share_workers2_c * A_c + share_workers2_n * A_n
-            #Calculate resulting payroll tax
-            t_realized = tau / (avg_prod2 - tau)
-            #Add one to iteration count
-            iteration=iteration+1
-        t = t_realized
+        t_guess = tau /(avg_prod1 - tau)        
+        w2_n_guess = A_n/(1+t_guess)
+        w2_c_guess = A_c/(1+t_guess)
+        L2_n_guess = share_pop_n*((w2_n_guess+alpha_n*tau-kappa_lb)/(kappa_ub-kappa_lb))
+        L2_c_guess = share_pop_c*((w2_c_guess+alpha_c*tau-kappa_lb)/(kappa_ub-kappa_lb))
+        w2_n, w2_c, L2_n, L2_c, t =  fsolve(equations, (w2_n_guess, w2_c_guess,\
+                                                        L2_n_guess, L2_c_guess,\
+                                                            t_guess))
+        #Solve for value of employment
+        V2_c = w2_c + alpha_c * tau
+        V2_n = w2_n + alpha_n * tau
+        #Solve for employment rate
+        P2_c = (V2_c - kappa_lb) / kappa_dist
+        P2_n = (V2_n - kappa_lb) / kappa_dist
+        #Solve for share of workers and avg. productivity
+        share_workers2_c = L2_c / (L2_c + L2_n)
+        share_workers2_n =  L2_n / (L2_c + L2_n)
+        avg_prod2 = share_workers2_c * A_c + share_workers2_n * A_n
         # Solve for e-pop ratio in Payroll Tax Eq
         epop_ratio2 = L2_c + L2_n
         # Solve for wage bill share
@@ -315,7 +320,7 @@ class calibration_model:
             #Return to previous directory
             os.chdir(cwd)
     
-'''
+
 #%%  Create Instance #%%
 # Importing Data
 data_folder = "/Users/caseymcquillan/Desktop/Research/FZZ/data"
@@ -348,16 +353,17 @@ if any(np.isnan([vars(model)[x] for x in vars(model).keys()])):
 #Calibrate Model
 model.calibrate()
 
+
 #Output LaTeX Tables
 output_path = '/Users/caseymcquillan/Desktop/'
-model.generate_table(file_name='SummaryTable'+str(year)+"_baseline", year=year, 
+model.generate_table(file_name='SummaryTable'+str(year)+"_baseline_new", year=year, 
                      table_type="equilibrium summary",
                      table_label="SummaryTable"+str(year)+"baseline", 
                      location=output_path, subtitle=" for Baseline")
 
-model.generate_table(file_name='EqComparison'+str(year)+"_baseline", year=year, 
+model.generate_table(file_name='EqComparison'+str(year)+"_baseline_new", year=year, 
                  table_type="equilibrium comparison", 
                  table_label="EqComparison"+str(year)+"baseline", 
                  location=output_path, subtitle=" for Baseline")
 
-'''
+
