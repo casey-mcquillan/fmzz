@@ -160,7 +160,7 @@ alpha_n=1
 tau_param = 'tau_high'
 
 # Parameter to be varied:
-years = [1977,1987] + list(range(1996, 2019))
+years = [1977,1987] + list(range(1996, 2020))
 elasticity_values = [[0.398,0.258],[0.15,0.15], [0.3,0.3],[0.45,0.45]]
 
 #Loop through values of tau and year
@@ -229,7 +229,6 @@ for elasticity_value in reversed(elasticity_values):
 plt.legend(title = r'Elasticties $[\epsilon^H_c, \epsilon^H_N]$')
 plt.xlabel("Year")
 plt.ylabel("Pct. Reduction in College Wage Premium")
-plt.grid(axis='y', color='gainsboro')
 plt.gca().yaxis.set_major_formatter(plt.matplotlib.ticker.StrMethodFormatter('{x:,.0%}'))
 plt.grid(axis='y', color='gainsboro')
 plt.savefig('varyElasticity_overTime_cwp.png', dpi=500)
@@ -251,7 +250,7 @@ plt.savefig('varyElasticity_overTime_cwb.png', dpi=500)
 plt.clf()
 
 
-#%% Tables: Varying Elasticties Over Time #%% 
+#%% Tables: Varying Elasticties #%% 
 # Importing Data
 os.chdir(data_folder)
 df_observed = pd.read_csv('observed_data.csv', index_col=0)
