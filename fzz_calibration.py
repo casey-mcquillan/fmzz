@@ -320,7 +320,7 @@ class calibration_model:
             #Return to previous directory
             os.chdir(cwd)
     
-
+'''
 #%%  Create Instance #%%
 # Importing Data
 data_folder = "/Users/caseymcquillan/Desktop/Research/FZZ/data"
@@ -365,5 +365,4 @@ model.generate_table(file_name='EqComparison'+str(year)+"_baseline", year=year,
                  table_type="equilibrium comparison", 
                  table_label="EqComparison"+str(year)+"baseline", 
                  location=output_path, subtitle=" for Baseline")
-
-
+'''
