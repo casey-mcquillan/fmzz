@@ -155,7 +155,7 @@ for tau in tau_params:
                   f'{pct_diff_empRate:.2f}% bigger (+{chg_empRate_p:.3f}, not +{chg_empRate_h:.3f})')
             
             print()
-        print()
+            print()
             '''
             
             # Collect and Graph outcomes

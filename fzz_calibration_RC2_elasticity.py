@@ -9,17 +9,12 @@ Created on Tue Dec 28 14:51:26 2021
 import os
 import pandas as pd
 import numpy as np
-import matplotlib.pyplot as plt
-import seaborn as sns
-sns.set_style("darkgrid")
+from scipy.optimize import fsolve
 
-### Set working directory and folders
-code_folder = "/Users/caseymcquillan/Desktop/Research/FZZ/code"
-data_folder = "/Users/caseymcquillan/Desktop/Research/FZZ/data"
-graph_output_path = '/Users/caseymcquillan/Desktop/Research/FZZ/output/Graphs/'
-table_output_path = '/Users/caseymcquillan/Desktop/Research/FZZ/output/Graphs/'
+### Set working directory
+folder = "/Users/caseymcquillan/Desktop/Research/FZZ/code"
+os.chdir(folder)
 
-os.chdir(code_folder)
 
 #%%  Define Class for Calibrating Model #%%
 class calibration_model_RC2:
