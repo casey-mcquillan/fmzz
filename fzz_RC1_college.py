@@ -256,7 +256,7 @@ output_path = '/Users/caseymcquillan/Desktop/Research/FZZ/output/Tables/RC1_coll
 #Create list for table values specific to each value of tau
 comparison_table_values = []
 
-#Loop through values of tau
+#Loop through vcollege definitions
 for def_num in [1,2,3]:       
     #Define and calibrate model
     model = calibration_model(alpha_c, alpha_n,
