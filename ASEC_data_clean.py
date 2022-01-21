@@ -39,12 +39,12 @@ df['college (weighted)'] = \
     df['college'] * df['ASECWT']
 
 # Define working
-hours_requirment =  1*(df['UHRSWORKLY'] >= 35)
-weeks_requirment =  1*(df['WKSWORK2'] >= 4)
-worker_class_requirement = [int(not x in [13,14,29]) for x in df['CLASSWLY']]
+hours_requirement =  1*(df['UHRSWORKLY'] >= 35)
+weeks_requirement =  1*(df['WKSWORK2'] >= 4)
+worker_class_requirement = [int(not x in [10,13,14,29]) for x in df['CLASSWLY']]
 
-df['working'] = hours_requirment * weeks_requirment * worker_class_requirement
-df['working (weighted)'] = hours_requirment * weeks_requirment* df['ASECWT']
+df['working'] = hours_requirement * weeks_requirement * worker_class_requirement
+df['working (weighted)'] = hours_requirement * weeks_requirement * worker_class_requirement * df['ASECWT']
 
 # Collect wage data
 df['wage_college'] = df['working'] * df['college'] * df['INCWAGE']
