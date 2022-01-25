@@ -12,7 +12,7 @@ import numpy as np
 ### Set working directory and folders
 code_folder = "/Users/caseymcquillan/Desktop/Research/FZZ/code"
 data_folder = "/Users/caseymcquillan/Desktop/Research/FZZ/data"
-output_folder = "/Users/caseymcquillan/Desktop/"
+output_folder = "/Users/caseymcquillan/Desktop/Research/FZZ/output/Tables/SummaryStats"
 os.chdir(code_folder)
 
 
@@ -120,13 +120,10 @@ for group in ['Total', 'FTFY', 'PTPY']:
 '''
 os.chdir(data_folder)
 price_data = pd.read_csv('PCEPI_data.csv', index_col=0)
-
-
 adj_factor = price_data.loc[year, 'PCEPI Adjustment Factor (2019 Dollars)']
 for var in ['wage1_c', 'wage1_n', 'wage1_c (weighted)', 'wage1_n (weighted)']:
     table_data.loc[yearvar] = adj_factor*df.loc[year, var]
-'''   
-        
+'''      
         
 #%% Output Latex Table #%%
 
@@ -214,7 +211,7 @@ table_bottom = ['\end{tabular} \n',
 #Create, write, and close file
 cwd = os.getcwd()
 os.chdir(output_folder)
-file = open("table1.tex","w")
+file = open(f"summary_stats_{str(year)}.tex","w")
 file.writelines(table_header) 
 file.writelines(table_values)   
 file.writelines(table_bottom)   
