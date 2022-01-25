@@ -1,161 +1,223 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Thu Dec  9 10:35:11 2021
-
+Created on Thu Jan 20 22:47:06 2022
 @author: caseymcquillan
 """
 #%%  Preamble: Import packages, set directory #%%  
 import os as os
 import pandas as pd
 import numpy as np
-import math
 
 ### Set working directory and folders
 code_folder = "/Users/caseymcquillan/Desktop/Research/FZZ/code"
 data_folder = "/Users/caseymcquillan/Desktop/Research/FZZ/data"
-output_path = "/Users/caseymcquillan/Desktop/Research/FZZ/output/Tables/SummaryStats"
+output_folder = "/Users/caseymcquillan/Desktop/"
 os.chdir(code_folder)
-
-
-#%% Functions #%%
-def weighted_avg_and_std(values, weights):
-    """
-    Return the weighted average and standard deviation.
-
-    values, weights -- Numpy ndarrays with the same shape.
-    """
-    average = np.average(values, weights=weights)
-    # Fast and numerically precise:
-    variance = np.average((values-average)**2, weights=weights)
-    return (average, math.sqrt(variance))
 
 
 #%% Import Data #%%
 os.chdir(data_folder)
-df = pd.read_csv('cps_00009.csv')
+df = pd.read_csv('cps_00010.csv')
+OECD_data = pd.read_csv('OECD_data.csv', index_col='year')
 
+#%% Data Cleaning #%%
 
-#%% Data Wrangling #%%
-#Drop invalid responses
-for var in ['EDUC', 'WKSWORK2', 'UHRSWORKLY', 'CLASSWLY', 'INCWAGE']:
+# Drop invalid responses
+for var in ['EDUC', 'WKSWORK2', 'UHRSWORKLY', 'CLASSWLY', 'INCWAGE', 'ANYCOVLY']:
     df = df[[not np.isnan(x) for x in df[var]]]
 df = df[[not x in [0,1,999] for x in df['EDUC']]]
 df = df[df['WKSWORK2']!=9]
-df = df[df['CLASSWLY']!=99]
 
-#Adjust year bc survey data corresponds to prev year
+# Drop self-employed workers
+df = df[[(not x in [10,13,14,29]) for x in df['CLASSWLY']]]
+
+# Adjust year bc survey data corresponds to prev year
 df['YEAR'] = df['YEAR'] - 1
 
 # Define college attendance
-df['college'] = \
+df['College'] = \
     [int(x in [110, 120, 121, 122, 111, 123, 124, 125]) for x in df['EDUC']]
-
-# Define working
-hours_requirment =  1*(df['UHRSWORKLY'] >= 35)
-weeks_requirment =  1*(df['WKSWORK2'] >= 4)
-worker_class_requirement = [int(not x in [13,14,29]) for x in df['CLASSWLY']]
-
-df['working'] = hours_requirment * weeks_requirment * worker_class_requirement
-
-# Collect wage data conditional on working
-df['wage'] = df['working'] * df['INCWAGE']
-df['wage_college'] = df['working'] * df['college'] * df['INCWAGE']
-df['wage_noncollege'] = df['working'] * (1 - df['college']) * df['INCWAGE']
-
-df['log_wage'] = df['working'] * np.log(df['INCWAGE']+1)
-df['log_wage_college'] = df['working'] * df['college'] * np.log(df['INCWAGE']+1)
-df['log_wage_noncollege'] = df['working'] * (1 - df['college']) * np.log(df['INCWAGE']+1)
+df['Non-College'] = 1-df['College']
 
 
-#%% Data Collapse #%%
-# Create this variable to track number of observations after collapse
-df['N'] = 1
-df['noncollege'] = 1 - df['college']
-df['college_working'] = df['college'] * df['working']
-df['noncollege_working'] = (1-df['college']) * df['working']
-
-# Create weights 
-df['ASECWT']
-df['ASECWT_college'] = df['college'] * df['ASECWT']
-df['ASECWT_noncollege'] = df['noncollege'] * df['ASECWT']
-df['ASECWT_working'] = df['working'] * df['ASECWT']
-df['ASECWT_college_working'] = df['college_working'] * df['ASECWT']
-df['ASECWT_noncollege_working'] = df['noncollege_working'] * df['ASECWT']
+# Define Health Insurance
+df['HI'] = 1*(df['ANYCOVLY']==2)
+df['ESHI'] = 1*(df['PAIDGH']>=20)
+df['HI Other'] = df['HI'] - df['ESHI']
+df['No HI'] = 1 - df['HI']
 
 
+## Define Full-Time, Full-Year
+hours_requirement_FTFY =  1*(df['UHRSWORKLY'] >= 35)
+weeks_requirement_FTFY =  1*(df['WKSWORK2'] >= 4)
+df['FTFY'] = hours_requirement_FTFY * weeks_requirement_FTFY
+df_FTFY = df[df['FTFY']==1]
 
-#Defines variables and outcomes of interest
-variables = ['Share of Population with a College Degree', 'Share of Workforce with a College Degree',
-             'Share of Population without a College Degree', 'Share of Workforce without a College Degree',
-             'Wages', 'Wages (College)', 'Wages (Non-college)', 
-             'Log Wages', 'Log Wages (College)', 'Log Wages (Non-college)',
-             'Employment Rate', 'Employment Rate (College)', 'Employment Rate (Non-college)', 
-             'Labor Supply', 'Labor Supply (College)', 'Labor Supply (Non-college)']
+## Define Part-Time, Part-Year
+hours_requirement_PTPY =  1*(df['UHRSWORKLY'] > 0)
+weeks_requirement_PTPY =  1*(df['WKSWORK2'] > 0)
+df['PTPY'] = hours_requirement_PTPY * weeks_requirement_PTPY
+df['PTPY'] = df['PTPY']-df['FTFY']
+df_PTPY = df[df['PTPY']==1]
 
-outcomes = ["Average", "Standard Deviation"]
+#Define Workforce (FTFY or PTPY)
+df['working'] =  df['PTPY']+df['FTFY']
 
-summary_stats = pd.DataFrame(index=outcomes, columns=variables)
-
-# Calculate based on data
-# Select Year
-df_ss = df[df['YEAR']==2019]
-
-# Population Share
-summary_stats.loc[outcomes,'Share of Population with a College Degree'] \
-    = weighted_avg_and_std(values=df_ss['college'], weights=df_ss['ASECWT'])
-summary_stats.loc[outcomes,'Share of Population without a College Degree'] \
-    = weighted_avg_and_std(values=df_ss['noncollege'], weights=df_ss['ASECWT'])
-
-# Workforce Share
-summary_stats.loc[outcomes,'Share of Workforce with a College Degree'] \
-    = weighted_avg_and_std(values=df_ss['college'], weights=df_ss['ASECWT_working'])
-summary_stats.loc[outcomes,'Share of Workforce without a College Degree'] \
-    = weighted_avg_and_std(values=df_ss['noncollege'], weights=df_ss['ASECWT_working'])
-
-# Wages
-summary_stats.loc[outcomes, 'Wages'] \
-    = weighted_avg_and_std(values=df_ss['wage'], weights=df_ss['ASECWT_working'])
-summary_stats.loc[outcomes, 'Wages (College)'] \
-    = weighted_avg_and_std(values=df_ss['wage_college'], weights=df_ss['ASECWT_college_working'])
-summary_stats.loc[outcomes, 'Wages (Non-college)'] \
-    = weighted_avg_and_std(values=df_ss['wage_noncollege'], weights=df_ss['ASECWT_noncollege_working'])
-
-# Log Wages
-summary_stats.loc[outcomes,'Log Wages'] \
-    = weighted_avg_and_std(values=df_ss['log_wage'], weights=df_ss['ASECWT_working'])
-summary_stats.loc[outcomes,'Log Wages (College)'] \
-    = weighted_avg_and_std(values=df_ss['log_wage_college'], weights=df_ss['ASECWT_college_working'])
-summary_stats.loc[outcomes,'Log Wages (Non-college)'] \
-    = weighted_avg_and_std(values=df_ss['log_wage_noncollege'], weights=df_ss['ASECWT_noncollege_working'])
-
-# Employment Rates
-summary_stats.loc[outcomes,'Employment Rate'] \
-    =weighted_avg_and_std(values=df_ss['working'], weights=df_ss['ASECWT'])
-summary_stats.loc[outcomes,'Employment Rate (College)'] \
-    =weighted_avg_and_std(values=df_ss['working'], weights=df_ss['ASECWT_college'])
-summary_stats.loc[outcomes,'Employment Rate (Non-college)'] \
-    =weighted_avg_and_std(values=df_ss['working'], weights=df_ss['ASECWT_noncollege'])
-
-#Labor Supply
-summary_stats.loc[outcomes,'Labor Supply'] \
-    =weighted_avg_and_std(values=df_ss['working'], weights=df_ss['ASECWT'])
-summary_stats.loc[outcomes,'Labor Supply (College)'] \
-    =weighted_avg_and_std(values=df_ss['college_working'], weights=df_ss['ASECWT'])
-summary_stats.loc[outcomes,'Labor Supply (Non-college)'] \
-    =weighted_avg_and_std(values=(df_ss['noncollege_working']), weights=df_ss['ASECWT'])
+# Constant column
+df['Total'] = 1
 
 
-#%% Inflation Adjust #%%
+#%% Create Table Data #%%
+
+## Choose Relevant year
+year = 2019
+df = df[df['YEAR']==year]
+
+## Pull Total Population
+total_population = OECD_data.loc[year,'Population (25-64)']
+
+## Create Dataframe with Table Data
+table_data = pd.DataFrame(columns=['Group', 'Subgroup', 'Variable', 'Value'])
+for group in ['Total', 'FTFY', 'PTPY']:
+    group_var = df[group]
+    
+    for column in ['Total', 'College', 'Non-College']:
+        column_var = df[column]
+        
+        ### Calculations
+        ## Shares
+        population_share = np.average(group_var*column_var, weights=df['ASECWT'])
+        population_level = total_population * population_share
+        workforce_share = np.average(group_var*column_var, weights=df['ASECWT']*df['working'])
+        group_share = np.average(group_var*column_var, weights=df['ASECWT']*group_var)
+        
+        ## Health Insurance
+        ESHI = np.average(df['ESHI'], weights=df['ASECWT']*group_var*column_var)
+        HI_Other = np.average(df['HI Other'], weights=df['ASECWT']*group_var*column_var)
+        No_HI = np.average(df['No HI'], weights=df['ASECWT']*group_var*column_var)
+        
+        ### Labor statistics
+        employment_rate = np.average(group_var*column_var, weights=df['ASECWT']*column_var)
+        avg_wages = np.average(df['INCWAGE'], weights=df['ASECWT']*group_var*column_var) 
+        
+        
+        ### Append to Dataframe
+        ### Define rows of table:
+        table_data.loc[len(table_data)]= group, column, 'Population (millions)', population_level/1000000
+        table_data.loc[len(table_data)]= group, column, 'Share of Population', population_share
+        table_data.loc[len(table_data)]= group, column, 'Share of Workforce', workforce_share
+        table_data.loc[len(table_data)]= group, column, 'Share of Group', group_share
+        table_data.loc[len(table_data)]= group, column, 'Share with ESHI', ESHI
+        table_data.loc[len(table_data)]= group, column, 'Share with Other HI', HI_Other
+        table_data.loc[len(table_data)]= group, column, 'Share with No HI', No_HI
+        table_data.loc[len(table_data)]= group, column, 'Employment Rate', employment_rate
+        table_data.loc[len(table_data)]= group, column, 'Avg. Annual Wage', avg_wages
+        
+
+
+#%% Inflation Adjust Wages #%%
 '''
-# Adjust wages to be in 2019 dollars
 os.chdir(data_folder)
 price_data = pd.read_csv('PCEPI_data.csv', index_col=0)
-for year in data.index:
-    adj_factor = price_data.loc[year, 'PCEPI Adjustment Factor (2019 Dollars)']
-    for var in ['wage1_c', 'wage1_n', 'wage1_c (weighted)', 'wage1_n (weighted)']:
-        data.loc[year, var] = adj_factor*data.loc[year, var]
-'''
 
-#%% Export Data #%%
-summary_stats.T.to_excel(output_path+'/SummaryStats2019.xlsx', index = True)
+
+adj_factor = price_data.loc[year, 'PCEPI Adjustment Factor (2019 Dollars)']
+for var in ['wage1_c', 'wage1_n', 'wage1_c (weighted)', 'wage1_n (weighted)']:
+    table_data.loc[yearvar] = adj_factor*df.loc[year, var]
+'''   
+        
+        
+#%% Output Latex Table #%%
+
+#List of rows
+variables = ['Population (millions)', 'Share of Population', 'Share of Workforce',
+               'Share of Group', 'Share with ESHI', 'Share with Other HI',
+               'Share with No HI', 'Employment Rate', 'Avg. Annual Wage']
+
+#Dictionaries for each group to panel title
+group2title_Dict={'Total':'Panel A: Population ages 25-64', 
+                  'FTFY':'Panel B: Full-Time, Full-Year Workers ages 25-64', 
+                  'PTPY':'Panel C: Part-Time or Part-Year Workers ages 25-64'}
+
+#Loop through each group
+table_values = []
+for group in ['Total', 'FTFY', 'PTPY']:
+    df_panel = table_data[table_data['Group']==group]
+        
+    # For column in ['Total', 'College', 'Non-college']:
+    df_panel_t = df_panel[df_panel['Subgroup']=='Total']
+    df_panel_c = df_panel[df_panel['Subgroup']=='College']
+    df_panel_n = df_panel[df_panel['Subgroup']=='Non-College']
+    
+    # Set index to variable
+    df_panel_t=df_panel_t.set_index('Variable')
+    df_panel_c=df_panel_c.set_index('Variable')
+    df_panel_n=df_panel_n.set_index('Variable')
+    
+    # Remove certain variables for 'Total' Panel
+    if group == 'Total':  
+        var_list = variables[:-2]
+        var_list.remove('Share of Workforce')
+        var_list.remove('Share of Group')
+    else: var_list = variables
+    
+    # Loop through each variable
+    panel_values = []
+    for var in var_list:
+        var_t = df_panel_t.loc[var, 'Value']
+        var_c = df_panel_c.loc[var, 'Value']
+        var_n = df_panel_n.loc[var, 'Value']
+        string = f'\t {var} & {var_t:,.2f} & {var_c:,.2f} & {var_n:,.2f} & \\\\ \n'
+        
+        #Add in break after certain lines
+        if group!='Total'and var=='Share with No HI':
+            string = string.replace('\\\\', '\medskip \\\\')
+        if group=='Total' and var=='Share of Population':
+            string = string.replace('\\\\', '\medskip \\\\')
+        
+        #Adjust Share of Group
+        if var=='Share of Group':
+            string = f'\t {var} & & {var_c:,.2f} & {var_n:,.2f} & \medskip \\\\ \n'
+            
+        #Round to nearest dollar for wages
+        if var == 'Avg. Annual Wage':
+            string = f'\t {var} & {var_t:,.0f} & {var_c:,.0f} & {var_n:,.0f} & \\\\ \n'
+        
+        #Add row to panel values
+        panel_values.append(string)
+        
+    #Concatenate strigns for the panel
+    panel_header = ['\multicolumn{5}{l} \n{\\textsl{',
+                    group2title_Dict[group],
+                    '}} \\\\ \n\hline \n',
+                    '& Total & College & Non-College \\\\ \n\hline \n']
+    
+    panel_bottom = ['\hline \hline \\\\  \n']
+    
+    #Add panel to table values
+    table_values = table_values + panel_header + panel_values + panel_bottom
+
+
+## Create Table Header and Bottom
+table_header = ['\\begin{table}[htbp!] \n',
+                f'\caption{{Summary Statistics in {year}}} ', 
+                '\label{tab_summstats} \n',
+                '\centering \n',
+                '\\begin{tabular}{lcccccc} \n'
+                '\hline  \n']
+
+
+table_bottom = ['\end{tabular} \n',
+                '\end{table}']
+        
+#Create, write, and close file
+cwd = os.getcwd()
+os.chdir(output_folder)
+file = open("table1.tex","w")
+file.writelines(table_header) 
+file.writelines(table_values)   
+file.writelines(table_bottom)   
+file.close()
+
+
