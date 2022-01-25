@@ -29,14 +29,15 @@ df = df[[not x in [0,1,999] for x in df['EDUC']]]
 df = df[df['WKSWORK2']!=9]
 df = df[df['CLASSWLY']!=99]
 
+# Drop self-employed workers
+df = df[[(not x in [10,13,14,29]) for x in df['CLASSWLY']]]
+
 #Adjust year bc survey data corresponds to prev year
 df['YEAR'] = df['YEAR'] - 1
 
 # Define college attendance
 df['college'] = \
     [int(x in [110, 120, 121, 122, 111, 123, 124, 125]) for x in df['EDUC']]
-df['college (weighted)'] = \
-    df['college'] * df['ASECWT']
 
 # Define working
 hours_requirement =  1*(df['UHRSWORKLY'] >= 35)
@@ -107,7 +108,7 @@ for year in data.index:
     adj_factor = price_data.loc[year, 'PCEPI Adjustment Factor (2019 Dollars)']
     for var in ['wage1_c', 'wage1_n', 'wage1_c (weighted)', 'wage1_n (weighted)']:
         data.loc[year, var] = adj_factor*data.loc[year, var]
-
+        
 
 #%% Export Data #%%
 os.chdir(data_folder)
