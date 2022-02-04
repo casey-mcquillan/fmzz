@@ -27,7 +27,7 @@ from fzz_calibration import calibration_model
 #%% 1a. Cleaning ASEC Data #%%
 #Import Data
 os.chdir(data_folder)
-df = pd.read_csv('cps_00009.csv')
+df = pd.read_csv('cps_00011.csv')
 
 # Drop invalid responses
 for var in ['EDUC', 'WKSWORK2', 'UHRSWORKLY', 'CLASSWLY', 'INCWAGE']:
@@ -36,131 +36,183 @@ df = df[[not x in [0,1,999] for x in df['EDUC']]]
 df = df[df['WKSWORK2']!=9]
 df = df[df['CLASSWLY']!=99]
 
+# Drop self-employed workers
+df = df[[(not x in [10,13,14,29]) for x in df['CLASSWLY']]]
+
 # Adjust year bc survey data corresponds to prev year
 df['YEAR'] = df['YEAR'] - 1
 
 ### Define college attendance
 #College Definition 1
-df['college1'] = \
+df['College (Definition 1)'] = \
     [int(x in [110, 120, 121, 122, 111, 123, 124, 125]) for x in df['EDUC']]
-df['college1 (weighted)'] = \
-    df['college1'] * df['ASECWT']
+df['Non-College (Definition 1)'] = 1- df['College (Definition 1)'] 
 
 #College Definition 2
-df['college2'] = \
+df['College (Definition 2)'] = \
     [int(x in [90, 100, 110, 120, 121, 122, 91, 92, 111, 123, 124, 125]) for x in df['EDUC']]
-df['college2 (weighted)'] = \
-    df['college2'] * df['ASECWT']
+df['Non-College (Definition 2)'] = 1- df['College (Definition 2)'] 
 
 #College Definition 3
-df['college3'] = \
+df['College (Definition 3)'] = \
     [int(x in [80, 90, 100, 110, 120, 121, 122, 81, 91, 92, 111, 123, 124, 125]) for x in df['EDUC']]
-df['college3 (weighted)'] = \
-    df['college3'] * df['ASECWT']
+df['Non-College (Definition 3)'] = 1- df['College (Definition 3)'] 
 
 # Define working
 hours_requirment =  1*(df['UHRSWORKLY'] >= 35)
 weeks_requirment =  1*(df['WKSWORK2'] >= 4)
-worker_class_requirement = [int(not x in [13,14,29]) for x in df['CLASSWLY']]
+df['FTFY'] = hours_requirment * weeks_requirment
 
-df['working'] = hours_requirment * weeks_requirment * worker_class_requirement
-df['working (weighted)'] = hours_requirment * weeks_requirment* df['ASECWT']
+# Define Health Insurance
+df['ESHI_own'] = 1*(df['GRPOWNLY']==2)
+''' Other variables with different time inconsistencies
+df['HI'] = 1*(df['ANYCOVLY']==2 or df['VERIFY']==2)
+df['ESHI'] =   1*(df['GRPCOVLY']==2 or df['INCLUGH']==2)
+df['ESHI_own'] = 1*(df['GRPOWNLY']==2)
+df['ESHI_dependent'] = 1*(df['GRPDEPLY']==2)
+df['HI Other'] = df['HI'] - df['ESHI']
+df['No HI'] = 1 - df['HI']
+'''
 
-# Collect wage data based on definition
-for def_num in [1,2,3]:
-    df[f'wage_college{def_num}'] = df['working'] * df[f'college{def_num}'] * df['INCWAGE']
-    df[f'wage_noncollege{def_num}'] = df['working'] * (1 - df[f'college{def_num}']) * df['INCWAGE']
-    df[f'wage_college{def_num} (weighted)'] = df['working'] * df[f'college{def_num}'] * df['INCWAGE'] * df['ASECWT'] 
-    df[f'wage_noncollege{def_num} (weighted)'] = df['working'] * (1 - df[f'college{def_num}']) * df['INCWAGE'] * df['ASECWT']
+# Constant column
+df['Total'] = 1
+
     
-
 #%% 1b. Data Collapse #%%
-# Create this variable to track number of observations after collapse ####
-df['N'] = 1
-df['N_working'] = df['working']
 
+# Define range of years
+years = range(1975,2021)
+
+# Define variables
+variables = ['N', 'N_FTFY',
+                    'Share ESHI policyholders', 
+                    'Share ESHI policyholders (weighted)']
 for def_num in [1,2,3]:
-    df[f'N_college{def_num}'] = df[f'college{def_num}']
-    df[f'N_noncollege{def_num}'] = 1 - df[f'college{def_num}']
-    df[f'N_college{def_num}_working'] = df[f'college{def_num}'] * df['working']
-    df[f'N_noncollege{def_num}_working'] = (1-df[f'college{def_num}']) * df['working']
+    variables = variables + [f'N_college [College Definition {def_num}]', 
+                f'N_college_FTFY [College Definition {def_num}]',
+                f'share_pop_c [College Definition {def_num}]',
+                f'share_pop_c (weighted) [College Definition {def_num}]',
+                f'share_workers1_c [College Definition {def_num}]', 
+                f'share_workers1_c (weighted) [College Definition {def_num}]',
+                f'P1_c [College Definition {def_num}]',
+                f'P1_c (weighted) [College Definition {def_num}]',
+                f'P1_n [College Definition {def_num}]',
+                f'P1_n (weighted) [College Definition {def_num}]',
+                f'wage1_c [College Definition {def_num}]',
+                f'wage1_c (weighted) [College Definition {def_num}]',
+                f'wage1_n [College Definition {def_num}]',
+                f'wage1_n (weighted) [College Definition {def_num}]']
 
-# Create weights
-df['ASECWT']
-df['ASECWT_working'] = df['N_working'] * df['ASECWT']
+# Create dataframe
+data = pd.DataFrame(index=years, columns=variables)
 
-for def_num in [1,2,3]:
-    df[f'ASECWT_college{def_num}'] = df[f'N_college{def_num}'] * df['ASECWT']
-    df[f'ASECWT_noncollege{def_num}'] = df[f'N_noncollege{def_num}'] * df['ASECWT']
-    df[f'ASECWT_college{def_num}_working'] = df[f'N_college{def_num}_working'] * df['ASECWT']
-    df[f'ASECWT_noncollege{def_num}_working'] = df[f'N_noncollege{def_num}_working'] * df['ASECWT']
-
-# Collapse data by year ####
-data = df.groupby('YEAR').sum()  
-
-
-#%% 1c. Calculate variables #%%
-for def_num in [1,2,3]:
-    #LFP
-    data[f'P1_c [college definition {def_num}]'] = data[f'N_college{def_num}_working'] / data[f'N_college{def_num}']
-    data[f'P1_c (weighted) [college definition {def_num}]'] = data[f'ASECWT_college{def_num}_working'] / data[f'ASECWT_college{def_num}']
+# Loop through years to create dataframe
+for year in years:
+    year_dummy = 1*(df['YEAR']==year)
+        
+    ### Calculations unrelated to College Definition
+    data.loc[year,'N'] = np.sum(df['Total']*year_dummy)
+    data.loc[year,'N_FTFY'] = np.sum(df['FTFY']*year_dummy)
     
-    data[f'P1_n [college definition {def_num}]'] = data[f'N_noncollege{def_num}_working'] / data[f'N_noncollege{def_num}']
-    data[f'P1_n (weighted) [college definition {def_num}]'] = data[f'ASECWT_noncollege{def_num}_working'] / data[f'ASECWT_noncollege{def_num}']
+    ## Share of FTFY workers that are ESHI policyholders
+    if year >= 1995:
+        data.loc[year,'Share ESHI policyholders'] = \
+            np.average(df['ESHI_own']*df['FTFY'], \
+                       weights=year_dummy*df['FTFY'])
+        data.loc[year,'Share ESHI policyholders (weighted)'] = \
+            np.average(df['ESHI_own']*df['FTFY'], \
+                       weights=df['ASECWT']*year_dummy*df['FTFY'])   
     
-    #Share of workers
-    data[f'share_workers1_c [college definition {def_num}]'] = data[f'N_college{def_num}_working'] / data[f'N_working']
-    data[f'share_workers1_c (weighted) [college definition {def_num}]'] = data[f'ASECWT_college{def_num}_working'] / data[f'ASECWT_working']
+    ### Calculations unrelated to College Definition
+    for def_num in ['1', '2', '3']:
+        ## Number of observations
+        data.loc[year,f'N_college [College Definition {def_num}]'] = np.sum(df[f'College (Definition {def_num})']*year_dummy)
+        data.loc[year,f'N_college_FTFY [College Definition {def_num}]'] = np.sum(df[f'College (Definition {def_num})']*df['FTFY']*year_dummy)
+        
+        ## College Share of population
+        data.loc[year,f'share_pop_c [College Definition {def_num}]'] = \
+            np.average(df[f'College (Definition {def_num})'], \
+                       weights=year_dummy)
+        data.loc[year,f'share_pop_c (weighted) [College Definition {def_num}]'] = \
+            np.average(df[f'College (Definition {def_num})'], \
+                       weights=df['ASECWT']*year_dummy)
+        
+        ## College Share of FTFY workforce
+        data.loc[year,f'share_workers1_c [College Definition {def_num}]'] = \
+            np.average(df[f'College (Definition {def_num})']*df['FTFY'], \
+                       weights=year_dummy*df['FTFY'])
+        data.loc[year,f'share_workers1_c (weighted) [College Definition {def_num}]'] = \
+            np.average(df[f'College (Definition {def_num})']*df['FTFY'], 
+                       weights=df['ASECWT']*year_dummy*df['FTFY'])
+        ## Employment Rates
+        data.loc[year,f'P1_c [College Definition {def_num}]'] = \
+            np.average(df[f'College (Definition {def_num})']*df['FTFY'], \
+                       weights=year_dummy*df[f'College (Definition {def_num})'])
+        data.loc[year,f'P1_c (weighted) [College Definition {def_num}]'] = \
+            np.average(df[f'College (Definition {def_num})']*df['FTFY'], \
+                       weights=df['ASECWT']*year_dummy*df[f'College (Definition {def_num})'])
+        
+        data.loc[year,f'P1_n [College Definition {def_num}]'] = \
+            np.average(df[f'Non-College (Definition {def_num})']*df['FTFY'], \
+                       weights=year_dummy*df[f'Non-College (Definition {def_num})'])
+        data.loc[year,f'P1_n (weighted) [College Definition {def_num}]'] = \
+            np.average(df[f'Non-College (Definition {def_num})']*df['FTFY'], \
+                       weights=df['ASECWT']*year_dummy*df[f'Non-College (Definition {def_num})'])
     
-    data[f'share_pop_c [college definition {def_num}]'] = data[f'N_college{def_num}'] / data[f'N']
-    data[f'share_pop_c (weighted) [college definition {def_num}]'] = data[f'ASECWT_college{def_num}'] / data[f'ASECWT']
-    
-    #Calculate wages
-    data[f'wage1_c [college definition {def_num}]'] = \
-        data[f'wage_college{def_num}'] / data[f'N_college{def_num}_working'] 
-    data[f'wage1_n [college definition {def_num}]'] = \
-        data[f'wage_noncollege{def_num}'] / data[f'N_noncollege{def_num}_working']
-    
-    data[f'wage1_c (weighted) [college definition {def_num}]'] = \
-        data[f'wage_college{def_num} (weighted)'] / data[f'ASECWT_college{def_num}_working']
-    data[f'wage1_n (weighted) [college definition {def_num}]'] = \
-        data[f'wage_noncollege{def_num} (weighted)'] / data[f'ASECWT_noncollege{def_num}_working']
+        ## Wage Data
+        data.loc[year,f'wage1_c [College Definition {def_num}]'] = \
+            np.average(df['INCWAGE']*df[f'College (Definition {def_num})']*df['FTFY'], \
+                       weights=year_dummy*df[f'College (Definition {def_num})']*df['FTFY'])
+        data.loc[year,f'wage1_c (weighted) [College Definition {def_num}]'] = \
+            np.average(df['INCWAGE']*df[f'College (Definition {def_num})']*df['FTFY'], \
+                       weights=df['ASECWT']*year_dummy*df[f'College (Definition {def_num})']*df['FTFY'])
+        data.loc[year,f'wage1_n [College Definition {def_num}]'] = \
+            np.average(df['INCWAGE']*df[f'Non-College (Definition {def_num})']*df['FTFY'], \
+                       weights=year_dummy*df[f'Non-College (Definition {def_num})']*df['FTFY'])
+        data.loc[year,f'wage1_n (weighted) [College Definition {def_num}]'] = \
+            np.average(df['INCWAGE']*df[f'Non-College (Definition {def_num})']*df['FTFY'], \
+                       weights=df['ASECWT']*year_dummy*df[f'Non-College (Definition {def_num})']*df['FTFY'])
 
-# Inflation Adjust: Adjust wages to be in 2019 dollars
+
+#%% Inflation Adjust #%%
+# Adjust wages to be in 2019 dollars
 os.chdir(data_folder)
 price_data = pd.read_csv('PCEPI_data.csv', index_col=0)
 for year in data.index:
     adj_factor = price_data.loc[year, 'PCEPI Adjustment Factor (2019 Dollars)']
     for def_num in [1,2,3]:
-        for var in [f'wage1_c [college definition {def_num}]', 
-                    f'wage1_n [college definition {def_num}]', 
-                    f'wage1_c (weighted) [college definition {def_num}]', 
-                    f'wage1_n (weighted) [college definition {def_num}]']:
+        for var in [f'wage1_c [College Definition {def_num}]', 
+                    f'wage1_n [College Definition {def_num}]', 
+                    f'wage1_c (weighted) [College Definition {def_num}]', 
+                    f'wage1_n (weighted) [College Definition {def_num}]']:
             data.loc[year, var] = adj_factor*data.loc[year, var]        
         
         
-#%% 1d. Export Data #%%
+#%% 1c. Export Data #%%
 os.chdir(data_folder)
 
-variables = ['N', 'N_working']
+# Define variables
+variables = ['N', 'N_FTFY',
+                    'Share ESHI policyholders', 
+                    'Share ESHI policyholders (weighted)']
 for def_num in [1,2,3]:
-    variables_def = [f'N_college{def_num}', f'N_college{def_num}_working',                    
-                        f'share_pop_c [college definition {def_num}]', 
-                        f'share_pop_c (weighted) [college definition {def_num}]', 
-                        f'share_workers1_c [college definition {def_num}]', 
-                        f'share_workers1_c (weighted) [college definition {def_num}]',
-                        f'P1_c [college definition {def_num}]', 
-                        f'P1_c (weighted) [college definition {def_num}]',
-                        f'P1_n [college definition {def_num}]',
-                        f'P1_n (weighted) [college definition {def_num}]',
-                        f'wage1_c [college definition {def_num}]', 
-                        f'wage1_c (weighted) [college definition {def_num}]',
-                        f'wage1_n [college definition {def_num}]', 
-                        f'wage1_n (weighted) [college definition {def_num}]']
-    variables = variables + variables_def
+    variables = variables + [f'N_college [College Definition {def_num}]', 
+                f'N_college_FTFY [College Definition {def_num}]',
+                f'share_pop_c [College Definition {def_num}]',
+                f'share_pop_c (weighted) [College Definition {def_num}]',
+                f'share_workers1_c [College Definition {def_num}]', 
+                f'share_workers1_c (weighted) [College Definition {def_num}]',
+                f'P1_c [College Definition {def_num}]',
+                f'P1_c (weighted) [College Definition {def_num}]',
+                f'P1_n [College Definition {def_num}]',
+                f'P1_n (weighted) [College Definition {def_num}]',
+                f'wage1_c [College Definition {def_num}]',
+                f'wage1_c (weighted) [College Definition {def_num}]',
+                f'wage1_n [College Definition {def_num}]',
+                f'wage1_n (weighted) [College Definition {def_num}]']
 
+#Export
 data_export = data[variables]
-
 data_export.to_csv('CPS_ASEC_clean_RC1.csv')
 
 
@@ -180,16 +232,16 @@ df_observed = pd.DataFrame({
                 'epop_ratio': OECD_data['Employment Rate (25-64)']/100,
                 'pop_count': OECD_data['Population (25-64)'],
                 'tau_high': premium_data['Avg Enr Cost'],
-                'tau_med': premium_data['Avg Emp Cost'],
-                'tau_low': premium_data['Emp Cost * Takeup']})
+                'tau_baseline': premium_data['Avg Enr Cost']*ASEC_data['Share ESHI policyholders (weighted)'],
+                'tau_low': premium_data['Avg Emp Cost']*ASEC_data['Share ESHI policyholders (weighted)']})
                 
 for def_num in [1,2,3]:              
-    df_observed[f'share_pop_c [college definition {def_num}]'] = ASEC_data[f'share_pop_c (weighted) [college definition {def_num}]']
-    df_observed[f'share_workers1_c [college definition {def_num}]'] = ASEC_data[f'share_workers1_c (weighted) [college definition {def_num}]']
-    df_observed[f'wage1_c [college definition {def_num}]'] = ASEC_data[f'wage1_c (weighted) [college definition {def_num}]']
-    df_observed[f'wage1_n [college definition {def_num}]'] = ASEC_data[f'wage1_n (weighted) [college definition {def_num}]']
-    df_observed[f'P1_c [college definition {def_num}]'] = ASEC_data[f'P1_c (weighted) [college definition {def_num}]']
-    df_observed[f'P1_n [college definition {def_num}]'] = ASEC_data[f'P1_n (weighted) [college definition {def_num}]']
+    df_observed[f'share_pop_c [College Definition {def_num}]'] = ASEC_data[f'share_pop_c (weighted) [College Definition {def_num}]']
+    df_observed[f'share_workers1_c [College Definition {def_num}]'] = ASEC_data[f'share_workers1_c (weighted) [College Definition {def_num}]']
+    df_observed[f'wage1_c [College Definition {def_num}]'] = ASEC_data[f'wage1_c (weighted) [College Definition {def_num}]']
+    df_observed[f'wage1_n [College Definition {def_num}]'] = ASEC_data[f'wage1_n (weighted) [College Definition {def_num}]']
+    df_observed[f'P1_c [College Definition {def_num}]'] = ASEC_data[f'P1_c (weighted) [College Definition {def_num}]']
+    df_observed[f'P1_n [College Definition {def_num}]'] = ASEC_data[f'P1_n (weighted) [College Definition {def_num}]']
 
 ## Select relevant variables
 data_export = df_observed
@@ -222,21 +274,20 @@ os.chdir(output_path)
 for var in variables:
     plot_title = variables2name_dict[var]
     for def_num in [1,2,3]:
-        plt.plot(df_observed[f'{var} [college definition {def_num}]'], label=f'College Definition {def_num}')
+        plt.plot(df_observed[f'{var} [College Definition {def_num}]'], label=f'College Definition {def_num}')
     plt.legend()
     plt.title(plot_title, fontsize=14)
     plt.savefig(f'{var}_RC1.png', dpi=500)
     plt.clf()
     
 for def_num in [1,2,3]:
-    plt.plot(df_observed[f'wage1_c [college definition {def_num}]']\
-             -df_observed[f'wage1_n [college definition {def_num}]'],\
+    plt.plot(df_observed[f'wage1_c [College Definition {def_num}]']\
+             -df_observed[f'wage1_n [College Definition {def_num}]'],\
             label=f'College Definition {def_num}')
 plt.legend()
 plt.title("College Wage Premium", fontsize=14)
 plt.savefig('college_wage_premium_RC1.png', dpi=500)
 plt.clf()
-
 
 os.chdir(code_folder)
 
@@ -246,9 +297,15 @@ os.chdir(data_folder)
 df_observed = pd.read_csv('observed_data_RC1.csv', index_col=0)
 
 # Parameter assumptions:
+alpha_c=1
+alpha_n=1
 year = 2019
-tau_param = 'tau_high'
-alpha_c, alpha_n, = 1,1
+
+#Baseline Parameters
+tau_baseline = 'tau_baseline'
+rho_baseline = 0.3827
+elasticity_baseline = ['common', 'common']
+e_c_baseline, e_n_baseline = elasticity_baseline[0], elasticity_baseline[1]
 
 #Output path and define years
 output_path = '/Users/caseymcquillan/Desktop/Research/FZZ/output/Tables/RC1_college'
@@ -256,27 +313,33 @@ output_path = '/Users/caseymcquillan/Desktop/Research/FZZ/output/Tables/RC1_coll
 #Create list for table values specific to each value of tau
 comparison_table_values = []
 
-#Loop through vcollege definitions
+#Loop through College Definitions
 for def_num in [1,2,3]:       
-    #Define and calibrate model
+    ## Define and calibrate model    
     model = calibration_model(alpha_c, alpha_n,
-                tau=df_observed.loc[year, tau_param], 
-                w1_c=df_observed.loc[year, f'wage1_c [college definition {def_num}]'], 
-                w1_n=df_observed.loc[year, f'wage1_n [college definition {def_num}]'],
-                P1_c=df_observed.loc[year, f'P1_c [college definition {def_num}]'], 
-                P1_n=df_observed.loc[year, f'P1_n [college definition {def_num}]'],
-                share_workers1_c=df_observed.loc[year, f'share_workers1_c [college definition {def_num}]'],
-                share_pop_c=df_observed.loc[year, f'share_pop_c [college definition {def_num}]'],
-                pop_count=df_observed.loc[year, 'pop_count'])
-
-    #Make sure there are no NANs in model before calibration
-    if any(np.isnan([vars(model)[x] for x in vars(model).keys()])):
+                    rho=rho_baseline,
+                    tau=df_observed.loc[year, tau_baseline],
+                    elasticity_c=e_c_baseline, elasticity_n=e_n_baseline,
+                    w1_c=df_observed.loc[year, f'wage1_c [College Definition {def_num}]'], 
+                    w1_n=df_observed.loc[year, f'wage1_n [College Definition {def_num}]'],
+                    P1_c=df_observed.loc[year, f'P1_c [College Definition {def_num}]'], 
+                    P1_n=df_observed.loc[year, f'P1_n [College Definition {def_num}]'],
+                    share_workers1_c=df_observed.loc[year, f'share_workers1_c [College Definition {def_num}]'],
+                    share_pop_c=df_observed.loc[year, f'share_pop_c [College Definition {def_num}]'],
+                    pop_count=df_observed.loc[year, 'pop_count'])
+    
+    ##  Make sure there are no NANs in model before calibration
+    # Remove elasticities if specified to be common
+    if model.elasticity_c == model.elasticity_n == 'common': 
+        check = set(list(vars(model).keys())) - set(['elasticity_c', 'elasticity_n'])
+    else: check = vars(model).keys()
+    #And now check
+    if any(np.isnan([vars(model)[x] for x in check])):
         print("NAN value entered into calibration model for:")
-        for var in vars(model).keys():
+        for var in check:
             if np.isnan(vars(model)[var])==True: print("    "+var)
         print("for year: " + str(year))
-        continue
-    
+
     #Calibrate Model
     model.calibrate()
     
@@ -329,10 +392,17 @@ os.chdir(data_folder)
 df_observed = pd.read_csv('observed_data_RC1.csv', index_col=0)
 
 # Parameter assumptions:
-alpha_c, alpha_n, = 1, 1
-tau = 'tau_high'
+alpha_c=1
+alpha_n=1
+
+#Baseline Parameters
+tau_baseline = 'tau_baseline'
+rho_baseline = 0.3827
+elasticity_baseline = ['common', 'common']
+e_c_baseline, e_n_baseline = elasticity_baseline[0], elasticity_baseline[1]
+
 # Parameter to be varied:
-years = [1977,1987] + list(range(1996, 2020))
+years = list(range(1996, 2020))
 def_num = [1,2,3]
 
 #Output path 
@@ -346,33 +416,39 @@ variables = ["Pct. Chg. in College Wage Premium (O to H)",
              "Change in College Share of Wage Bill  (H to P)"]
 
 #Loop through values of tau and year
-df_outcomes = pd.DataFrame(columns = ['year', 'college definition', 'variable', 'value'])
+df_outcomes = pd.DataFrame(columns = ['year', 'College Definition', 'variable', 'value'])
 
 for def_num in [1,2,3]:   
     for year in years:
-        #Define and calibrate model
+        ## Define and calibrate model    
         model = calibration_model(alpha_c, alpha_n,
-                    tau=df_observed.loc[year, tau], 
-                    w1_c=df_observed.loc[year, f'wage1_c [college definition {def_num}]'], 
-                    w1_n=df_observed.loc[year, f'wage1_n [college definition {def_num}]'],
-                    P1_c=df_observed.loc[year, f'P1_c [college definition {def_num}]'], 
-                    P1_n=df_observed.loc[year, f'P1_n [college definition {def_num}]'],
-                    share_workers1_c=df_observed.loc[year, f'share_workers1_c [college definition {def_num}]'],
-                    share_pop_c=df_observed.loc[year, f'share_pop_c [college definition {def_num}]'],
-                    pop_count=df_observed.loc[year, 'pop_count'])
-    
-        #Make sure there are no NANs in model before calibration
-        if any(np.isnan([vars(model)[x] for x in vars(model).keys()])):
+                        rho=rho_baseline,
+                        tau=df_observed.loc[year, tau_baseline],
+                        elasticity_c=e_c_baseline, elasticity_n=e_n_baseline,
+                        w1_c=df_observed.loc[year, f'wage1_c [College Definition {def_num}]'], 
+                        w1_n=df_observed.loc[year, f'wage1_n [College Definition {def_num}]'],
+                        P1_c=df_observed.loc[year, f'P1_c [College Definition {def_num}]'], 
+                        P1_n=df_observed.loc[year, f'P1_n [College Definition {def_num}]'],
+                        share_workers1_c=df_observed.loc[year, f'share_workers1_c [College Definition {def_num}]'],
+                        share_pop_c=df_observed.loc[year, f'share_pop_c [College Definition {def_num}]'],
+                        pop_count=df_observed.loc[year, 'pop_count'])
+        
+        ##  Make sure there are no NANs in model before calibration
+        # Remove elasticities if specified to be common
+        if model.elasticity_c == model.elasticity_n == 'common': 
+            check = set(list(vars(model).keys())) - set(['elasticity_c', 'elasticity_n'])
+        else: check = vars(model).keys()
+        #And now check
+        if any(np.isnan([vars(model)[x] for x in check])):
             print("NAN value entered into calibration model for:")
-            for var in vars(model).keys():
+            for var in check:
                 if np.isnan(vars(model)[var])==True: print("    "+var)
             print("for year: " + str(year))
-            continue
-        
-        #Calibrate Model
+
+        ## Calibrate Model
         model.calibrate()
     
-        #Calculate variables of interest
+        ## Calculate variables of interest
         pct_chg_wage_premium_01 = 100*((model.w1_c-model.w1_n)-(model.w0_c-model.w0_n))/(model.w0_c-model.w0_n)
         pct_chg_wage_premium_12 = 100*((model.w2_c-model.w2_n)-(model.w1_c-model.w1_n))/(model.w1_c-model.w1_n)
         chg_wage_premium_12 = (model.w2_c-model.w2_n)-(model.w1_c-model.w1_n)
@@ -381,20 +457,20 @@ for def_num in [1,2,3]:
         pp_chg_wage_bill_12 = 100*(((model.L2_c*model.w2_c)/(model.L2_c*model.w2_c + model.L2_n*model.w2_n))- \
                                        ((model.L1_c*model.w1_c)/(model.L1_c*model.w1_c + model.L1_n*model.w1_n)))
 
-        #Create rows for dataframe and append them
-        new_row1 = {'year':year, 'college definition':def_num, \
+        ## Create rows for dataframe and append them
+        new_row1 = {'year':year, 'College Definition':def_num, \
                     'variable':"Pct. Chg. in College Wage Premium (O to H)", \
                     'value':pct_chg_wage_premium_01}    
-        new_row2 = {'year':year, 'college definition':def_num, \
+        new_row2 = {'year':year, 'College Definition':def_num, \
                     'variable':"Pct. Chg. in College Wage Premium (H to P)", \
                     'value':pct_chg_wage_premium_12}
-        new_row3 = {'year':year, 'college definition':def_num, \
+        new_row3 = {'year':year, 'College Definition':def_num, \
                     'variable':"Chg. in College Wage Premium (H to P)", \
                     'value':chg_wage_premium_12}
-        new_row4 = {'year':year, 'college definition':def_num, \
+        new_row4 = {'year':year, 'College Definition':def_num, \
                     'variable':"Change in College Share of Wage Bill  (O to H)", \
                     'value':pp_chg_wage_bill_01}    
-        new_row5 = {'year':year, 'college definition':def_num, \
+        new_row5 = {'year':year, 'College Definition':def_num, \
                     'variable':"Change in College Share of Wage Bill  (H to P)", \
                     'value':pp_chg_wage_bill_12}
         df_outcomes = df_outcomes.append(\
@@ -408,7 +484,7 @@ for var in variables:
 
     plt.figure(figsize=(6,4))     
     for def_num in [1,2,3]: 
-        df_series = df_graph[[x == def_num for x in df_graph['college definition']]]
+        df_series = df_graph[[x == def_num for x in df_graph['College Definition']]]
         plt.plot(df_series['year'], df_series['value'], label=f'College Definition {def_num}')
     plt.legend()
     plt.xlabel("Year")
@@ -427,40 +503,55 @@ os.chdir(data_folder)
 df_observed = pd.read_csv('observed_data_RC1.csv', index_col=0)
 
 # Parameter assumptions:
-alpha_c, alpha_n, = 1, 1
-tau_param = 'tau_high'
+alpha_c=1
+alpha_n=1
+
+#Baseline Parameters
+tau_baseline = 'tau_baseline'
+rho_baseline = 0.3827
+elasticity_baseline = ['common', 'common']
+e_c_baseline, e_n_baseline = elasticity_baseline[0], elasticity_baseline[1]
+
 # Parameter to be varied:
-years = [1977,1987] + list(range(1996, 2020))
-def_num = [1,2,3]
+years = list(range(1996, 2020))
 
 #Output path 
 output_path = '/Users/caseymcquillan/Desktop/Research/FZZ/output/Graphs/RC1_college'
 
 #Loop through values of tau and year
-df_outcomes = pd.DataFrame(columns = ['year', 'college definition', 
+df_outcomes = pd.DataFrame(columns = ['year', 'College Definition', 
                                       "College Wage Premium", 
                                       "Potential Reduction in College Wage Premium",
                                       "Pct. Reduction in CWP (H to P)"])
 for def_num in [1,2,3]:   
     for year in years:
-        #Define and calibrate model
+        ## Define and calibrate model    
         model = calibration_model(alpha_c, alpha_n,
-                    tau=df_observed.loc[year, tau_param], 
-                    w1_c=df_observed.loc[year, f'wage1_c [college definition {def_num}]'], 
-                    w1_n=df_observed.loc[year, f'wage1_n [college definition {def_num}]'],
-                    P1_c=df_observed.loc[year, f'P1_c [college definition {def_num}]'], 
-                    P1_n=df_observed.loc[year, f'P1_n [college definition {def_num}]'],
-                    share_workers1_c=df_observed.loc[year, f'share_workers1_c [college definition {def_num}]'],
-                    share_pop_c=df_observed.loc[year, f'share_pop_c [college definition {def_num}]'],
-                    pop_count=df_observed.loc[year, 'pop_count'])
-    
-        #Make sure there are no NANs in model before calibration
-        if any(np.isnan([vars(model)[x] for x in vars(model).keys()])):
+                        rho=rho_baseline,
+                        tau=df_observed.loc[year, tau_baseline],
+                        elasticity_c=e_c_baseline, elasticity_n=e_n_baseline,
+                        w1_c=df_observed.loc[year, f'wage1_c [College Definition {def_num}]'], 
+                        w1_n=df_observed.loc[year, f'wage1_n [College Definition {def_num}]'],
+                        P1_c=df_observed.loc[year, f'P1_c [College Definition {def_num}]'], 
+                        P1_n=df_observed.loc[year, f'P1_n [College Definition {def_num}]'],
+                        share_workers1_c=df_observed.loc[year, f'share_workers1_c [College Definition {def_num}]'],
+                        share_pop_c=df_observed.loc[year, f'share_pop_c [College Definition {def_num}]'],
+                        pop_count=df_observed.loc[year, 'pop_count'])
+        
+        ##  Make sure there are no NANs in model before calibration
+        # Remove elasticities if specified to be common
+        if model.elasticity_c == model.elasticity_n == 'common': 
+            check = set(list(vars(model).keys())) - set(['elasticity_c', 'elasticity_n'])
+        else: check = vars(model).keys()
+        #And now check
+        if any(np.isnan([vars(model)[x] for x in check])):
             print("NAN value entered into calibration model for:")
-            for var in vars(model).keys():
+            for var in check:
                 if np.isnan(vars(model)[var])==True: print("    "+var)
             print("for year: " + str(year))
-            continue
+
+        ## Calibrate Model
+        model.calibrate()
         
         #Calibrate Model
         model.calibrate()
@@ -470,7 +561,7 @@ for def_num in [1,2,3]:
         contrib_ESHI_cwp = (model.w1_c - model.w1_n) - (model.w2_c - model.w2_n)        
         
         #Create rows for dataframe and append them
-        new_row = {'year':year, 'college definition':def_num, \
+        new_row = {'year':year, 'College Definition':def_num, \
                     "College Wage Premium": cwp, \
                     "Potential Reduction in College Wage Premium": contrib_ESHI_cwp,
                     "Pct. Reduction in CWP (H to P)": 100* (contrib_ESHI_cwp/cwp)}    
@@ -479,9 +570,9 @@ for def_num in [1,2,3]:
 #Set year as index
 df_outcomes=df_outcomes.set_index('year')   
 
-#Create subsets based on college definition
+#Create subsets based on College Definition
 for def_num in [1,2,3]: 
-    exec(f'df_outcomes_college{def_num} = df_outcomes[df_outcomes[\'college definition\']=={def_num}]') 
+    exec(f'df_outcomes_college{def_num} = df_outcomes[df_outcomes[\'College Definition\']=={def_num}]') 
 
 #Create graphs
 os.chdir(output_path)
@@ -514,7 +605,7 @@ os.chdir(code_folder)
 ref_year = 2019
 for def_num in [1,2,3]:
     print(f'College Definition {def_num}:')
-    for year in [1977,1987,1997,2007]:
+    for year in [1997,2000,2007,2010]:
         exec(f'chg_cwp = df_outcomes_college{def_num}.loc[ref_year,\'College Wage Premium\'] -' +\
                     f'df_outcomes_college{def_num}.loc[year,\'College Wage Premium\']')
         exec(f'chg_ESHI_contrib = df_outcomes_college{def_num}.loc[ref_year,\'Potential Reduction in College Wage Premium\'] -' +\
@@ -528,7 +619,7 @@ for def_num in [1,2,3]:
 #%%  A1. Technical Note: Composition of Some College Around 1992 #%%
 #Import Data
 os.chdir(data_folder)
-df = pd.read_csv('cps_00009.csv')
+df = pd.read_csv('cps_00011.csv')
 
 # Drop invalid responses
 for var in ['EDUC', 'WKSWORK2', 'UHRSWORKLY', 'CLASSWLY', 'INCWAGE']:
@@ -536,6 +627,9 @@ for var in ['EDUC', 'WKSWORK2', 'UHRSWORKLY', 'CLASSWLY', 'INCWAGE']:
 df = df[[not x in [0,1,999] for x in df['EDUC']]]
 df = df[df['WKSWORK2']!=9]
 df = df[df['CLASSWLY']!=99]
+
+# Drop self-employed workers
+df = df[[(not x in [10,13,14,29]) for x in df['CLASSWLY']]]
 
 # Adjust year bc survey data corresponds to prev year
 df['YEAR'] = df['YEAR'] - 1
@@ -576,9 +670,7 @@ df['adv_degree (weighted)'] = \
 # Define working
 hours_requirment =  1*(df['UHRSWORKLY'] >= 35)
 weeks_requirment =  1*(df['WKSWORK2'] >= 4)
-worker_class_requirement = [int(not x in [13,14,29]) for x in df['CLASSWLY']]
-
-df['working'] = hours_requirment * weeks_requirment * worker_class_requirement
+df['working'] = hours_requirment * weeks_requirment
 df['working (weighted)'] = hours_requirment * weeks_requirment* df['ASECWT']
 
 # Create this variable to track number of observations after collapse

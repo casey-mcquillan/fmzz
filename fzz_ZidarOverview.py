@@ -20,7 +20,7 @@ output_path = '/Users/caseymcquillan/Desktop/Research/FZZ/output/Tables/ZidarOve
 os.chdir(code_folder)
 
 #from fzz_calibration import calibration_model 
-from fzz_calibration_RC4_zwick import calibration_model_RC4 
+from fzz_calibration import calibration_model 
 
 
 #%%      Establishing Baseline:      %%#
@@ -36,7 +36,7 @@ alpha_n=1
 year = 2019
 
 #Baseline Parameters
-tau_baseline = 'tau_high'
+tau_baseline = 'tau_baseline'
 rho_baseline = 0.3827
 elasticity_baseline = ['common', 'common']
 e_c_baseline, e_n_baseline = elasticity_baseline[0], elasticity_baseline[1]
@@ -47,7 +47,7 @@ e_c_baseline, e_n_baseline = elasticity_baseline[0], elasticity_baseline[1]
 baselines_results_string = []
 
 #Define Model
-model = calibration_model_RC4(alpha_c, alpha_n,
+model = calibration_model(alpha_c, alpha_n,
                     rho=rho_baseline,
                     tau=df_observed.loc[year, tau_baseline],
                     elasticity_c=e_c_baseline, elasticity_n=e_n_baseline,
@@ -87,31 +87,26 @@ model.generate_table(file_name='EqComparison'+str(year)+"_baseline", year=year,
 
 #Save Results for Overview
 pct_chg_cwp = 100*((model.w2_c/model.w2_n)-(model.w1_c/model.w1_n))/(model.w1_c/model.w1_n -1)
-pp_chg_cwb = 100*(((model.L2_c*model.w2_c)/(model.L2_c*model.w2_c + model.L2_n*model.w2_n))\
-                   -((model.L1_c*model.w1_c)/(model.L1_c*model.w1_c + model.L1_n*model.w1_n)))
+pp_chg_P_C = 100*(model.P2_c - model.P1_c)
 pp_chg_P_N = 100*(model.P2_n - model.P1_n)
-baselines_results_string.append(f' \t & {pct_chg_cwp:,.2f}\\% & {pp_chg_cwb:,.2f} pp & {pp_chg_P_N:,.2f} pp \\\\ ')
+baselines_results_string.append(f' \t & {pct_chg_cwp:,.2f}\\% & {pp_chg_P_C:,.2f} pp & {pp_chg_P_N:,.2f} pp \\\\ ')
 
 #%%      Vary Tau:      %%#
 #Results for Overview Table
 tau_results_string = []
 
 #Parameters to be varied:
-tau_params = ['tau_high', 'tau_med', 'tau_low']
+tau_params = ['tau_high', 'tau_baseline', 'tau_low']
 tau2specification_Dict ={'tau_high':'Total Cost with Complete Take-up',
-                         'tau_med':'Cost to Employer with Complete Take-up',
+                         'tau_baseline':'Total Cost with Incomplete Take-up',
                          'tau_low':'Cost to Employer with Incomplete Take-up'}
 
 #Initialize strings for tables
 delta_w_C_string = '\\ \\ $\Delta(w_C)$ \n \t'
 delta_w_N_string = '\\ \\ $\Delta(w_N)$ \n \t'
-delta_cwg_string = '\\ \\ $\Delta(w_C - w_N)$ \n \t'
-pct_chg_cwg_string = '\\ \\ $\\%\\Delta(w_C - w_N)$ \n \t'
 pct_chg_cwp_string = '\\ \\ $\\%\\Delta(w_C/w_N - 1)$ \n \t'
-pct_chg_L_string = '\\ \\ $\\%\\Delta(L_C+L_N)$ \n \t'
-pct_chg_L_C_string = '\\ \\ $\\%\\Delta(L_C)$ \n \t'
-pct_chg_L_B_string = '\\ \\ $\\%\\Delta(L_N)$ \n \t'
-delta_employmentShare_C_string = '$\Delta$(\\small College Share): \n \t'
+delta_P_n_string = '\\ \\ $\Delta(P_N)$ \n \t'
+delta_P_c_string = '\\ \\ $\Delta(P_C)$ \n \t'
 delta_employment_string = '$\Delta$(\\small Total Employment): \n \t'
 delta_employment_C_string = '\\ \\ \\small College \n \t'
 delta_employment_N_string = '\\ \\ \\small Non-College \n \t'
@@ -124,7 +119,7 @@ for tau_param in tau_params:
     label = tau2specification_Dict[tau_param]
     
     #Define Model
-    model = calibration_model_RC4(alpha_c, alpha_n,
+    model = calibration_model(alpha_c, alpha_n,
                         rho=rho_baseline,
                         tau=df_observed.loc[year, tau_param],
                         elasticity_c=e_c_baseline, elasticity_n=e_n_baseline,
@@ -161,8 +156,9 @@ for tau_param in tau_params:
     pct_chg_cwp = 100*((model.w2_c/model.w2_n)-(model.w1_c/model.w1_n))/(model.w1_c/model.w1_n -1)
     pp_chg_cwb = 100*(((model.L2_c*model.w2_c)/(model.L2_c*model.w2_c + model.L2_n*model.w2_n))\
                        -((model.L1_c*model.w1_c)/(model.L1_c*model.w1_c + model.L1_n*model.w1_n)))
+    pp_chg_P_C = 100*(model.P2_c - model.P1_c)
     pp_chg_P_N = 100*(model.P2_n - model.P1_n)
-    tau_results_string.append(f' \t & {pct_chg_cwp:,.2f}\\% & {pp_chg_cwb:,.2f} pp & {pp_chg_P_N:,.2f} pp \\\\ ')
+    tau_results_string.append(f' \t & {pct_chg_cwp:,.2f}\\% & {pp_chg_P_C:,.2f} pp & {pp_chg_P_N:,.2f} pp \\\\ ')
     
     #Add values to strings for Eq Comparison Tables
     if i ==1: ampersand = '&'
@@ -170,21 +166,11 @@ for tau_param in tau_params:
     
     delta_w_C_string = delta_w_C_string + ampersand + f' {model.w2_c-model.w1_c:,.0f} '
     delta_w_N_string = delta_w_N_string + ampersand + f' {model.w2_n-model.w1_n:,.0f} '
-    delta_cwg_string = delta_cwg_string + ampersand + f' {(model.w2_c-model.w2_n)-(model.w1_c-model.w1_n):,.0f} '
-    pct_chg_cwg_string = pct_chg_cwg_string + ampersand + \
-        f' {100*((model.w2_c-model.w2_n)-(model.w1_c-model.w1_n))/(model.w1_c-model.w1_n):,.2f}\\% '
     pct_chg_cwp_string = pct_chg_cwp_string + ampersand + \
         f' {100*((model.w2_c/model.w2_n)-(model.w1_c/model.w1_n))/(model.w1_c/model.w1_n -1):,.2f}\\% '
     
-    pct_chg_L_string = pct_chg_L_string + ampersand +  \
-        f' {100*((model.L2_c+model.L2_n)-(model.L1_c+model.L1_n))/(model.L1_c+model.L1_n):,.2f}\\% '
-    pct_chg_L_C_string = pct_chg_L_C_string + ampersand + \
-        f' {100*((model.L2_c)-(model.L1_c))/(model.L1_c):,.2f}\\% '
-    pct_chg_L_B_string = pct_chg_L_B_string + ampersand + \
-        f' {100*((model.L2_n)-(model.L1_n))/(model.L1_n):,.2f}\\% '
-    
-    delta_employmentShare_C_string = delta_employmentShare_C_string + ampersand + \
-        f' {100*(((model.L2_c)/(model.L2_c+model.L2_n))-((model.L1_c)/(model.L1_c+model.L1_n))):,.2f} pp '
+    delta_P_n_string = delta_P_n_string + ampersand + f' {100*(model.P2_n-model.P1_n):,.2f} pp '
+    delta_P_c_string = delta_P_c_string + ampersand + f' {100*(model.P2_c-model.P1_c):,.2f} pp '
     delta_employment_string = delta_employment_string + ampersand + \
         f' {(model.employment2_c+model.employment2_n)-(model.employment1_c+model.employment1_n):,.0f} '
     delta_employment_C_string = delta_employment_C_string + ampersand + \
@@ -199,24 +185,18 @@ header = [f'\ctable[caption={{Equilibrium Comparison Across ESHI Cost Assumption
           '    label={EqComparison_AcrossTau}, pos=h!]', '\n',
           '{lccccc}{}{\\FL', '\n',
           '\t &	 \small \multicolumn{1}{p{3cm}}{\centering Total Cost, \\ Complete Take-up}','\n', 
-          '\t &&	 \small \multicolumn{1}{p{3cm}}{\centering  Cost to Employer, \\ Complete Take-up}','\n', 
+          '\t &&	 \small \multicolumn{1}{p{3cm}}{\centering  Total Cost, \\ Incomplete Takeup}','\n', 
           '\t &&	 \small \multicolumn{1}{p{3cm}}{\centering Cost to Employer, \\ Incomplete Takeup}', '\\\\','\n', 
           '\cmidrule{1-6}', '\n']
 
 table_values=['\\underline{Wages:}', ' \\\\\n',
                 delta_w_C_string, ' \\\\\n',
                 delta_w_N_string, ' \\\\\n',
-                delta_cwg_string, ' \\\\\n',
-                pct_chg_cwg_string, ' \\\\\n',
                 pct_chg_cwp_string, ' \\\\\n',
                 '\\\\\n',
-                '\\underline{Labor Supply:}', ' \\\\\n',
-                pct_chg_L_string, ' \\\\\n',
-                pct_chg_L_C_string, ' \\\\\n',
-                pct_chg_L_B_string, ' \\\\\n',
-                '\\\\\n',
                 '\\underline{Employment:}', ' \\\\\n',
-                delta_employmentShare_C_string, ' \\\\\n',
+                delta_P_n_string, ' \\\\\n',
+                delta_P_c_string, ' \\\\\n',
                 delta_employment_string, ' \\\\\n',
                 delta_employment_C_string, ' \\\\\n',
                 delta_employment_N_string, ' \\\\\n',
@@ -251,13 +231,9 @@ elasticity2specification_Dict ={str(['common','common']):'Common $\kappa$',
 column_header_string = '$(\epsilon^H_C, \epsilon^H_N)$ '
 delta_w_C_string = '\\ \\ $\Delta(w_C)$ \n \t'
 delta_w_N_string = '\\ \\ $\Delta(w_N)$ \n \t'
-delta_cwg_string = '\\ \\ $\Delta(w_C - w_N)$ \n \t'
-pct_chg_cwg_string = '\\ \\ $\\%\\Delta(w_C - w_N)$ \n \t'
 pct_chg_cwp_string = '\\ \\ $\\%\\Delta(w_C/w_N - 1)$ \n \t'
-pct_chg_L_string = '\\ \\ $\\%\\Delta(L_C+L_N)$ \n \t'
-pct_chg_L_C_string = '\\ \\ $\\%\\Delta(L_C)$ \n \t'
-pct_chg_L_B_string = '\\ \\ $\\%\\Delta(L_N)$ \n \t'
-delta_employmentShare_C_string = '$\Delta$(\\small College Share): \n \t'
+delta_P_n_string = '\\ \\ $\Delta(P_N)$ \n \t'
+delta_P_c_string = '\\ \\ $\Delta(P_C)$ \n \t'
 delta_employment_string = '$\Delta$(\\small Total Employment): \n \t'
 delta_employment_C_string = '\\ \\ \\small College \n \t'
 delta_employment_N_string = '\\ \\ \\small Non-College \n \t'
@@ -272,7 +248,7 @@ for elasticity_value in elasticity_values:
     label = elasticity2specification_Dict[str(elasticity_value)]
     
     #Define and calibrate model
-    model = calibration_model_RC4(alpha_c, alpha_n,
+    model = calibration_model(alpha_c, alpha_n,
                 rho=rho_baseline,
                 tau=df_observed.loc[year, tau_baseline],
                 elasticity_c=e_c, elasticity_n=e_n,
@@ -307,10 +283,9 @@ for elasticity_value in elasticity_values:
 
     #Save Results for Overview
     pct_chg_cwp = 100*((model.w2_c/model.w2_n)-(model.w1_c/model.w1_n))/(model.w1_c/model.w1_n -1)
-    pp_chg_cwb = 100*(((model.L2_c*model.w2_c)/(model.L2_c*model.w2_c + model.L2_n*model.w2_n))\
-                       -((model.L1_c*model.w1_c)/(model.L1_c*model.w1_c + model.L1_n*model.w1_n)))
+    pp_chg_P_C = 100*(model.P2_c - model.P1_c)
     pp_chg_P_N = 100*(model.P2_n - model.P1_n)
-    elasticity_results_string.append(f' \t & {pct_chg_cwp:,.2f}\\% & {pp_chg_cwb:,.2f} pp & {pp_chg_P_N:,.2f} pp \\\\ ')
+    elasticity_results_string.append(f' \t & {pct_chg_cwp:,.2f}\\% & {pp_chg_P_C:,.2f} pp & {pp_chg_P_N:,.2f} pp \\\\ ')
 
     #Add values to strings for Eq Comparison Tables
     if i ==1: ampersand = '&'
@@ -320,21 +295,11 @@ for elasticity_value in elasticity_values:
     
     delta_w_C_string = delta_w_C_string + ampersand + f' {model.w2_c-model.w1_c:,.0f} '
     delta_w_N_string = delta_w_N_string + ampersand + f' {model.w2_n-model.w1_n:,.0f} '
-    delta_cwg_string = delta_cwg_string + ampersand + f' {(model.w2_c-model.w2_n)-(model.w1_c-model.w1_n):,.0f} '
-    pct_chg_cwg_string = pct_chg_cwg_string + ampersand + \
-        f' {100*((model.w2_c-model.w2_n)-(model.w1_c-model.w1_n))/(model.w1_c-model.w1_n):,.2f}\\% '
     pct_chg_cwp_string = pct_chg_cwp_string + ampersand + \
         f' {100*((model.w2_c/model.w2_n)-(model.w1_c/model.w1_n))/(model.w1_c/model.w1_n -1):,.2f}\\% '
     
-    pct_chg_L_string = pct_chg_L_string + ampersand +  \
-        f' {100*((model.L2_c+model.L2_n)-(model.L1_c+model.L1_n))/(model.L1_c+model.L1_n):,.2f}\\% '
-    pct_chg_L_C_string = pct_chg_L_C_string + ampersand + \
-        f' {100*((model.L2_c)-(model.L1_c))/(model.L1_c):,.2f}\\% '
-    pct_chg_L_B_string = pct_chg_L_B_string + ampersand + \
-        f' {100*((model.L2_n)-(model.L1_n))/(model.L1_n):,.2f}\\% '
-    
-    delta_employmentShare_C_string = delta_employmentShare_C_string + ampersand + \
-        f' {100*(((model.L2_c)/(model.L2_c+model.L2_n))-((model.L1_c)/(model.L1_c+model.L1_n))):,.2f} pp '
+    delta_P_n_string = delta_P_n_string + ampersand + f' {100*(model.P2_n-model.P1_n):,.2f} pp '
+    delta_P_c_string = delta_P_c_string + ampersand + f' {100*(model.P2_c-model.P1_c):,.2f} pp '
     delta_employment_string = delta_employment_string + ampersand + \
         f' {(model.employment2_c+model.employment2_n)-(model.employment1_c+model.employment1_n):,.0f} '
     delta_employment_C_string = delta_employment_C_string + ampersand + \
@@ -354,17 +319,11 @@ header = [f'\ctable[caption={{Equilibrium Comparison Across Elasticity Assumptio
 table_values=['\\underline{Wages:}', ' \\\\\n',
                 delta_w_C_string, ' \\\\\n',
                 delta_w_N_string, ' \\\\\n',
-                delta_cwg_string, ' \\\\\n',
-                pct_chg_cwg_string, ' \\\\\n',
                 pct_chg_cwp_string, ' \\\\\n',
                 '\\\\\n',
-                '\\underline{Labor Supply:}', ' \\\\\n',
-                pct_chg_L_string, ' \\\\\n',
-                pct_chg_L_C_string, ' \\\\\n',
-                pct_chg_L_B_string, ' \\\\\n',
-                '\\\\\n',
                 '\\underline{Employment:}', ' \\\\\n',
-                delta_employmentShare_C_string, ' \\\\\n',
+                delta_P_n_string, ' \\\\\n',
+                delta_P_c_string, ' \\\\\n',
                 delta_employment_string, ' \\\\\n',
                 delta_employment_C_string, ' \\\\\n',
                 delta_employment_N_string, ' \\\\\n',
@@ -399,13 +358,9 @@ rho2specification_Dict ={str(1):'Perfect Substitutes',
 column_header_string = ''
 delta_w_C_string = '\\ \\ $\Delta(w_C)$ \n \t'
 delta_w_N_string = '\\ \\ $\Delta(w_N)$ \n \t'
-delta_cwg_string = '\\ \\ $\Delta(w_C - w_N)$ \n \t'
-pct_chg_cwg_string = '\\ \\ $\\%\\Delta(w_C - w_N)$ \n \t'
 pct_chg_cwp_string = '\\ \\ $\\%\\Delta(w_C/w_N - 1)$ \n \t'
-pct_chg_L_string = '\\ \\ $\\%\\Delta(L_C+L_N)$ \n \t'
-pct_chg_L_C_string = '\\ \\ $\\%\\Delta(L_C)$ \n \t'
-pct_chg_L_B_string = '\\ \\ $\\%\\Delta(L_N)$ \n \t'
-delta_employmentShare_C_string = '$\Delta$(\\small College Share): \n \t'
+delta_P_n_string = '\\ \\ $\Delta(P_N)$ \n \t'
+delta_P_c_string = '\\ \\ $\Delta(P_C)$ \n \t'
 delta_employment_string = '$\Delta$(\\small Total Employment): \n \t'
 delta_employment_C_string = '\\ \\ \\small College \n \t'
 delta_employment_N_string = '\\ \\ \\small Non-College \n \t'
@@ -419,7 +374,7 @@ for rho_value in rho_values:
     label = rho2specification_Dict[str(rho_value)]
     
     #Define and calibrate model    
-    model = calibration_model_RC4(alpha_c, alpha_n,
+    model = calibration_model(alpha_c, alpha_n,
                 rho=rho_value,
                 tau=df_observed.loc[year, tau_baseline],
                 elasticity_c=e_c_baseline, elasticity_n=e_n_baseline,
@@ -454,10 +409,9 @@ for rho_value in rho_values:
     
     #Save Results for Overview
     pct_chg_cwp = 100*((model.w2_c/model.w2_n)-(model.w1_c/model.w1_n))/(model.w1_c/model.w1_n -1)
-    pp_chg_cwb = 100*(((model.L2_c*model.w2_c)/(model.L2_c*model.w2_c + model.L2_n*model.w2_n))\
-                       -((model.L1_c*model.w1_c)/(model.L1_c*model.w1_c + model.L1_n*model.w1_n)))
+    pp_chg_P_C = 100*(model.P2_c - model.P1_c)
     pp_chg_P_N = 100*(model.P2_n - model.P1_n)
-    rho_results_string.append(f' \t & {pct_chg_cwp:,.2f}\\% & {pp_chg_cwb:,.2f} pp & {pp_chg_P_N:,.2f} pp \\\\ ')
+    rho_results_string.append(f' \t & {pct_chg_cwp:,.2f}\\% & {pp_chg_P_C:,.2f} pp & {pp_chg_P_N:,.2f} pp \\\\ ')
     
     #Add values to strings for Eq Comparison Tables
     if i ==1: ampersand = '&'
@@ -467,21 +421,11 @@ for rho_value in rho_values:
     
     delta_w_C_string = delta_w_C_string + ampersand + f' {model.w2_c-model.w1_c:,.0f} '
     delta_w_N_string = delta_w_N_string + ampersand + f' {model.w2_n-model.w1_n:,.0f} '
-    delta_cwg_string = delta_cwg_string + ampersand + f' {(model.w2_c-model.w2_n)-(model.w1_c-model.w1_n):,.0f} '
-    pct_chg_cwg_string = pct_chg_cwg_string + ampersand + \
-        f' {100*((model.w2_c-model.w2_n)-(model.w1_c-model.w1_n))/(model.w1_c-model.w1_n):,.2f}\\% '
     pct_chg_cwp_string = pct_chg_cwp_string + ampersand + \
         f' {100*((model.w2_c/model.w2_n)-(model.w1_c/model.w1_n))/(model.w1_c/model.w1_n -1):,.2f}\\% '
     
-    pct_chg_L_string = pct_chg_L_string + ampersand +  \
-        f' {100*((model.L2_c+model.L2_n)-(model.L1_c+model.L1_n))/(model.L1_c+model.L1_n):,.2f}\\% '
-    pct_chg_L_C_string = pct_chg_L_C_string + ampersand + \
-        f' {100*((model.L2_c)-(model.L1_c))/(model.L1_c):,.2f}\\% '
-    pct_chg_L_B_string = pct_chg_L_B_string + ampersand + \
-        f' {100*((model.L2_n)-(model.L1_n))/(model.L1_n):,.2f}\\% '
-    
-    delta_employmentShare_C_string = delta_employmentShare_C_string + ampersand + \
-        f' {100*(((model.L2_c)/(model.L2_c+model.L2_n))-((model.L1_c)/(model.L1_c+model.L1_n))):,.2f} pp '
+    delta_P_n_string = delta_P_n_string + ampersand + f' {100*(model.P2_n-model.P1_n):,.2f} pp '
+    delta_P_c_string = delta_P_c_string + ampersand + f' {100*(model.P2_c-model.P1_c):,.2f} pp '
     delta_employment_string = delta_employment_string + ampersand + \
         f' {(model.employment2_c+model.employment2_n)-(model.employment1_c+model.employment1_n):,.0f} '
     delta_employment_C_string = delta_employment_C_string + ampersand + \
@@ -501,17 +445,11 @@ header = [f'\ctable[caption={{Equilibrium Comparison Across Substitutability ($\
 table_values=['\\underline{Wages:}', ' \\\\\n',
                 delta_w_C_string, ' \\\\\n',
                 delta_w_N_string, ' \\\\\n',
-                delta_cwg_string, ' \\\\\n',
-                pct_chg_cwg_string, ' \\\\\n',
                 pct_chg_cwp_string, ' \\\\\n',
                 '\\\\\n',
-                '\\underline{Labor Supply:}', ' \\\\\n',
-                pct_chg_L_string, ' \\\\\n',
-                pct_chg_L_C_string, ' \\\\\n',
-                pct_chg_L_B_string, ' \\\\\n',
-                '\\\\\n',
                 '\\underline{Employment:}', ' \\\\\n',
-                delta_employmentShare_C_string, ' \\\\\n',
+                delta_P_n_string, ' \\\\\n',
+                delta_P_c_string, ' \\\\\n',
                 delta_employment_string, ' \\\\\n',
                 delta_employment_C_string, ' \\\\\n',
                 delta_employment_N_string, ' \\\\\n',
@@ -544,35 +482,31 @@ college_defs2specification_Dict ={1:'Bachelor\s Degree or Higher',
 column_header_string = ''
 delta_w_C_string = '\\ \\ $\Delta(w_C)$ \n \t'
 delta_w_N_string = '\\ \\ $\Delta(w_N)$ \n \t'
-delta_cwg_string = '\\ \\ $\Delta(w_C - w_N)$ \n \t'
-pct_chg_cwg_string = '\\ \\ $\\%\\Delta(w_C - w_N)$ \n \t'
 pct_chg_cwp_string = '\\ \\ $\\%\\Delta(w_C/w_N - 1)$ \n \t'
-pct_chg_L_string = '\\ \\ $\\%\\Delta(L_C+L_N)$ \n \t'
-pct_chg_L_C_string = '\\ \\ $\\%\\Delta(L_C)$ \n \t'
-pct_chg_L_B_string = '\\ \\ $\\%\\Delta(L_N)$ \n \t'
-delta_employmentShare_C_string = '$\Delta$(\\small College Share): \n \t'
+delta_P_n_string = '\\ \\ $\Delta(P_N)$ \n \t'
+delta_P_c_string = '\\ \\ $\Delta(P_C)$ \n \t'
 delta_employment_string = '$\Delta$(\\small Total Employment): \n \t'
 delta_employment_C_string = '\\ \\ \\small College \n \t'
 delta_employment_N_string = '\\ \\ \\small Non-College \n \t'
 delta_cwb_string = '$\\Delta$(\\small College Share): \n \t'
 
-#Loop through vcollege definitions
+#Loop through vCollege Definitions
 i = 0
 for def_num in [1,2,3]:  
     i = i+1 
     label = college_defs2specification_Dict[def_num]
     
     #Define and calibrate model
-    model = calibration_model_RC4(alpha_c, alpha_n,
+    model = calibration_model(alpha_c, alpha_n,
                 rho=rho_baseline,
                 tau=df_observed.loc[year, tau_baseline],
                 elasticity_c=e_c_baseline, elasticity_n=e_c_baseline,
-                w1_c=df_observed_RC1.loc[year, f'wage1_c [college definition {def_num}]'], 
-                w1_n=df_observed_RC1.loc[year, f'wage1_n [college definition {def_num}]'],
-                P1_c=df_observed_RC1.loc[year, f'P1_c [college definition {def_num}]'], 
-                P1_n=df_observed_RC1.loc[year, f'P1_n [college definition {def_num}]'],
-                share_workers1_c=df_observed_RC1.loc[year, f'share_workers1_c [college definition {def_num}]'],
-                share_pop_c=df_observed_RC1.loc[year, f'share_pop_c [college definition {def_num}]'],
+                w1_c=df_observed_RC1.loc[year, f'wage1_c [College Definition {def_num}]'], 
+                w1_n=df_observed_RC1.loc[year, f'wage1_n [College Definition {def_num}]'],
+                P1_c=df_observed_RC1.loc[year, f'P1_c [College Definition {def_num}]'], 
+                P1_n=df_observed_RC1.loc[year, f'P1_n [College Definition {def_num}]'],
+                share_workers1_c=df_observed_RC1.loc[year, f'share_workers1_c [College Definition {def_num}]'],
+                share_pop_c=df_observed_RC1.loc[year, f'share_pop_c [College Definition {def_num}]'],
                 pop_count=df_observed_RC1.loc[year, 'pop_count'])
 
     #Make sure there are no NANs in model before calibration
@@ -597,10 +531,9 @@ for def_num in [1,2,3]:
     
     #Save Results for Overview
     pct_chg_cwp = 100*((model.w2_c/model.w2_n)-(model.w1_c/model.w1_n))/(model.w1_c/model.w1_n -1)
-    pp_chg_cwb = 100*(((model.L2_c*model.w2_c)/(model.L2_c*model.w2_c + model.L2_n*model.w2_n))\
-                       -((model.L1_c*model.w1_c)/(model.L1_c*model.w1_c + model.L1_n*model.w1_n)))
+    pp_chg_P_C = 100*(model.P2_c - model.P1_c)
     pp_chg_P_N = 100*(model.P2_n - model.P1_n)
-    collegeDef_results_string.append(f' \t & {pct_chg_cwp:,.2f}\\% & {pp_chg_cwb:,.2f} pp & {pp_chg_P_N:,.2f} pp \\\\ ')
+    collegeDef_results_string.append(f' \t & {pct_chg_cwp:,.2f}\\% & {pp_chg_P_C:,.2f} pp & {pp_chg_P_N:,.2f} pp \\\\ ')
     
     
     #Add values to strings for Eq Comparison Tables
@@ -611,21 +544,11 @@ for def_num in [1,2,3]:
     
     delta_w_C_string = delta_w_C_string + ampersand + f' {model.w2_c-model.w1_c:,.0f} '
     delta_w_N_string = delta_w_N_string + ampersand + f' {model.w2_n-model.w1_n:,.0f} '
-    delta_cwg_string = delta_cwg_string + ampersand + f' {(model.w2_c-model.w2_n)-(model.w1_c-model.w1_n):,.0f} '
-    pct_chg_cwg_string = pct_chg_cwg_string + ampersand + \
-        f' {100*((model.w2_c-model.w2_n)-(model.w1_c-model.w1_n))/(model.w1_c-model.w1_n):,.2f}\\% '
     pct_chg_cwp_string = pct_chg_cwp_string + ampersand + \
         f' {100*((model.w2_c/model.w2_n)-(model.w1_c/model.w1_n))/(model.w1_c/model.w1_n -1):,.2f}\\% '
     
-    pct_chg_L_string = pct_chg_L_string + ampersand +  \
-        f' {100*((model.L2_c+model.L2_n)-(model.L1_c+model.L1_n))/(model.L1_c+model.L1_n):,.2f}\\% '
-    pct_chg_L_C_string = pct_chg_L_C_string + ampersand + \
-        f' {100*((model.L2_c)-(model.L1_c))/(model.L1_c):,.2f}\\% '
-    pct_chg_L_B_string = pct_chg_L_B_string + ampersand + \
-        f' {100*((model.L2_n)-(model.L1_n))/(model.L1_n):,.2f}\\% '
-    
-    delta_employmentShare_C_string = delta_employmentShare_C_string + ampersand + \
-        f' {100*(((model.L2_c)/(model.L2_c+model.L2_n))-((model.L1_c)/(model.L1_c+model.L1_n))):,.2f} pp '
+    delta_P_n_string = delta_P_n_string + ampersand + f' {100*(model.P2_n-model.P1_n):,.2f} pp '
+    delta_P_c_string = delta_P_c_string + ampersand + f' {100*(model.P2_c-model.P1_c):,.2f} pp '
     delta_employment_string = delta_employment_string + ampersand + \
         f' {(model.employment2_c+model.employment2_n)-(model.employment1_c+model.employment1_n):,.0f} '
     delta_employment_C_string = delta_employment_C_string + ampersand + \
@@ -648,17 +571,11 @@ header = [f'\ctable[caption={{Equilibrium Comparison for {year} Across College D
 table_values=['\\underline{Wages:}', ' \\\\\n',
                 delta_w_C_string, ' \\\\\n',
                 delta_w_N_string, ' \\\\\n',
-                delta_cwg_string, ' \\\\\n',
-                pct_chg_cwg_string, ' \\\\\n',
                 pct_chg_cwp_string, ' \\\\\n',
                 '\\\\\n',
-                '\\underline{Labor Supply:}', ' \\\\\n',
-                pct_chg_L_string, ' \\\\\n',
-                pct_chg_L_C_string, ' \\\\\n',
-                pct_chg_L_B_string, ' \\\\\n',
-                '\\\\\n',
                 '\\underline{Employment:}', ' \\\\\n',
-                delta_employmentShare_C_string, ' \\\\\n',
+                delta_P_n_string, ' \\\\\n',
+                delta_P_c_string, ' \\\\\n',
                 delta_employment_string, ' \\\\\n',
                 delta_employment_C_string, ' \\\\\n',
                 delta_employment_N_string, ' \\\\\n',
@@ -683,7 +600,7 @@ header = ['\ctable[caption={Summary of Results Across Specifications},', ' \n',
             '    label={SummaryOverview}, pos=h!]', ' \n',
             '{lccc}{}{\\FL', '\n',
             '\t &    \small \multicolumn{1}{p{3cm}}{\centering Pct. Chg. College \\\\ Wage Premium}', ' \n',
-            '\t &	 \small \multicolumn{1}{p{3cm}}{\centering  PP. Chg. College \\\\ Wage Bill}', ' \n',
+            '\t &	 \small \multicolumn{1}{p{3.5cm}}{\centering PP. Chg. College \\\\ Employment Rate}', '\n',
             '\t &	 \small \multicolumn{1}{p{3.5cm}}{\centering PP. Chg. Non-College \\\\ Employment Rate}', '\\\\', '\n',
             '\cmidrule{1-4}', '\n',
             '\\\\' '\n']  
@@ -695,9 +612,9 @@ baseline = [r'\underline{Baseline:}', ' \n',
 acrossTau = [r'\underline{Cost of ESHI:} \\', ' \n ',
     '\ \ \small \shortstack[l]{Total Cost with \\\\ \ \ Complete Take-up}', 
     ' \n', tau_results_string[0], ' \n',
-    '\ \ \small \shortstack[l]{Employer Cost with \\\\ \ \ Complete Take-up}', 
+    '\ \ \small \shortstack[l]{Total Cost with \\\\ \ \ Incomplete Take-up}', 
     ' \n', tau_results_string[1], ' \n',
-    '\ \ \small \shortstack[l]{Employer Cost with \\\\ \ \ Complete Take-up}',
+    '\ \ \small \shortstack[l]{Employer Cost with \\\\ \ \ Incomplete Take-up}',
     ' \n', tau_results_string[2], ' \n',
     '\\\\', ' \n ',] 
 
@@ -735,12 +652,12 @@ closer = ['\\bottomrule}']
 #Create, write, and close file
 cwd = os.getcwd()
 os.chdir(output_path)
-file = open("ResultsSummary.tex","w")
+file = open("Summary_Robustness.tex","w")
 file.writelines(header) 
 file.writelines(baseline)  
-file.writelines(acrossTau)  
-file.writelines(acrossElasticity)  
+#file.writelines(acrossTau)  
 file.writelines(acrossRho)  
-file.writelines(acrossCollegeDef)   
+file.writelines(acrossCollegeDef) 
+file.writelines(acrossElasticity)  
 file.writelines(closer)   
 file.close()

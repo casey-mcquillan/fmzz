@@ -18,7 +18,7 @@ os.chdir(code_folder)
 
 #%% Import Data #%%
 os.chdir(data_folder)
-df = pd.read_csv('cps_00009.csv')
+df = pd.read_csv('cps_00011.csv')
 
 
 #%% Data Wrangling #%%
@@ -36,69 +36,110 @@ df = df[[(not x in [10,13,14,29]) for x in df['CLASSWLY']]]
 df['YEAR'] = df['YEAR'] - 1
 
 # Define college attendance
-df['college'] = \
+df['College'] = \
     [int(x in [110, 120, 121, 122, 111, 123, 124, 125]) for x in df['EDUC']]
+df['Non-College'] = 1-df['College']
 
 # Define working
 hours_requirement =  1*(df['UHRSWORKLY'] >= 35)
 weeks_requirement =  1*(df['WKSWORK2'] >= 4)
-worker_class_requirement = [int(not x in [10,13,14,29]) for x in df['CLASSWLY']]
+df['FTFY'] = hours_requirement * weeks_requirement
 
-df['working'] = hours_requirement * weeks_requirement * worker_class_requirement
-df['working (weighted)'] = hours_requirement * weeks_requirement * worker_class_requirement * df['ASECWT']
+# Define Health Insurance
+df['ESHI_own'] = 1*(df['GRPOWNLY']==2)
+df['ESHI_dependent'] = 1*(df['GRPDEPLY']==2)
+''' Other variables with different time inconsistencies
+df['HI'] = 1*(df['ANYCOVLY']==2 or df['VERIFY']==2)
+df['ESHI'] =   1*(df['GRPCOVLY']==2) + \
+    1*((1-1*(df['GRPCOVLY']==2))*(1*df['INCLUGH']==2))
+df['ESHI_own'] = 1*(df['GRPOWNLY']==2)
+df['ESHI_dependent'] = 1*(df['GRPDEPLY']==2)
+df['HI Other'] = df['HI'] - df['ESHI']
+df['No HI'] = 1 - df['HI']
+'''
 
-# Collect wage data
-df['wage_college'] = df['working'] * df['college'] * df['INCWAGE']
-df['wage_noncollege'] = df['working'] * (1 - df['college']) * df['INCWAGE']
-
-df['wage_college (weighted)'] = df['working'] * df['college'] * df['INCWAGE'] * df['ASECWT'] 
-df['wage_noncollege (weighted)'] = df['working'] * (1 - df['college']) * df['INCWAGE'] * df['ASECWT']
+# Constant column
+df['Total'] = 1
 
 
-#%% Data Collapse #%%
-# Create this variable to track number of observations after collapse
-df['N'] = 1
-df['N_college'] = df['college']
-df['N_noncollege'] = 1 - df['college']
-df['N_working'] = df['working']
-df['N_college_working'] = df['college'] * df['working']
-df['N_noncollege_working'] = (1-df['college']) * df['working']
+#%% Create Dataframe by year #%%
 
-# Create weights 
-df['ASECWT']
-df['ASECWT_college'] = df['N_college'] * df['ASECWT']
-df['ASECWT_noncollege'] = df['N_noncollege'] * df['ASECWT']
-df['ASECWT_working'] = df['N_working'] * df['ASECWT']
-df['ASECWT_college_working'] = df['N_college_working'] * df['ASECWT']
-df['ASECWT_noncollege_working'] = df['N_noncollege_working'] * df['ASECWT']
+# Define range of years
+years = range(1975,2021)
 
-# Collapse data by year
-data = df.groupby('YEAR').sum()  
+# Define variables
+variables = ['N', 'N_college', 'N_FTFY', 'N_college_FTFY',
+                    'share_pop_c', 'share_pop_c (weighted)', 
+                    'share_workers1_c', 'share_workers1_c (weighted)',
+                    'P1_c', 'P1_c (weighted)',
+                    'P1_n', 'P1_n (weighted)',
+                    'wage1_c', 'wage1_c (weighted)',
+                    'wage1_n', 'wage1_n (weighted)',
+                    'Share ESHI policyholders', 
+                    'Share ESHI policyholders (weighted)']
 
-# Calculate variables
-data['P1_c'] = data['N_college_working'] / data['N_college']
-data['P1_c (weighted)'] = data['ASECWT_college_working'] / data['ASECWT_college']
+# Create dataframe
+data = pd.DataFrame(index=years, columns=variables)
 
-data['P1_n'] = data['N_noncollege_working'] / data['N_noncollege']
-data['P1_n (weighted)'] = data['ASECWT_noncollege_working'] / data['ASECWT_noncollege']
-
-data['share_workers1_c'] = data['N_college_working'] / data['N_working']
-data['share_workers1_c (weighted)'] = data['ASECWT_college_working'] / data['ASECWT_working']
-
-data['share_pop_c'] = data['N_college'] / data['N']
-data['share_pop_c (weighted)'] = data['ASECWT_college'] / data['ASECWT']
-
-#Calculate wages
-data['wage1_c'] = \
-    data['wage_college'] / data['N_college_working'] 
-data['wage1_n'] = \
-    data['wage_noncollege'] / data['N_noncollege_working']
-
-data['wage1_c (weighted)'] = \
-    data['wage_college (weighted)'] / data['ASECWT_college_working']
-data['wage1_n (weighted)'] = \
-    data['wage_noncollege (weighted)'] / data['ASECWT_noncollege_working']
+# Loop through years to create dataframe
+for year in years:
+    year_dummy = 1*(df['YEAR']==year)
+        
+    ### Calculations
+    ## Number of observations
+    data.loc[year,'N'] = np.sum(df['Total']*year_dummy)
+    data.loc[year,'N_college'] = np.sum(df['College']*year_dummy)
+    data.loc[year,'N_FTFY'] = np.sum(df['FTFY']*year_dummy)
+    data.loc[year,'N_college_FTFY'] = np.sum(df['College']*df['FTFY']*year_dummy)
     
+    ## College Share of population
+    data.loc[year,'share_pop_c'] = np.average(df['College'], \
+                                                weights=year_dummy)
+    data.loc[year,'share_pop_c (weighted)'] = np.average(df['College'], \
+                                                weights=df['ASECWT']*year_dummy)
+    
+    ## College Share of FTFY workforce
+    data.loc[year,'share_workers1_c'] = np.average(df['College']*df['FTFY'], \
+                                                    weights=year_dummy*df['FTFY'])
+    data.loc[year,'share_workers1_c (weighted)'] = np.average(df['College']*df['FTFY'], 
+                                                    weights=df['ASECWT']*year_dummy*df['FTFY'])
+    ## Employment Rates
+    data.loc[year,'P1_c'] = np.average(df['College']*df['FTFY'], \
+                                       weights=year_dummy*df['College'])
+    data.loc[year,'P1_c (weighted)'] = np.average(df['College']*df['FTFY'], \
+                                        weights=df['ASECWT']*year_dummy*df['College'])
+    
+    data.loc[year,'P1_n'] = np.average(df['Non-College']*df['FTFY'], \
+                                       weights=year_dummy*df['Non-College'])
+    data.loc[year,'P1_n (weighted)'] = np.average(df['Non-College']*df['FTFY'], \
+                                        weights=df['ASECWT']*year_dummy*df['Non-College'])
+
+
+    ## Wage Data
+    data.loc[year,'wage1_c'] = np.average(df['INCWAGE']*df['College']*df['FTFY'], \
+                                          weights=year_dummy*df['College']*df['FTFY'])
+    data.loc[year,'wage1_c (weighted)'] = np.average(df['INCWAGE']*df['College']*df['FTFY'], \
+                                            weights=df['ASECWT']*year_dummy*df['College']*df['FTFY'])
+    data.loc[year,'wage1_n'] = np.average(df['INCWAGE']*df['Non-College']*df['FTFY'], \
+                                          weights=year_dummy*df['Non-College']*df['FTFY'])
+    data.loc[year,'wage1_n (weighted)'] = np.average(df['INCWAGE']*df['Non-College']*df['FTFY'], \
+                                            weights=df['ASECWT']*year_dummy*df['Non-College']*df['FTFY'])
+
+    ## Share of FTFY workers that are ESHI policyholders
+    if year >= 1995:  
+        data.loc[year,'Share ESHI policyholders'] = \
+            np.average(df['ESHI_own']*df['FTFY'], \
+                       weights=year_dummy*df['FTFY'])
+        data.loc[year,'Share ESHI policyholders (weighted)'] = \
+            np.average(df['ESHI_own']*df['FTFY'], \
+                       weights=df['ASECWT']*year_dummy*df['FTFY'])   
+                
+        data.loc[year,'Share ESHI dependents'] = \
+            np.average(df['ESHI_dependent']*df['FTFY'], \
+                       weights=year_dummy*df['FTFY'])
+        data.loc[year,'Share ESHI dependents (weighted)'] = \
+            np.average(df['ESHI_dependent']*df['FTFY'], \
+                       weights=df['ASECWT']*year_dummy*df['FTFY'])  
     
 #%% Inflation Adjust #%%
 # Adjust wages to be in 2019 dollars
@@ -112,11 +153,17 @@ for year in data.index:
 
 #%% Export Data #%%
 os.chdir(data_folder)
-data_export = data[['N', 'N_college', 'N_working', 'N_college_working',
+data_export = data[['N', 'N_college', 'N_FTFY', 'N_college_FTFY',
                     'share_pop_c', 'share_pop_c (weighted)', 
                     'share_workers1_c', 'share_workers1_c (weighted)',
                     'P1_c', 'P1_c (weighted)',
                     'P1_n', 'P1_n (weighted)',
                     'wage1_c', 'wage1_c (weighted)',
-                    'wage1_n', 'wage1_n (weighted)']]
+                    'wage1_n', 'wage1_n (weighted)',
+                    'Share ESHI',
+                    'Share ESHI (weighted)',
+                    'Share ESHI policyholders',
+                    'Share ESHI policyholders (weighted)',
+                    'Share ESHI dependents',
+                    'Share ESHI dependents (weighted)']]
 data_export.to_csv('CPS_ASEC_clean.csv')    

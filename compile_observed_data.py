@@ -39,8 +39,8 @@ df_observed = pd.DataFrame({
                 'P1_c': ASEC_data['P1_c (weighted)'],
                 'P1_n': ASEC_data['P1_n (weighted)'],
                 'tau_high': premium_data['Avg Enr Cost'],
-                'tau_med': premium_data['Avg Emp Cost'],
-                'tau_low': premium_data['Emp Cost * Takeup'],
+                'tau_baseline': premium_data['Avg Enr Cost']*ASEC_data['Share ESHI policyholders (weighted)'],
+                'tau_low': premium_data['Avg Emp Cost']*ASEC_data['Share ESHI policyholders (weighted)'],
             })
 
 #%%  Data Export #%%
