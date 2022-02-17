@@ -116,7 +116,7 @@ for group in ['Total', 'FTFY', 'PTPY']:
         table_data.loc[len(table_data)]= group, column, 'Share with Other HI', HI_Other
         table_data.loc[len(table_data)]= group, column, 'Share with No HI', No_HI
         table_data.loc[len(table_data)]= group, column, 'Employment Rate', employment_rate
-        table_data.loc[len(table_data)]= group, column, 'Avg. Annual Wage', avg_wages
+        table_data.loc[len(table_data)]= group, column, 'Avg. Annual Earnings', avg_wages
         
 
 
@@ -135,7 +135,7 @@ for var in ['wage1_c', 'wage1_n', 'wage1_c (weighted)', 'wage1_n (weighted)']:
 variables = ['Population (millions)', 'Share of Population', 'Share of Workforce',
                'Share of Group', 'Share with ESHI', 'Policyholder', 'Dependent',
                'Share with Other HI', 'Share with No HI', 
-               'Employment Rate', 'Avg. Annual Wage']
+               'Employment Rate', 'Avg. Annual Earnings']
 
 #Dictionaries for each group to panel title
 group2title_Dict={'Total':'Panel A: Population ages 25-64', 
@@ -187,8 +187,8 @@ for group in ['Total', 'FTFY', 'PTPY']:
             string = '\t \\ \\ \\ \\ \\small '+ string[2:] 
             
         #Round to nearest dollar for wages
-        if var == 'Avg. Annual Wage':
-            string = f'\t {var} & {var_t:,.0f} & {var_c:,.0f} & {var_n:,.0f} & \\\\ \n'
+        if var == 'Avg. Annual Earnings':
+            string = f'\t {var} & \${var_t:,.0f} & \${var_c:,.0f} & \${var_n:,.0f} & \\\\ \n'
         
        
         
@@ -208,16 +208,12 @@ for group in ['Total', 'FTFY', 'PTPY']:
 
 
 ## Create Table Header and Bottom
-table_header = ['\\begin{table}[htbp!] \n',
-                f'\caption{{Summary Statistics in {year}}} ', 
-                '\label{tab_summstats} \n',
-                '\centering \n',
+table_header = ['\centering \n',
                 '\\begin{tabular}{lcccccc} \n'
                 '\hline  \n']
 
 
-table_bottom = ['\end{tabular} \n',
-                '\end{table}']
+table_bottom = ['\end{tabular}']
         
 #Create, write, and close file
 cwd = os.getcwd()
@@ -227,5 +223,3 @@ file.writelines(table_header)
 file.writelines(table_values)   
 file.writelines(table_bottom)   
 file.close()
-
-
