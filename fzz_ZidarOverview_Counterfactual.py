@@ -14,7 +14,7 @@ import numpy as np
 ### Set working directory and folders
 code_folder = "/Users/caseymcquillan/Desktop/Research/FZZ/code"
 data_folder = "/Users/caseymcquillan/Desktop/Research/FZZ/data"
-output_path = '/Users/caseymcquillan/Desktop/Research/FZZ/output/Tables/ZidarOverview_CG'
+output_path = '/Users/caseymcquillan/Desktop/Research/FZZ/output/Tables/Counterfactual Growth'
 
 ### Import calibration class
 os.chdir(code_folder)
@@ -37,7 +37,7 @@ year1 = 1987
 year2 = 2019
 
 #Baseline Parameters
-tau_baseline = 'tau_high'
+tau_baseline = 'tau_baseline'
 rho_baseline = 0.3827
 elasticity_baseline = ['common', 'common']
 e_c_baseline, e_n_baseline = elasticity_baseline[0], elasticity_baseline[1]
@@ -107,47 +107,43 @@ chg_cwp_H = 100*(cwp_H_2 - cwp_H_1)
 chg_cwp_P = 100*(cwp_P_2 - cwp_P_1)
 diff_chg_cwp = (chg_cwp_P-chg_cwp_H)
 
-#College Wage Bill
-cwb_H_1 = (model_year1.w1_c*model_year1.L1_c)/\
-    (model_year1.w1_c*model_year1.L1_c + model_year1.w1_n*model_year1.L1_n)
-cwb_H_2 = (model_year2.w1_c*model_year2.L1_c)/\
-    (model_year2.w1_c*model_year2.L1_c + model_year2.w1_n*model_year2.L1_n)
-
-cwb_P_1 = (model_year1.w2_c*model_year1.L2_c)/\
-    (model_year1.w2_c*model_year1.L2_c + model_year1.w2_n*model_year1.L2_n)
-cwb_P_2 = (model_year2.w2_c*model_year2.L2_c)/\
-    (model_year2.w2_c*model_year2.L2_c + model_year2.w2_n*model_year2.L2_n)
-
-chg_cwb_H = 100*(cwb_H_2 - cwb_H_1)
-chg_cwb_P = 100*(cwb_P_2 - cwb_P_1)
-diff_chg_cwb = (chg_cwb_P-chg_cwb_H)
+#College Employment Rate
+chg_cer_H = 100*(model_year2.P1_c - model_year1.P1_c)
+chg_cer_P = 100*(model_year2.P2_c - model_year1.P2_c)
+diff_chg_cer = (chg_cer_P-chg_cer_H)
 
 #Non-College Employment Rate
-ncer_H_1 = model_year1.P1_n
-ncer_H_2 = model_year2.P1_n
-
-ncer_H_1 = model_year1.P2_n
-ncer_H_2 = model_year2.P2_n
-
 chg_ncer_H = 100*(model_year2.P1_n - model_year1.P1_n)
 chg_ncer_P = 100*(model_year2.P2_n - model_year1.P2_n)
 diff_chg_ncer = (chg_ncer_P-chg_ncer_H)
 
-baseline_results_string_H.append(f' \t & {chg_cwp_H:,.2f} pp & {chg_cwb_H:,.2f} pp & {chg_ncer_H:,.2f} pp \\\\ ')
-baseline_results_string_P.append(f' \t & {chg_cwp_P:,.2f} pp & {chg_cwb_P:,.2f} pp & {chg_ncer_P:,.2f} pp \\\\ ')
-baseline_results_string_CG.append(f' \t & {diff_chg_cwp:,.2f} pp & {diff_chg_cwb:,.2f} pp & {diff_chg_ncer:,.2f} pp \\\\ ')
+#Non-College Employment
+chg_nce_H = (model_year2.employment1_n - model_year1.employment1_n)/1000
+chg_nce_P = (model_year2.employment2_n - model_year1.employment2_n)/1000
+diff_chg_nce = (chg_nce_P-chg_nce_H)
+
+#Payroll Tax Rate    
+ptr_P_1 = 100*model_year1.t
+ptr_P_2 = 100*model_year2.t
+chg_ptr_P = (ptr_P_2 - ptr_P_1)
+   
+#Store Results
+baseline_results_string_H.append(f' \t & {chg_cwp_H:,.2f} pp & {chg_cer_H:,.2f} pp & {chg_ncer_H:,.2f} pp & {chg_nce_H:,.0f} & - \\\\ ')
+baseline_results_string_P.append(f' \t & {chg_cwp_P:,.2f} pp & {chg_cer_P:,.2f} pp & {chg_ncer_P:,.2f} pp & {chg_nce_P:,.0f} & {chg_ptr_P:,.2f} pp \\\\ ')
+baseline_results_string_CG.append(f' \t & {diff_chg_cwp:,.2f} pp & {diff_chg_cer:,.2f} pp & {diff_chg_ncer:,.2f} pp & {diff_chg_nce:,.0f} \\\\ ')
 
 #%%      Vary Tau:      %%#
+
 #Results for Overview Table
 tau_results_string_H = []
 tau_results_string_P = []
 tau_results_string_CG = []
 
 #Parameters to be varied:
-tau_params = ['tau_high', 'tau_med']
-tau2specification_Dict ={'tau_high':'Total Cost with Complete Take-up',
-                         'tau_med':'Cost to Employer with Complete Take-up',
-                         'tau_low':'Cost to Employer with Incomplete Take-up'}
+tau_params = ['tau_high', 'tau_baseline', 'tau_low']
+tau2specification_Dict ={'tau_high':'Total Cost with Complete Takeup',
+                         'tau_baseline':'Total Cost with Incomplete Takeup',
+                         'tau_low':'Cost to Employer with Incomplete Takeup'}
 
 #Loop through
 i = 0
@@ -200,10 +196,6 @@ for tau_param in tau_params:
     model_year1.calibrate()
     model_year2.calibrate()
         
-    ## Calibrate Models
-    model_year1.calibrate()
-    model_year2.calibrate()
-    
     ## Save Results for Overview
     #College Wage Premium
     cwp_H_1 = (model_year1.w1_c/model_year1.w1_n)-1
@@ -216,36 +208,32 @@ for tau_param in tau_params:
     chg_cwp_P = 100*(cwp_P_2 - cwp_P_1)
     diff_chg_cwp = (chg_cwp_P-chg_cwp_H)
     
-    #College Wage Bill
-    cwb_H_1 = (model_year1.w1_c*model_year1.L1_c)/\
-        (model_year1.w1_c*model_year1.L1_c + model_year1.w1_n*model_year1.L1_n)
-    cwb_H_2 = (model_year2.w1_c*model_year2.L1_c)/\
-        (model_year2.w1_c*model_year2.L1_c + model_year2.w1_n*model_year2.L1_n)
-    
-    cwb_P_1 = (model_year1.w2_c*model_year1.L2_c)/\
-        (model_year1.w2_c*model_year1.L2_c + model_year1.w2_n*model_year1.L2_n)
-    cwb_P_2 = (model_year2.w2_c*model_year2.L2_c)/\
-        (model_year2.w2_c*model_year2.L2_c + model_year2.w2_n*model_year2.L2_n)
-    
-    chg_cwb_H = 100*(cwb_H_2 - cwb_H_1)
-    chg_cwb_P = 100*(cwb_P_2 - cwb_P_1)
-    diff_chg_cwb = (chg_cwb_P-chg_cwb_H)
+    #College Employment Rate
+    chg_cer_H = 100*(model_year2.P1_c - model_year1.P1_c)
+    chg_cer_P = 100*(model_year2.P2_c - model_year1.P2_c)
+    diff_chg_cer = (chg_cer_P-chg_cer_H)
     
     #Non-College Employment Rate
-    ncer_H_1 = model_year1.P1_n
-    ncer_H_2 = model_year2.P1_n
-    
-    ncer_H_1 = model_year1.P2_n
-    ncer_H_2 = model_year2.P2_n
-    
     chg_ncer_H = 100*(model_year2.P1_n - model_year1.P1_n)
     chg_ncer_P = 100*(model_year2.P2_n - model_year1.P2_n)
     diff_chg_ncer = (chg_ncer_P-chg_ncer_H)
     
-    tau_results_string_H.append(f' \t & {chg_cwp_H:,.2f} pp & {chg_cwb_H:,.2f} pp & {chg_ncer_H:,.2f} pp \\\\ ')
-    tau_results_string_P.append(f' \t & {chg_cwp_P:,.2f} pp & {chg_cwb_P:,.2f} pp & {chg_ncer_P:,.2f} pp \\\\ ')
-    tau_results_string_CG.append(f' \t & {diff_chg_cwp:,.2f} pp & {diff_chg_cwb:,.2f} pp & {diff_chg_ncer:,.2f} pp \\\\ ')
-
+    #Non-College Employment
+    nchg_nce_H = (model_year2.employment1_n - model_year1.employment1_n)/1000
+    chg_nce_P = (model_year2.employment2_n - model_year1.employment2_n)/1000
+    diff_chg_nce = (chg_nce_P-chg_nce_H)
+    
+    #Payroll Tax Rate    
+    ptr_P_1 = 100*model_year1.t
+    ptr_P_2 = 100*model_year2.t
+    chg_ptr_P = (ptr_P_2 - ptr_P_1)
+    
+    #Store Results
+    tau_results_string_H.append(f' \t & {chg_cwp_H:,.2f} pp & {chg_cer_H:,.2f} pp & {chg_ncer_H:,.2f} pp & {chg_nce_H:,.0f} & - \\\\ ')
+    tau_results_string_P.append(f' \t & {chg_cwp_P:,.2f} pp & {chg_cer_P:,.2f} pp & {chg_ncer_P:,.2f} pp & {chg_nce_P:,.0f} & {chg_ptr_P:,.2f} pp \\\\ ')
+    tau_results_string_CG.append(f' \t & {diff_chg_cwp:,.2f} pp & {diff_chg_cer:,.2f} pp & {diff_chg_ncer:,.2f} pp & {diff_chg_nce:,.0f} \\\\ ')
+    
+    
 #%%      Vary Elasticties:      %%#
 #Results for Overview Table
 elasticity_results_string_H = []
@@ -323,35 +311,30 @@ for elasticity_value in elasticity_values:
     chg_cwp_P = 100*(cwp_P_2 - cwp_P_1)
     diff_chg_cwp = (chg_cwp_P-chg_cwp_H)
     
-    #College Wage Bill
-    cwb_H_1 = (model_year1.w1_c*model_year1.L1_c)/\
-        (model_year1.w1_c*model_year1.L1_c + model_year1.w1_n*model_year1.L1_n)
-    cwb_H_2 = (model_year2.w1_c*model_year2.L1_c)/\
-        (model_year2.w1_c*model_year2.L1_c + model_year2.w1_n*model_year2.L1_n)
-    
-    cwb_P_1 = (model_year1.w2_c*model_year1.L2_c)/\
-        (model_year1.w2_c*model_year1.L2_c + model_year1.w2_n*model_year1.L2_n)
-    cwb_P_2 = (model_year2.w2_c*model_year2.L2_c)/\
-        (model_year2.w2_c*model_year2.L2_c + model_year2.w2_n*model_year2.L2_n)
-    
-    chg_cwb_H = 100*(cwb_H_2 - cwb_H_1)
-    chg_cwb_P = 100*(cwb_P_2 - cwb_P_1)
-    diff_chg_cwb = (chg_cwb_P-chg_cwb_H)
+    #College Employment Rate
+    chg_cer_H = 100*(model_year2.P1_c - model_year1.P1_c)
+    chg_cer_P = 100*(model_year2.P2_c - model_year1.P2_c)
+    diff_chg_cer = (chg_cer_P-chg_cer_H)
     
     #Non-College Employment Rate
-    ncer_H_1 = model_year1.P1_n
-    ncer_H_2 = model_year2.P1_n
-    
-    ncer_H_1 = model_year1.P2_n
-    ncer_H_2 = model_year2.P2_n
-    
     chg_ncer_H = 100*(model_year2.P1_n - model_year1.P1_n)
     chg_ncer_P = 100*(model_year2.P2_n - model_year1.P2_n)
     diff_chg_ncer = (chg_ncer_P-chg_ncer_H)
     
-    elasticity_results_string_H.append(f' \t & {chg_cwp_H:,.2f} pp & {chg_cwb_H:,.2f} pp & {chg_ncer_H:,.2f} pp \\\\ ')
-    elasticity_results_string_P.append(f' \t & {chg_cwp_P:,.2f} pp & {chg_cwb_P:,.2f} pp & {chg_ncer_P:,.2f} pp \\\\ ')
-    elasticity_results_string_CG.append(f' \t & {diff_chg_cwp:,.2f} pp & {diff_chg_cwb:,.2f} pp & {diff_chg_ncer:,.2f} pp \\\\ ')
+    #Non-College Employment
+    chg_nce_H = (model_year2.employment1_n - model_year1.employment1_n)/1000
+    chg_nce_P = (model_year2.employment2_n - model_year1.employment2_n)/1000
+    diff_chg_nce = (chg_nce_P-chg_nce_H)
+    
+    #Payroll Tax Rate    
+    ptr_P_1 = 100*model_year1.t
+    ptr_P_2 = 100*model_year2.t
+    chg_ptr_P = (ptr_P_2 - ptr_P_1)
+    
+    #Store Results
+    elasticity_results_string_H.append(f' \t & {chg_cwp_H:,.2f} pp & {chg_cer_H:,.2f} pp & {chg_ncer_H:,.2f} pp & {chg_nce_H:,.2f} & - \\\\ ')
+    elasticity_results_string_P.append(f' \t & {chg_cwp_P:,.2f} pp & {chg_cer_P:,.2f} pp & {chg_ncer_P:,.2f} pp & {chg_nce_P:,.0f} & {chg_ptr_P:,.2f} pp \\\\ ')
+    elasticity_results_string_CG.append(f' \t & {diff_chg_cwp:,.2f} pp & {diff_chg_cer:,.2f} pp & {diff_chg_ncer:,.2f} pp & {diff_chg_nce:,.0f} \\\\ ')
 
 #%%      Vary Substitutabilitity:      %%#
 #Results for Overview Table
@@ -428,35 +411,30 @@ for rho_value in rho_values:
     chg_cwp_P = 100*(cwp_P_2 - cwp_P_1)
     diff_chg_cwp = (chg_cwp_P-chg_cwp_H)
     
-    #College Wage Bill
-    cwb_H_1 = (model_year1.w1_c*model_year1.L1_c)/\
-        (model_year1.w1_c*model_year1.L1_c + model_year1.w1_n*model_year1.L1_n)
-    cwb_H_2 = (model_year2.w1_c*model_year2.L1_c)/\
-        (model_year2.w1_c*model_year2.L1_c + model_year2.w1_n*model_year2.L1_n)
-    
-    cwb_P_1 = (model_year1.w2_c*model_year1.L2_c)/\
-        (model_year1.w2_c*model_year1.L2_c + model_year1.w2_n*model_year1.L2_n)
-    cwb_P_2 = (model_year2.w2_c*model_year2.L2_c)/\
-        (model_year2.w2_c*model_year2.L2_c + model_year2.w2_n*model_year2.L2_n)
-    
-    chg_cwb_H = 100*(cwb_H_2 - cwb_H_1)
-    chg_cwb_P = 100*(cwb_P_2 - cwb_P_1)
-    diff_chg_cwb = (chg_cwb_P-chg_cwb_H)
+    #College Employment Rate
+    chg_cer_H = 100*(model_year2.P1_c - model_year1.P1_c)
+    chg_cer_P = 100*(model_year2.P2_c - model_year1.P2_c)
+    diff_chg_cer = (chg_cer_P-chg_cer_H)
     
     #Non-College Employment Rate
-    ncer_H_1 = model_year1.P1_n
-    ncer_H_2 = model_year2.P1_n
-    
-    ncer_H_1 = model_year1.P2_n
-    ncer_H_2 = model_year2.P2_n
-    
     chg_ncer_H = 100*(model_year2.P1_n - model_year1.P1_n)
     chg_ncer_P = 100*(model_year2.P2_n - model_year1.P2_n)
     diff_chg_ncer = (chg_ncer_P-chg_ncer_H)
     
-    rho_results_string_H.append(f' \t & {chg_cwp_H:,.2f} pp & {chg_cwb_H:,.2f} pp & {chg_ncer_H:,.2f} pp \\\\ ')
-    rho_results_string_P.append(f' \t & {chg_cwp_P:,.2f} pp & {chg_cwb_P:,.2f} pp & {chg_ncer_P:,.2f} pp \\\\ ')
-    rho_results_string_CG.append(f' \t & {diff_chg_cwp:,.2f} pp & {diff_chg_cwb:,.2f} pp & {diff_chg_ncer:,.2f} pp \\\\ ')   
+    #Non-College Employment
+    chg_nce_H = (model_year2.employment1_n - model_year1.employment1_n)/1000
+    chg_nce_P = (model_year2.employment2_n - model_year1.employment2_n)/1000
+    diff_chg_nce = (chg_nce_P-chg_nce_H)
+    
+    #Payroll Tax Rate    
+    ptr_P_1 = 100*model_year1.t
+    ptr_P_2 = 100*model_year2.t
+    chg_ptr_P = (ptr_P_2 - ptr_P_1)
+    
+    #Store Results
+    rho_results_string_H.append(f' \t & {chg_cwp_H:,.2f} pp & {chg_cer_H:,.2f} pp & {chg_ncer_H:,.2f} pp & {chg_nce_H:,.0f} & -\\\\ ')
+    rho_results_string_P.append(f' \t & {chg_cwp_P:,.2f} pp & {chg_cer_P:,.2f} pp & {chg_ncer_P:,.2f} pp & {chg_nce_P:,.0f} & {chg_ptr_P:,.2f} pp \\\\ ')
+    rho_results_string_CG.append(f' \t & {diff_chg_cwp:,.2f} pp & {diff_chg_cer:,.2f} pp & {diff_chg_ncer:,.2f} pp & {diff_chg_nce:,.0f} \\\\ ')   
 
 #%%      Vary College Definition:      %%#
 #Results for Overview Table
@@ -470,7 +448,7 @@ college_defs2specification_Dict ={1:'Bachelor\s Degree or Higher',
                          2:'Associate\'s Degree or Higher',
                          3:'Some College or More'}
 
-#Loop through vcollege definitions
+#Loop through vCollege Definitions
 i = 0
 for def_num in [1,2,3]:  
     i = i+1 
@@ -481,24 +459,24 @@ for def_num in [1,2,3]:
                 rho=rho_baseline,
                 tau=df_observed.loc[year1, tau_baseline],
                 elasticity_c=e_c_baseline, elasticity_n=e_c_baseline,
-                w1_c=df_observed_RC1.loc[year1, f'wage1_c [college definition {def_num}]'], 
-                w1_n=df_observed_RC1.loc[year1, f'wage1_n [college definition {def_num}]'],
-                P1_c=df_observed_RC1.loc[year1, f'P1_c [college definition {def_num}]'], 
-                P1_n=df_observed_RC1.loc[year1, f'P1_n [college definition {def_num}]'],
-                share_workers1_c=df_observed_RC1.loc[year1, f'share_workers1_c [college definition {def_num}]'],
-                share_pop_c=df_observed_RC1.loc[year1, f'share_pop_c [college definition {def_num}]'],
+                w1_c=df_observed_RC1.loc[year1, f'wage1_c [College Definition {def_num}]'], 
+                w1_n=df_observed_RC1.loc[year1, f'wage1_n [College Definition {def_num}]'],
+                P1_c=df_observed_RC1.loc[year1, f'P1_c [College Definition {def_num}]'], 
+                P1_n=df_observed_RC1.loc[year1, f'P1_n [College Definition {def_num}]'],
+                share_workers1_c=df_observed_RC1.loc[year1, f'share_workers1_c [College Definition {def_num}]'],
+                share_pop_c=df_observed_RC1.loc[year1, f'share_pop_c [College Definition {def_num}]'],
                 pop_count=df_observed_RC1.loc[year1, 'pop_count'])
     
     model_year2 = calibration_model_RC4(alpha_c, alpha_n,
             rho=rho_baseline,
             tau=df_observed.loc[year2, tau_baseline],
             elasticity_c=e_c_baseline, elasticity_n=e_c_baseline,
-            w1_c=df_observed_RC1.loc[year2, f'wage1_c [college definition {def_num}]'], 
-            w1_n=df_observed_RC1.loc[year2, f'wage1_n [college definition {def_num}]'],
-            P1_c=df_observed_RC1.loc[year2, f'P1_c [college definition {def_num}]'], 
-            P1_n=df_observed_RC1.loc[year2, f'P1_n [college definition {def_num}]'],
-            share_workers1_c=df_observed_RC1.loc[year2, f'share_workers1_c [college definition {def_num}]'],
-            share_pop_c=df_observed_RC1.loc[year2, f'share_pop_c [college definition {def_num}]'],
+            w1_c=df_observed_RC1.loc[year2, f'wage1_c [College Definition {def_num}]'], 
+            w1_n=df_observed_RC1.loc[year2, f'wage1_n [College Definition {def_num}]'],
+            P1_c=df_observed_RC1.loc[year2, f'P1_c [College Definition {def_num}]'], 
+            P1_n=df_observed_RC1.loc[year2, f'P1_n [College Definition {def_num}]'],
+            share_workers1_c=df_observed_RC1.loc[year2, f'share_workers1_c [College Definition {def_num}]'],
+            share_pop_c=df_observed_RC1.loc[year2, f'share_pop_c [College Definition {def_num}]'],
             pop_count=df_observed_RC1.loc[year2, 'pop_count'])
 
     ## Make sure there are no NANs in model before calibration
@@ -533,46 +511,42 @@ for def_num in [1,2,3]:
     chg_cwp_P = 100*(cwp_P_2 - cwp_P_1)
     diff_chg_cwp = (chg_cwp_P-chg_cwp_H)
     
-    #College Wage Bill
-    cwb_H_1 = (model_year1.w1_c*model_year1.L1_c)/\
-        (model_year1.w1_c*model_year1.L1_c + model_year1.w1_n*model_year1.L1_n)
-    cwb_H_2 = (model_year2.w1_c*model_year2.L1_c)/\
-        (model_year2.w1_c*model_year2.L1_c + model_year2.w1_n*model_year2.L1_n)
-    
-    cwb_P_1 = (model_year1.w2_c*model_year1.L2_c)/\
-        (model_year1.w2_c*model_year1.L2_c + model_year1.w2_n*model_year1.L2_n)
-    cwb_P_2 = (model_year2.w2_c*model_year2.L2_c)/\
-        (model_year2.w2_c*model_year2.L2_c + model_year2.w2_n*model_year2.L2_n)
-    
-    chg_cwb_H = 100*(cwb_H_2 - cwb_H_1)
-    chg_cwb_P = 100*(cwb_P_2 - cwb_P_1)
-    diff_chg_cwb = (chg_cwb_P-chg_cwb_H)
+    #College Employment Rate
+    chg_cer_H = 100*(model_year2.P1_c - model_year1.P1_c)
+    chg_cer_P = 100*(model_year2.P2_c - model_year1.P2_c)
+    diff_chg_cer = (chg_cer_P-chg_cer_H)
     
     #Non-College Employment Rate
-    ncer_H_1 = model_year1.P1_n
-    ncer_H_2 = model_year2.P1_n
-    
-    ncer_H_1 = model_year1.P2_n
-    ncer_H_2 = model_year2.P2_n
-    
     chg_ncer_H = 100*(model_year2.P1_n - model_year1.P1_n)
     chg_ncer_P = 100*(model_year2.P2_n - model_year1.P2_n)
     diff_chg_ncer = (chg_ncer_P-chg_ncer_H)
     
-    collegeDef_results_string_H.append(f' \t & {chg_cwp_H:,.2f} pp & {chg_cwb_H:,.2f} pp & {chg_ncer_H:,.2f} pp \\\\ ')
-    collegeDef_results_string_P.append(f' \t & {chg_cwp_P:,.2f} pp & {chg_cwb_P:,.2f} pp & {chg_ncer_P:,.2f} pp \\\\ ')
-    collegeDef_results_string_CG.append(f' \t & {diff_chg_cwp:,.2f} pp & {diff_chg_cwb:,.2f} pp & {diff_chg_ncer:,.2f} pp \\\\ ')  
+    #Non-College Employment
+    chg_nce_H = (model_year2.employment1_n - model_year1.employment1_n)/1000
+    chg_nce_P = (model_year2.employment2_n - model_year1.employment2_n)/1000
+    diff_chg_nce = (chg_nce_P-chg_nce_H)
+    
+    #Payroll Tax Rate    
+    ptr_P_1 = 100*model_year1.t
+    ptr_P_2 = 100*model_year2.t
+    chg_ptr_P = (ptr_P_2 - ptr_P_1)
+    
+    #Store Results
+    collegeDef_results_string_H.append(f' \t & {chg_cwp_H:,.2f} pp & {chg_cer_H:,.2f} pp & {chg_ncer_H:,.2f} pp & {chg_nce_H:,.0f} & - \\\\ ')
+    collegeDef_results_string_P.append(f' \t & {chg_cwp_P:,.2f} pp & {chg_cer_P:,.2f} pp & {chg_ncer_P:,.2f} pp & {chg_nce_P:,.0f} & {chg_ptr_P:,.2f} pp \\\\ ')
+    collegeDef_results_string_CG.append(f' \t & {diff_chg_cwp:,.2f} pp & {diff_chg_cer:,.2f} pp & {diff_chg_ncer:,.2f} pp & {diff_chg_nce:,.0f} \\\\ ')  
 
 #%%      Compile Overview Tables:      %%#
 
 ## Table 1: Results under different counterfactuals
-header = ['\ctable[caption={', f'Change over Time under Different Counterfactuals ({year1}-{year2})', '},', ' \n',
-            '    label={SummaryOverview}, pos=h!]', ' \n',
-            '{lccc}{}{\\FL', '\n',
-            '\t &    \small \multicolumn{1}{p{3cm}}{\centering Chg. College \\\\ Wage Premium}', ' \n',
-            '\t &	 \small \multicolumn{1}{p{3cm}}{\centering  Chg. College \\\\ Wage Bill}', ' \n',
-            '\t &	 \small \multicolumn{1}{p{3.5cm}}{\centering Chg. Non-College \\\\ Employment Rate}', '\\\\', '\n',
-            '\cmidrule{1-4}', '\n']  
+header = ['\\begin{tabular}{lccccc}', '\n',
+          '\\FL', '\n',
+            '\t &    \multicolumn{1}{p{2.15cm}}{\\footnotesize \centering College \\ Wage Premium}', ' \n',
+            '\t &	 \multicolumn{1}{p{2cm}}{\\footnotesize \centering  College \\ Employment Rate}', ' \n',
+            '\t &	 \multicolumn{1}{p{2cm}}{\\footnotesize \centering Non-College \\ Employment Rate}', ' \n',
+            '\t &	 \multicolumn{1}{p{2cm}}{\\footnotesize \centering Non-College \\ Employment (Thous.)}', ' \n',
+            '\t &	 \multicolumn{1}{p{2cm}}{\\footnotesize \centering Payroll \\ Tax Rate}', '\\\\', '\n',
+            '\cmidrule{1-6}', '\n']  
 
 headTax = [r'\textbf{Head Tax Equilibrium} \\', ' \n', 
           '\\\\', ' \n'] 
@@ -582,16 +556,16 @@ baseline_H = [r'\ \ \underline{Baseline:}', ' \n',
           '\\\\', ' \n'] 
 
 acrossCollegeDef_H = [r'\ \ \underline{College Definitions:} \\', ' \n ',
-    '\ \ \small{ Bachelor\'s or More  }', 
+    '\ \ \ \ \small{ Bachelor\'s or More  (Baseline)}', 
     '\n', collegeDef_results_string_H[0], ' \n',
-    '\ \ \small{  Associate\'s or More  }', 
+    '\ \ \ \ \small{  Associate\'s or More  }', 
     '\n', collegeDef_results_string_H[1], ' \n',
-    '\ \ \small{ Some College or More  }',
+    '\ \ \ \ \small{ Some College or More  }',
     '\n', collegeDef_results_string_H[2], ' \n',
     '\\\\', ' \n'] 
 
 
-payrollTax = ['\cmidrule{1-4}', ' \n ',
+payrollTax = ['\cmidrule{1-6}', ' \n ',
               r'\textbf{Payroll Tax Equilibrium} \\ ', ' \n ',
               '\\\\', ' \n ']
 
@@ -599,123 +573,129 @@ baseline_P = [r'\ \ \underline{Baseline:}', ' \n',
           baseline_results_string_P[0], ' \n',
           '\\\\', ' \n'] 
 
-acrossTau = [r'\ \ \underline{Cost of ESHI:} \\', ' \n ',
-    '\ \ \ \ \small \shortstack[l]{Total Cost with \\\\ \ \ Complete Take-up}', 
-    ' \n', tau_results_string_P[0], ' \n',
-    '\ \ \ \ \small \shortstack[l]{Employer Cost with \\\\ \ \ Complete Take-up}', 
-    ' \n', tau_results_string_P[1], ' \n',
-    '\\\\', ' \n ',] 
 
-acrossElasticity = [r'\ \ \underline{Assumed Elasticities:} \\', ' \n ',
-    '\ \ \ \ \small{ Common Parameters }', 
+# acrossTau = [r'\ \ \underline{Cost of ESHI:} \\', ' \n ',
+#     '\ \ \ \ \small \shortstack[l]{Total Cost \\\\ \ \ Total Coverage}', 
+#     ' \n', tau_results_string_P[0], ' \n',
+#     '\ \ \ \ \small \shortstack[l]{Employer Cost \\\\ \ \ Partial Coverage}', 
+#     ' \n', tau_results_string_P[1], ' \n',
+#     '\\\\', ' \n ',] 
+
+
+acrossElasticity = [r'\underline{Labor Supply Elasticities:} \\', ' \n',
+    '\ \small{Derived Group-Specific Elasticities:} \\\\', ' \n ',
+    '\ \ \ \ \small{$\epsilon_C=0.42$ and $\epsilon_N=0.28$ (Baseline)}', 
     '\n', elasticity_results_string_P[0], ' \n',
-    '\ \ \ \ \small{ Low Elasticity (0.15) }', 
+    '\ \small{Assumed Common Elasticities:} \\\\', ' \n',
+    '\ \ \ \ \small{$\epsilon_C=\epsilon_N=0.15$}', 
     '\n', elasticity_results_string_P[1], ' \n',
-    '\ \ \ \ \small{ Medium Elasticity (0.30) }', 
+    '\ \ \ \ \small{$\epsilon_C=\epsilon_N=0.30$}', 
     '\n', elasticity_results_string_P[2], ' \n',
-    '\ \ \ \ \small{ High Elasticity (0.45) }',
+    '\ \ \ \ \small{$\epsilon_C=\epsilon_N=0.45$}',
     '\n', elasticity_results_string_P[3], ' \n',
     '\\\\', ' \n'] 
 
-acrossRho = [r'\ \ \underline{Substitutability ($\rho$)} \\', ' \n ',
-    '\ \ \ \ \small{ Perfect Substitutes }', 
+acrossRho = [r'\underline{Substitutability ($\rho$)} \\', ' \n',
+    '\ \ \ \ \small{Perfect Substitutes ($\\rho=1$)}', 
     ' \n', rho_results_string_P[0], ' \n',
-    '\ \ \ \ \small{ Gross Substitutes }', 
+    '\ \ \ \ \small{Gross Substitutes ($\\rho=0.38$, Baseline)}', 
     '\n', rho_results_string_P[1], ' \n',
-    '\ \ \ \ \small{ Cobb-Douglas }', 
+    '\ \ \ \ \small{Cobb-Douglas ($\\rho=0$)}', 
     ' \n', rho_results_string_P[2], ' \n',
     '\\\\', ' \n'] 
-
-acrossCollegeDef_P = [r'\ \ \underline{College Definitions:} \\', ' \n ',
-    '\ \ \small{ Bachelor\'s or More  }', 
+acrossCollegeDef_P = [r'\underline{College Definitions:} \\', ' \n',
+    '\ \ \ \ \small{Bachelor\'s or More  (Baseline)}', 
     '\n', collegeDef_results_string_P[0], ' \n',
-    '\ \ \small{  Associate\'s or More  }', 
+    '\ \ \ \ \small{Associate\'s or More  }', 
     '\n', collegeDef_results_string_P[1], ' \n',
-    '\ \ \small{ Some College or More  }',
+    '\ \ \ \ \small{Some College or More  }',
     '\n', collegeDef_results_string_P[2], ' \n',
     '\\\\', ' \n'] 
 
-closer = ['\\bottomrule}']
+closer = ['\\bottomrule','\n', '\end{tabular}']
 
 #Create, write, and close file
 cwd = os.getcwd()
 os.chdir(output_path)
-file = open(f"Results_OverTime{year2}_{year1}.tex","w")
+file = open(f"Change_OverTime{year2}_{year1}_Robust.tex","w")
 file.writelines(header) 
 file.writelines(headTax)
-file.writelines(baseline_H) 
+#file.writelines(baseline_H) 
 file.writelines(acrossCollegeDef_H)  
 file.writelines(payrollTax)  
-file.writelines(baseline_P)   
-file.writelines(acrossTau)  
-file.writelines(acrossElasticity)  
+#file.writelines(baseline_P)   
+#file.writelines(acrossTau)
 file.writelines(acrossRho)  
-file.writelines(acrossCollegeDef_P)   
+file.writelines(acrossCollegeDef_P) 
+file.writelines(acrossElasticity)   
 file.writelines(closer)   
 file.close()
  
     
 
 ## Table 2: Difference in Counterfactuals
-header = ['\ctable[caption={', f'Difference in Growth (Payroll Tax versus Head Tax, {year1}-{year2})', '},', ' \n',
-            '    label={DifferenceOverview}, pos=h!]', ' \n',
-            '{lccc}{}{\\FL', '\n',
-            '\t &    \small \multicolumn{1}{p{3cm}}{\centering Chg. College \\\\ Wage Premium}', ' \n',
-            '\t &	 \small \multicolumn{1}{p{3cm}}{\centering  Chg. College \\\\ Wage Bill}', ' \n',
-            '\t &	 \small \multicolumn{1}{p{3.5cm}}{\centering Chg. Non-College \\\\ Employment Rate}', '\\\\', '\n',
-            '\cmidrule{1-4}', '\\\\', ' \n']  
+header = ['\\begin{tabular}{lcccc}', '\n',
+          '\\FL', '\n',
+            '\t &    \small \multicolumn{1}{p{2.15cm}}{\\footnotesize \centering College \\\\ Wage Premium}', ' \n',
+            '\t &	 \small \multicolumn{1}{p{2cm}}{\\footnotesize \centering  College \\\\ Employment Rate}', ' \n',
+            '\t &	 \small \multicolumn{1}{p{2cm}}{\\footnotesize \centering Non-College \\\\ Employment Rate}', ' \n',
+            '\t &	 \small \multicolumn{1}{p{2cm}}{\\footnotesize \centering Non-College \\\\ Employment}','\\\\', '\n',
+            '\cmidrule{1-5}', '\\\\', ' \n']  
 
 baseline = [r'\ \ \underline{Baseline:}', ' \n', 
           baseline_results_string_CG[0], ' \n',
           '\\\\', ' \n'] 
 
-acrossTau = [r'\ \ \underline{Cost of ESHI:} \\', ' \n ',
-    '\ \ \ \ \small \shortstack[l]{Total Cost with \\\\ \ \ Complete Take-up}', 
-    ' \n', tau_results_string_CG[0], ' \n',
-    '\ \ \ \ \small \shortstack[l]{Employer Cost with \\\\ \ \ Complete Take-up}', 
-    ' \n', tau_results_string_CG[1], ' \n',
-    '\\\\', ' \n ',] 
+# acrossTau = [r'\ \ \underline{Cost of ESHI:} \\', ' \n ',
+#     '\ \ \ \ \small \shortstack[l]{Total Cost with \\\\ \ \ Complete Takeup}', 
+#     ' \n', tau_results_string_CG[0], ' \n',
+#     '\ \ \ \ \small \shortstack[l]{Employer Cost with \\\\ \ \ Complete Takeup}', 
+#     ' \n', tau_results_string_CG[1], ' \n',
+#     '\\\\', ' \n ',] 
 
-acrossElasticity = [r'\ \ \underline{Assumed Elasticities:} \\', ' \n ',
-    '\ \ \ \ \small{ Common Parameters }', 
+
+acrossElasticity = [r'\underline{Labor Supply Elasticities:} \\', ' \n',
+    '\ \small{Derived Group-Specific Elasticities:} \\\\', ' \n ',
+    '\ \ \ \ \small{$\epsilon_C=0.42$ and $\epsilon_N=0.28$ (Baseline)}', 
     '\n', elasticity_results_string_CG[0], ' \n',
-    '\ \ \ \ \small{ Low Elasticity (0.15) }', 
+    '\ \small{Assumed Common Elasticities:} \\\\', ' \n',
+    '\ \ \ \ \small{$\epsilon_C=\epsilon_N=0.15$}', 
     '\n', elasticity_results_string_CG[1], ' \n',
-    '\ \ \ \ \small{ Medium Elasticity (0.30) }', 
+    '\ \ \ \ \small{$\epsilon_C=\epsilon_N=0.30$}', 
     '\n', elasticity_results_string_CG[2], ' \n',
-    '\ \ \ \ \small{ High Elasticity (0.45) }',
+    '\ \ \ \ \small{$\epsilon_C=\epsilon_N=0.45$}',
     '\n', elasticity_results_string_CG[3], ' \n',
     '\\\\', ' \n'] 
 
-acrossRho = [r'\ \ \underline{Substitutability ($\rho$)} \\', ' \n ',
-    '\ \ \ \ \small{ Perfect Substitutes }', 
+acrossRho = [r'\underline{Substitutability ($\rho$)} \\', ' \n',
+    '\ \ \ \ \small{Perfect Substitutes ($\\rho=1$)}', 
     ' \n', rho_results_string_CG[0], ' \n',
-    '\ \ \ \ \small{ Gross Substitutes }', 
+    '\ \ \ \ \small{Gross Substitutes ($\\rho=0.38$, Baseline)}', 
     '\n', rho_results_string_CG[1], ' \n',
-    '\ \ \ \ \small{ Cobb-Douglas }', 
+    '\ \ \ \ \small{Cobb-Douglas ($\\rho=0$)}', 
     ' \n', rho_results_string_CG[2], ' \n',
-    '\\\\', ' \n'] 
+    '\\\\', ' \n']
 
-acrossCollegeDef = [r'\ \ \underline{College Definitions:} \\', ' \n ',
-    '\ \ \small{ Bachelor\'s or More  }', 
+acrossCollegeDef = [r'\underline{College Definitions:} \\', ' \n',
+    '\ \ \ \ \small{Bachelor\'s or More  (Baseline)}', 
     '\n', collegeDef_results_string_CG[0], ' \n',
-    '\ \ \small{  Associate\'s or More  }', 
+    '\ \ \ \ \small{Associate\'s or More  }', 
     '\n', collegeDef_results_string_CG[1], ' \n',
-    '\ \ \small{ Some College or More  }',
+    '\ \ \ \ \small{Some College or More  }',
     '\n', collegeDef_results_string_CG[2], ' \n',
     '\\\\', ' \n'] 
 
-closer = ['\\bottomrule}']
+closer = ['\\bottomrule','\n', '\end{tabular}']
 
 #Create, write, and close file
 cwd = os.getcwd()
 os.chdir(output_path)
-file = open(f"Difference_OverTime{year2}_{year1}.tex","w")
+file = open(f"Diff_Change_OverTime{year2}_{year1}_Robust.tex","w")
 file.writelines(header)   
-file.writelines(baseline)   
-file.writelines(acrossTau)  
-file.writelines(acrossElasticity)  
+#file.writelines(baseline)   
+#file.writelines(acrossTau)  
 file.writelines(acrossRho)  
-file.writelines(acrossCollegeDef)   
+file.writelines(acrossCollegeDef)
+file.writelines(acrossElasticity)  
 file.writelines(closer)   
 file.close()
