@@ -16,7 +16,8 @@ import numpy as np
 ### Set working directory
 code_folder = "/Users/caseymcquillan/Desktop/Research/FZZ/code"
 data_folder = "/Users/caseymcquillan/Desktop/Research/FZZ/data"
-output_path = "/Users/caseymcquillan/Desktop/Research/FZZ/output/Graphs/Counterfactual Growth"
+output_path = "/Users/caseymcquillan/Desktop/"
+#output_path = "/Users/caseymcquillan/Desktop/Research/FZZ/output/Graphs/Counterfactual Growth"
 os.chdir(code_folder)
 
 
@@ -45,7 +46,7 @@ alpha_c, alpha_n, = 1, 1
 years = [1977,1987] + list(range(1996, 2020))
 tau_params = ['tau_high', 'tau_med', 'tau_low']
 tau2specification_Dict ={'tau_high':'Total Cost and Complete Take-up',
-                         'tau_med':'Cost to Employer and Complete Take-up',
+                         'df_observed':'Cost to Employer and Complete Take-up',
                          'tau_low':'Cost to Employer and Incomplete Take-up'}
 
 #Loop through values of tau and year
@@ -54,8 +55,10 @@ df_outcomes = pd.DataFrame(columns = ['year', 'Tau',
                     "College Wage Premium (Payroll Tax)",
                     "College Share of the Wage Bill (Head Tax)",
                     "College Share of the Wage Bill (Payroll Tax)",
+                    "College Employment Rate (Head Tax)", 
+                    "College Employment Rate (Payroll Tax)",
                     "Non-college Employment Rate (Head Tax)", 
-                    "Non-college Employment Rate (Payroll Tax) "])
+                    "Non-college Employment Rate (Payroll Tax)"])
 
 for tau in tau_params:  
     for year in years:
@@ -95,6 +98,8 @@ for tau in tau_params:
                     "College Wage Premium (Payroll Tax)": cwpRatio_p, \
                     "College Share of the Wage Bill (Head Tax)": cswb_h, \
                     "College Share of the Wage Bill (Payroll Tax)": cswb_p, \
+                    "College Employment Rate (Head Tax)": model.P1_c, \
+                    "College Employment Rate (Payroll Tax)": model.P2_c}
                     "Non-college Employment Rate (Head Tax)": model.P1_n, \
                     "Non-college Employment Rate (Payroll Tax)": model.P2_n}
         df_outcomes = df_outcomes.append(\
