@@ -36,7 +36,7 @@ alpha_n=1
 year = 2019
 
 #Baseline Parameters
-tau_baseline = 'tau_high'
+tau_baseline = 'tau_baseline'
 rho_baseline = 0.3827
 elasticity_baseline = ['common', 'common']
 e_c_baseline, e_n_baseline = elasticity_baseline[0], elasticity_baseline[1]
@@ -91,6 +91,12 @@ model.generate_table(file_name='EqComparison'+str(year)+"_baseline", year=year,
 alpha_c=1
 alpha_n=1
 
+# Baseline Parameters
+tau_baseline = 'tau_baseline'
+rho_baseline = 0.3827
+elasticity_baseline = ['common', 'common']
+e_c_baseline, e_n_baseline = elasticity_baseline[0], elasticity_baseline[1]
+
 #Output path and define years
 output_path = '/Users/caseymcquillan/Desktop/Research/FZZ/output/Tables'
 years = [1977,1987] + list(range(1996, 2020))
@@ -131,8 +137,8 @@ for year in years:
     model.generate_table(file_name='SummaryTable'+str(year), year=year, 
                          table_type="equilibrium summary", 
                          table_label="SummaryTable"+str(year), 
-                         location=output_path_EqComparison)
+                         location=output_path_SummaryTable)
     
     model.generate_table(file_name='EqComparison'+str(year), year=year, 
                      table_type="equilibrium comparison", table_label="EqComparison"+str(year), 
-                     location=output_path_SummaryTable)
+                     location=output_path_EqComparison)

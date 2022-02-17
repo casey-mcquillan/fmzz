@@ -378,6 +378,7 @@ class calibration_model:
 
 
 #%%  Create Instance #%%
+'''
 # Importing Data
 os.chdir(data_folder)
 df_observed = pd.read_csv('observed_data.csv', index_col=0)
@@ -433,3 +434,4 @@ model.generate_table(file_name='EqComparison'+str(year)+"_Baseline", year=year,
                  table_type="equilibrium comparison", 
                  table_label="EqComparison"+str(year)+"baseline", 
                  location=output_path, subtitle=" under Baseline Specification")
+'''
