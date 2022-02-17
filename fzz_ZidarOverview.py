@@ -14,7 +14,7 @@ import numpy as np
 ### Set working directory and folders
 code_folder = "/Users/caseymcquillan/Desktop/Research/FZZ/code"
 data_folder = "/Users/caseymcquillan/Desktop/Research/FZZ/data"
-output_path = '/Users/caseymcquillan/Desktop/Research/FZZ/output/Tables/ZidarOverview'
+output_path = '/Users/caseymcquillan/Desktop/Research/FZZ/output/Tables/Overview'
 
 ### Import calibration class
 os.chdir(code_folder)
@@ -89,7 +89,8 @@ model.generate_table(file_name='EqComparison'+str(year)+"_baseline", year=year,
 pct_chg_cwp = 100*((model.w2_c/model.w2_n)-(model.w1_c/model.w1_n))/(model.w1_c/model.w1_n -1)
 pp_chg_P_C = 100*(model.P2_c - model.P1_c)
 pp_chg_P_N = 100*(model.P2_n - model.P1_n)
-baselines_results_string.append(f' \t & {pct_chg_cwp:,.2f}\\% & {pp_chg_P_C:,.2f} pp & {pp_chg_P_N:,.2f} pp \\\\ ')
+chg_employment_N = model.employment2_n - model.employment1_n
+baselines_results_string.append(f' \t & {pct_chg_cwp:,.2f}\\% & {pp_chg_P_C:,.2f} pp & {pp_chg_P_N:,.2f} pp & {chg_employment_N/1000:,.2f} & {100*((model.t)):,.2f}\\% \\\\ ')
 
 #%%      Vary Tau:      %%#
 #Results for Overview Table
@@ -97,11 +98,13 @@ tau_results_string = []
 
 #Parameters to be varied:
 tau_params = ['tau_high', 'tau_baseline', 'tau_low']
-tau2specification_Dict ={'tau_high':'Total Cost with Complete Take-up',
-                         'tau_baseline':'Total Cost with Incomplete Take-up',
-                         'tau_low':'Cost to Employer with Incomplete Take-up'}
+tau2specification_Dict ={'tau_high':'Total Cost with Complete Takeup',
+                         'tau_baseline':'Total Cost with Incomplete Takeup',
+                         'tau_low':'Cost to Employer with Incomplete Takeup'}
 
 #Initialize strings for tables
+tau_string = '\\underline{Fixed Per Worker Cost $\\tau$:} \n \t'
+payroll_tax_string = '\\underline{Payroll Tax Rate:} \n \t'
 delta_w_C_string = '\\ \\ $\Delta(w_C)$ \n \t'
 delta_w_N_string = '\\ \\ $\Delta(w_N)$ \n \t'
 pct_chg_cwp_string = '\\ \\ $\\%\\Delta(w_C/w_N - 1)$ \n \t'
@@ -111,6 +114,7 @@ delta_employment_string = '$\Delta$(\\small Total Employment): \n \t'
 delta_employment_C_string = '\\ \\ \\small College \n \t'
 delta_employment_N_string = '\\ \\ \\small Non-College \n \t'
 delta_cwb_string = '$\\Delta$(\\small College Share): \n \t'
+
 
 #Loop through
 i = 0
@@ -157,13 +161,16 @@ for tau_param in tau_params:
     pp_chg_cwb = 100*(((model.L2_c*model.w2_c)/(model.L2_c*model.w2_c + model.L2_n*model.w2_n))\
                        -((model.L1_c*model.w1_c)/(model.L1_c*model.w1_c + model.L1_n*model.w1_n)))
     pp_chg_P_C = 100*(model.P2_c - model.P1_c)
-    pp_chg_P_N = 100*(model.P2_n - model.P1_n)
-    tau_results_string.append(f' \t & {pct_chg_cwp:,.2f}\\% & {pp_chg_P_C:,.2f} pp & {pp_chg_P_N:,.2f} pp \\\\ ')
+    pp_chg_P_N = 100*(model.P2_n - model.P1_n)    
+    chg_employment_N = model.employment2_n - model.employment1_n
+    tau_results_string.append(f' \t & {pct_chg_cwp:,.2f}\\% & {pp_chg_P_C:,.2f} pp & {pp_chg_P_N:,.2f} pp & {chg_employment_N/1000:,.2f} & {100*((model.t)):,.2f}\\% \\\\ ')
     
     #Add values to strings for Eq Comparison Tables
     if i ==1: ampersand = '&'
     if i > 1: ampersand = ' &&'
     
+    tau_string = tau_string + ampersand + f' \${model.tau:,.0f} '
+    payroll_tax_string = payroll_tax_string + ampersand + f' {100*((model.t)):,.2f}\\% '
     delta_w_C_string = delta_w_C_string + ampersand + f' {model.w2_c-model.w1_c:,.0f} '
     delta_w_N_string = delta_w_N_string + ampersand + f' {model.w2_n-model.w1_n:,.0f} '
     pct_chg_cwp_string = pct_chg_cwp_string + ampersand + \
@@ -181,22 +188,25 @@ for tau_param in tau_params:
     delta_cwb_string = delta_cwb_string + ampersand + \
         f' {100*(((model.L2_c*model.w2_c)/(model.L2_c*model.w2_c + model.L2_n*model.w2_n))-((model.L1_c*model.w1_c)/(model.L1_c*model.w1_c + model.L1_n*model.w1_n))):,.2f} pp'
     
-header = [f'\ctable[caption={{Equilibrium Comparison Across ESHI Cost Assumptions}},', '\n',
-          '    label={EqComparison_AcrossTau}, pos=h!]', '\n',
-          '{lccccc}{}{\\FL', '\n',
-          '\t &	 \small \multicolumn{1}{p{3cm}}{\centering Total Cost, \\ Complete Take-up}','\n', 
-          '\t &&	 \small \multicolumn{1}{p{3cm}}{\centering  Total Cost, \\ Incomplete Takeup}','\n', 
-          '\t &&	 \small \multicolumn{1}{p{3cm}}{\centering Cost to Employer, \\ Incomplete Takeup}', '\\\\','\n', 
+header = ['\\begin{tabular}{lccccc}', '\n',
+          '\\FL', '\n',
+          '\t &	 \multicolumn{1}{p{2.7cm}}{\small \centering \\textbf{(1)} \\\\ Total Cost, \\\\ Total Coverage}','\n', 
+          '\t &&	 \multicolumn{1}{p{2.7cm}}{\small \centering \\textbf{(2)} \\\\Total Cost, \\\\ Partial Coverage \\\\ (Baseline)}','\n', 
+          '\t &&	 \multicolumn{1}{p{2.7cm}}{\small \centering \\textbf{(3)} \\\\ Employer Cost, \\\\ Partial Coverage}', '\\\\','\n', 
           '\cmidrule{1-6}', '\n']
 
-table_values=['\\underline{Wages:}', ' \\\\\n',
+table_values=[tau_string, ' \\\\\n',
+                '\\\\\n',
+                payroll_tax_string, ' \\\\\n',
+                '\\\\\n',
+                '\\underline{Wages:}', ' \\\\\n',
                 delta_w_C_string, ' \\\\\n',
                 delta_w_N_string, ' \\\\\n',
                 pct_chg_cwp_string, ' \\\\\n',
                 '\\\\\n',
                 '\\underline{Employment:}', ' \\\\\n',
-                delta_P_n_string, ' \\\\\n',
                 delta_P_c_string, ' \\\\\n',
+                delta_P_n_string, ' \\\\\n',
                 delta_employment_string, ' \\\\\n',
                 delta_employment_C_string, ' \\\\\n',
                 delta_employment_N_string, ' \\\\\n',
@@ -204,7 +214,7 @@ table_values=['\\underline{Wages:}', ' \\\\\n',
                 '\\underline{Wage Bill:}', ' \\\\\n',
                 delta_cwb_string,' \\\\\n']
 
-closer = ['\\bottomrule}']
+closer = ['\\bottomrule','\n', '\end{tabular}']
 
 #Create, write, and close file
 cwd = os.getcwd()
@@ -285,7 +295,8 @@ for elasticity_value in elasticity_values:
     pct_chg_cwp = 100*((model.w2_c/model.w2_n)-(model.w1_c/model.w1_n))/(model.w1_c/model.w1_n -1)
     pp_chg_P_C = 100*(model.P2_c - model.P1_c)
     pp_chg_P_N = 100*(model.P2_n - model.P1_n)
-    elasticity_results_string.append(f' \t & {pct_chg_cwp:,.2f}\\% & {pp_chg_P_C:,.2f} pp & {pp_chg_P_N:,.2f} pp \\\\ ')
+    chg_employment_N = model.employment2_n - model.employment1_n
+    elasticity_results_string.append(f' \t & {pct_chg_cwp:,.2f}\\% & {pp_chg_P_C:,.2f} pp & {pp_chg_P_N:,.2f} pp & {chg_employment_N/1000:,.2f} & {100*((model.t)):,.2f}\\% \\\\ ')
 
     #Add values to strings for Eq Comparison Tables
     if i ==1: ampersand = '&'
@@ -411,7 +422,8 @@ for rho_value in rho_values:
     pct_chg_cwp = 100*((model.w2_c/model.w2_n)-(model.w1_c/model.w1_n))/(model.w1_c/model.w1_n -1)
     pp_chg_P_C = 100*(model.P2_c - model.P1_c)
     pp_chg_P_N = 100*(model.P2_n - model.P1_n)
-    rho_results_string.append(f' \t & {pct_chg_cwp:,.2f}\\% & {pp_chg_P_C:,.2f} pp & {pp_chg_P_N:,.2f} pp \\\\ ')
+    chg_employment_N = model.employment2_n - model.employment1_n
+    rho_results_string.append(f' \t & {pct_chg_cwp:,.2f}\\% & {pp_chg_P_C:,.2f} pp & {pp_chg_P_N:,.2f} pp & {chg_employment_N/1000:,.2f} & {100*((model.t)):,.2f}\\% \\\\ ')
     
     #Add values to strings for Eq Comparison Tables
     if i ==1: ampersand = '&'
@@ -490,7 +502,7 @@ delta_employment_C_string = '\\ \\ \\small College \n \t'
 delta_employment_N_string = '\\ \\ \\small Non-College \n \t'
 delta_cwb_string = '$\\Delta$(\\small College Share): \n \t'
 
-#Loop through vCollege Definitions
+#Loop through College Definitions
 i = 0
 for def_num in [1,2,3]:  
     i = i+1 
@@ -533,7 +545,9 @@ for def_num in [1,2,3]:
     pct_chg_cwp = 100*((model.w2_c/model.w2_n)-(model.w1_c/model.w1_n))/(model.w1_c/model.w1_n -1)
     pp_chg_P_C = 100*(model.P2_c - model.P1_c)
     pp_chg_P_N = 100*(model.P2_n - model.P1_n)
-    collegeDef_results_string.append(f' \t & {pct_chg_cwp:,.2f}\\% & {pp_chg_P_C:,.2f} pp & {pp_chg_P_N:,.2f} pp \\\\ ')
+    chg_employment_N = model.employment2_n - model.employment1_n
+    
+    collegeDef_results_string.append(f' \t & {pct_chg_cwp:,.2f}\\% & {pp_chg_P_C:,.2f} pp & {pp_chg_P_N:,.2f} pp & {chg_employment_N/1000:,.2f} & {100*((model.t)):,.2f}\\% \\\\ ')
     
     
     #Add values to strings for Eq Comparison Tables
@@ -563,9 +577,9 @@ for def_num in [1,2,3]:
 header = [f'\ctable[caption={{Equilibrium Comparison for {year} Across College Definitions}},', '\n',
           '    label={EqComparison_AcrossCollegeDef}, pos=h!]', '\n',
           '{lccccc}{}{\\FL', '\n',
-          '\t &	 \small \multicolumn{1}{p{3cm}}{\centering Bachelor\'s Degree \\\\ or Higher}','\n', 
-          '\t &&	 \small \multicolumn{1}{p{3cm}}{\centering  Associate\'s Degree \\\\ or Higher}','\n', 
-          '\t &&	 \small \multicolumn{1}{p{3cm}}{\centering Some College \\\\ or More}', '\\\\', '\n', 
+          '\t &	 \multicolumn{1}{p{3cm}}{\small \centering Bachelor\'s Degree \\\\ or Higher}','\n', 
+          '\t &&	 \multicolumn{1}{p{3cm}}{\small \centering  Associate\'s Degree \\\\ or Higher}','\n', 
+          '\t &&	 \multicolumn{1}{p{3cm}}{\small \centering Some College \\\\ or More}', '\\\\', '\n', 
           '\cmidrule{1-6}', '\n']
 
 table_values=['\\underline{Wages:}', ' \\\\\n',
@@ -574,8 +588,8 @@ table_values=['\\underline{Wages:}', ' \\\\\n',
                 pct_chg_cwp_string, ' \\\\\n',
                 '\\\\\n',
                 '\\underline{Employment:}', ' \\\\\n',
-                delta_P_n_string, ' \\\\\n',
                 delta_P_c_string, ' \\\\\n',
+                delta_P_n_string, ' \\\\\n',
                 delta_employment_string, ' \\\\\n',
                 delta_employment_C_string, ' \\\\\n',
                 delta_employment_N_string, ' \\\\\n',
@@ -596,65 +610,68 @@ file.close()
 
 
 #%%      Compile Overview Tables:      %%#
-header = ['\ctable[caption={Summary of Results Across Specifications},', ' \n',
-            '    label={SummaryOverview}, pos=h!]', ' \n',
-            '{lccc}{}{\\FL', '\n',
-            '\t &    \small \multicolumn{1}{p{3cm}}{\centering Pct. Chg. College \\\\ Wage Premium}', ' \n',
-            '\t &	 \small \multicolumn{1}{p{3.5cm}}{\centering PP. Chg. College \\\\ Employment Rate}', '\n',
-            '\t &	 \small \multicolumn{1}{p{3.5cm}}{\centering PP. Chg. Non-College \\\\ Employment Rate}', '\\\\', '\n',
-            '\cmidrule{1-4}', '\n',
+header = ['\\begin{tabular}{lccccc}', ' \n',
+            '\\FL', '\n',
+            '\t &    \multicolumn{1}{p{2.2cm}}{\\footnotesize \centering College \\\\ Wage Premium} ', ' \n',
+            '\t &	 \multicolumn{1}{p{1.8cm}}{\\footnotesize \centering College \\\\ Employment Rate}', '\n',
+            '\t &	 \multicolumn{1}{p{1.8cm}}{\\footnotesize \centering Non-College \\\\ Employment Rate}', '\n',
+            '\t &	 \multicolumn{1}{p{1.8cm}}{\\footnotesize \centering Non-College \\\\ Employment (Thous.)}', '\n',
+            '\t &	 \multicolumn{1}{p{1.8cm}}{\\footnotesize \centering Payroll \\\\ Tax Rate}', '\\\\', '\n',
+            '\cmidrule{1-6}', '\n',
             '\\\\' '\n']  
 
 baseline = [r'\underline{Baseline:}', ' \n', 
           baselines_results_string[0], ' \n',
           '\\\\', ' \n'] 
 
-acrossTau = [r'\underline{Cost of ESHI:} \\', ' \n ',
-    '\ \ \small \shortstack[l]{Total Cost with \\\\ \ \ Complete Take-up}', 
+acrossTau = [r'\underline{Cost of ESHI:} \\', ' \n',
+    '\ \ \small \shortstack[l]{Total Cost with \\\\ \ \ Complete Takeup}', 
     ' \n', tau_results_string[0], ' \n',
-    '\ \ \small \shortstack[l]{Total Cost with \\\\ \ \ Incomplete Take-up}', 
+    '\ \ \small \shortstack[l]{Total Cost with \\\\ \ \ Incomplete Takeup} (Baseline)', 
     ' \n', tau_results_string[1], ' \n',
-    '\ \ \small \shortstack[l]{Employer Cost with \\\\ \ \ Incomplete Take-up}',
+    '\ \ \small \shortstack[l]{Employer Cost with \\\\ \ \ Incomplete Takeup}',
     ' \n', tau_results_string[2], ' \n',
     '\\\\', ' \n ',] 
 
-acrossElasticity = [r'\underline{Assumed Elasticities:} \\', ' \n ',
-    '\ \ \small{ Common Parameters }', 
+acrossElasticity = [r'\underline{Labor Supply Elasticities:} \\', ' \n',
+    '\ \small{Derived Group-Specific Elasticities:} \\\\', ' \n ',
+    '\ \ \ \small{$\epsilon_C=0.42$ and $\epsilon_N=0.28$ (Baseline)}', 
     '\n', elasticity_results_string[0], ' \n',
-    '\ \ \small{ Low Elasticity (0.15) }', 
+    '\ \small{Assumed Common Elasticities:} \\\\', ' \n',
+    '\ \ \ \small{$\epsilon_C=\epsilon_N=0.15$}', 
     '\n', elasticity_results_string[1], ' \n',
-    '\ \ \small{ Medium Elasticity (0.30) }', 
+    '\ \ \ \small{$\epsilon_C=\epsilon_N=0.30$}', 
     '\n', elasticity_results_string[2], ' \n',
-    '\ \ \small{ High Elasticity (0.45) }',
+    '\ \ \ \small{$\epsilon_C=\epsilon_N=0.45$}',
     '\n', elasticity_results_string[3], ' \n',
     '\\\\', ' \n'] 
 
-acrossRho = [r'\underline{Substitutability ($\rho$)} \\', ' \n ',
-    '\ \ \small{ Perfect Substitutes }', 
+acrossRho = [r'\underline{Substitutability ($\rho$)} \\', ' \n',
+    '\ \ \small{Perfect Substitutes ($\\rho=1$)}', 
     ' \n', rho_results_string[0], ' \n',
-    '\ \ \small{ Gross Substitutes }', 
+    '\ \ \small{Gross Substitutes ($\\rho=0.38$, Baseline)}', 
     '\n', rho_results_string[1], ' \n',
-    '\ \ \small{ Cobb-Douglas }', 
+    '\ \ \small{Cobb-Douglas ($\\rho=0$)}', 
     ' \n', rho_results_string[2], ' \n',
     '\\\\', ' \n'] 
 
-acrossCollegeDef = [r'\underline{College Definitions:} \\', ' \n ',
-    '\ \ \small{ Bachelor\'s or More  }', 
+acrossCollegeDef = [r'\underline{College Definitions:} \\', ' \n',
+    '\ \ \small{Bachelor\'s or More (Baseline)}', 
     '\n', collegeDef_results_string[0], ' \n',
-    '\ \ \small{  Associate\'s or More  }', 
+    '\ \ \small{Associate\'s or More  }', 
     '\n', collegeDef_results_string[1], ' \n',
-    '\ \ \small{ Some College or More  }',
+    '\ \ \small{Some College or More  }',
     '\n', collegeDef_results_string[2], ' \n',
     '\\\\', ' \n'] 
 
-closer = ['\\bottomrule}']
+closer = ['\\bottomrule','\n', '\end{tabular}']
 
 #Create, write, and close file
 cwd = os.getcwd()
 os.chdir(output_path)
-file = open("Summary_Robustness.tex","w")
+file = open("Overview_Robustness.tex","w")
 file.writelines(header) 
-file.writelines(baseline)  
+#file.writelines(baseline)  
 #file.writelines(acrossTau)  
 file.writelines(acrossRho)  
 file.writelines(acrossCollegeDef) 
