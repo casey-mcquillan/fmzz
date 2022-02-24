@@ -84,8 +84,8 @@ chg_t_string = f'\\ \\ Payroll Tax $(t)$ \n \t & - '
 chg_w_C_string = f'\\ \\ $w_C$ \n \t & \${chg_w_C_observed:,.0f}'
 chg_w_N_string = f'\\ \\ $w_N$ \n \t & \${chg_w_N_observed:,.0f}'
 chg_cwp_string = f'\\ \\ $w_C/w_N - 1$ \n \t & {chg_cwp_observed:,.2f} pp'
-chg_P_c_string = f'\\ \\ $P_C$ \n \t & {chg_P_C_observed:,.2f} pp'
-chg_P_n_string = f'\\ \\ $P_N$ \n \t & {chg_P_N_observed:,.2f} pp'
+chg_P_c_string = f'\\ \\ \\small College \n \t & {chg_P_C_observed:,.2f} pp'
+chg_P_n_string = f'\\ \\ \\small Non-College \n \t & {chg_P_N_observed:,.2f} pp'
 chg_employment_string = r'\underline{Total Employment (\textit{M}):}' +f' \n \t & {chg_employment_observed:,.2f}'
 chg_employment_C_string = f'\\ \\ \\small College \n \t & {chg_employment_C_observed:,.2f}'
 chg_employment_N_string = f'\\ \\ \\small Non-College \n \t & {chg_employment_N_observed:,.2f}'
@@ -232,10 +232,10 @@ table_values=['\\underline{ESHI:}', ' \\\\\n',
               chg_P_c_string, ' \\\\\n',
               chg_P_n_string, ' \\\\\n',
               '\\\\\n',
-              chg_employment_string, ' \\\\\n',
-              chg_employment_C_string, ' \\\\\n',
-              chg_employment_N_string, ' \\\\\n',
-              '\\\\\n',
+              #chg_employment_string, ' \\\\\n',
+              #chg_employment_C_string, ' \\\\\n',
+              #chg_employment_N_string, ' \\\\\n',
+              #'\\\\\n',
               '\\underline{Wage Bill:}', ' \\\\\n',
               chg_cwb_string,' \\\\\n']
 

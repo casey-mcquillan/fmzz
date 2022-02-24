@@ -128,9 +128,9 @@ ptr_P_2 = 100*model_year2.t
 chg_ptr_P = (ptr_P_2 - ptr_P_1)
    
 #Store Results
-baseline_results_string_H.append(f' \t & {chg_cwp_H:,.2f} pp & {chg_cer_H:,.2f} pp & {chg_ncer_H:,.2f} pp & {chg_nce_H:,.0f} & - \\\\ ')
-baseline_results_string_P.append(f' \t & {chg_cwp_P:,.2f} pp & {chg_cer_P:,.2f} pp & {chg_ncer_P:,.2f} pp & {chg_nce_P:,.0f} & {chg_ptr_P:,.2f} pp \\\\ ')
-baseline_results_string_CG.append(f' \t & {diff_chg_cwp:,.2f} pp & {diff_chg_cer:,.2f} pp & {diff_chg_ncer:,.2f} pp & {diff_chg_nce:,.0f} \\\\ ')
+baseline_results_string_H.append(f' \t & {chg_cwp_H:,.2f} pp & {chg_cer_H:,.2f} pp & {chg_ncer_H:,.2f} pp & - \\\\ ')
+baseline_results_string_P.append(f' \t & {chg_cwp_P:,.2f} pp & {chg_cer_P:,.2f} pp & {chg_ncer_P:,.2f} pp & {chg_ptr_P:,.2f} pp \\\\ ')
+baseline_results_string_CG.append(f' \t & {diff_chg_cwp:,.2f} pp & {diff_chg_cer:,.2f} pp & {diff_chg_ncer:,.2f} pp \\\\ ')
 
 #%%      Vary Tau:      %%#
 
@@ -229,9 +229,9 @@ for tau_param in tau_params:
     chg_ptr_P = (ptr_P_2 - ptr_P_1)
     
     #Store Results
-    tau_results_string_H.append(f' \t & {chg_cwp_H:,.2f} pp & {chg_cer_H:,.2f} pp & {chg_ncer_H:,.2f} pp & {chg_nce_H:,.0f} & - \\\\ ')
-    tau_results_string_P.append(f' \t & {chg_cwp_P:,.2f} pp & {chg_cer_P:,.2f} pp & {chg_ncer_P:,.2f} pp & {chg_nce_P:,.0f} & {chg_ptr_P:,.2f} pp \\\\ ')
-    tau_results_string_CG.append(f' \t & {diff_chg_cwp:,.2f} pp & {diff_chg_cer:,.2f} pp & {diff_chg_ncer:,.2f} pp & {diff_chg_nce:,.0f} \\\\ ')
+    tau_results_string_H.append(f' \t & {chg_cwp_H:,.2f} pp & {chg_cer_H:,.2f} pp & {chg_ncer_H:,.2f} pp & - \\\\ ')
+    tau_results_string_P.append(f' \t & {chg_cwp_P:,.2f} pp & {chg_cer_P:,.2f} pp & {chg_ncer_P:,.2f} pp & {chg_ptr_P:,.2f} pp \\\\ ')
+    tau_results_string_CG.append(f' \t & {diff_chg_cwp:,.2f} pp & {diff_chg_cer:,.2f} pp & {diff_chg_ncer:,.2f} pp \\\\ ')
     
     
 #%%      Vary Elasticties:      %%#
@@ -332,9 +332,9 @@ for elasticity_value in elasticity_values:
     chg_ptr_P = (ptr_P_2 - ptr_P_1)
     
     #Store Results
-    elasticity_results_string_H.append(f' \t & {chg_cwp_H:,.2f} pp & {chg_cer_H:,.2f} pp & {chg_ncer_H:,.2f} pp & {chg_nce_H:,.2f} & - \\\\ ')
-    elasticity_results_string_P.append(f' \t & {chg_cwp_P:,.2f} pp & {chg_cer_P:,.2f} pp & {chg_ncer_P:,.2f} pp & {chg_nce_P:,.0f} & {chg_ptr_P:,.2f} pp \\\\ ')
-    elasticity_results_string_CG.append(f' \t & {diff_chg_cwp:,.2f} pp & {diff_chg_cer:,.2f} pp & {diff_chg_ncer:,.2f} pp & {diff_chg_nce:,.0f} \\\\ ')
+    elasticity_results_string_H.append(f' \t & {chg_cwp_H:,.2f} pp & {chg_cer_H:,.2f} pp & {chg_ncer_H:,.2f} pp & - \\\\ ')
+    elasticity_results_string_P.append(f' \t & {chg_cwp_P:,.2f} pp & {chg_cer_P:,.2f} pp & {chg_ncer_P:,.2f} pp & {chg_ptr_P:,.2f} pp \\\\ ')
+    elasticity_results_string_CG.append(f' \t & {diff_chg_cwp:,.2f} pp & {diff_chg_cer:,.2f} pp & {diff_chg_ncer:,.2f} pp \\\\ ')
 
 #%%      Vary Substitutabilitity:      %%#
 #Results for Overview Table
@@ -432,9 +432,9 @@ for rho_value in rho_values:
     chg_ptr_P = (ptr_P_2 - ptr_P_1)
     
     #Store Results
-    rho_results_string_H.append(f' \t & {chg_cwp_H:,.2f} pp & {chg_cer_H:,.2f} pp & {chg_ncer_H:,.2f} pp & {chg_nce_H:,.0f} & -\\\\ ')
-    rho_results_string_P.append(f' \t & {chg_cwp_P:,.2f} pp & {chg_cer_P:,.2f} pp & {chg_ncer_P:,.2f} pp & {chg_nce_P:,.0f} & {chg_ptr_P:,.2f} pp \\\\ ')
-    rho_results_string_CG.append(f' \t & {diff_chg_cwp:,.2f} pp & {diff_chg_cer:,.2f} pp & {diff_chg_ncer:,.2f} pp & {diff_chg_nce:,.0f} \\\\ ')   
+    rho_results_string_H.append(f' \t & {chg_cwp_H:,.2f} pp & {chg_cer_H:,.2f} pp & {chg_ncer_H:,.2f} pp & - \\\\ ')
+    rho_results_string_P.append(f' \t & {chg_cwp_P:,.2f} pp & {chg_cer_P:,.2f} pp & {chg_ncer_P:,.2f} pp & {chg_ptr_P:,.2f} pp \\\\ ')
+    rho_results_string_CG.append(f' \t & {diff_chg_cwp:,.2f} pp & {diff_chg_cer:,.2f} pp & {diff_chg_ncer:,.2f} pp \\\\ ')   
 
 #%%      Vary College Definition:      %%#
 #Results for Overview Table
@@ -532,21 +532,20 @@ for def_num in [1,2,3]:
     chg_ptr_P = (ptr_P_2 - ptr_P_1)
     
     #Store Results
-    collegeDef_results_string_H.append(f' \t & {chg_cwp_H:,.2f} pp & {chg_cer_H:,.2f} pp & {chg_ncer_H:,.2f} pp & {chg_nce_H:,.0f} & - \\\\ ')
-    collegeDef_results_string_P.append(f' \t & {chg_cwp_P:,.2f} pp & {chg_cer_P:,.2f} pp & {chg_ncer_P:,.2f} pp & {chg_nce_P:,.0f} & {chg_ptr_P:,.2f} pp \\\\ ')
-    collegeDef_results_string_CG.append(f' \t & {diff_chg_cwp:,.2f} pp & {diff_chg_cer:,.2f} pp & {diff_chg_ncer:,.2f} pp & {diff_chg_nce:,.0f} \\\\ ')  
+    collegeDef_results_string_H.append(f' \t & {chg_cwp_H:,.2f} pp & {chg_cer_H:,.2f} pp & {chg_ncer_H:,.2f} pp & - \\\\ ')
+    collegeDef_results_string_P.append(f' \t & {chg_cwp_P:,.2f} pp & {chg_cer_P:,.2f} pp & {chg_ncer_P:,.2f} pp & {chg_ptr_P:,.2f} pp \\\\ ')
+    collegeDef_results_string_CG.append(f' \t & {diff_chg_cwp:,.2f} pp & {diff_chg_cer:,.2f} pp & {diff_chg_ncer:,.2f} pp \\\\ ')  
 
 #%%      Compile Overview Tables:      %%#
 
 ## Table 1: Results under different counterfactuals
-header = ['\\begin{tabular}{lccccc}', '\n',
+header = ['\\begin{tabular}{lcccc}', '\n',
           '\\FL', '\n',
             '\t &    \multicolumn{1}{p{2.15cm}}{\\footnotesize \centering College \\ Wage Premium}', ' \n',
             '\t &	 \multicolumn{1}{p{2cm}}{\\footnotesize \centering  College \\ Employment Rate}', ' \n',
             '\t &	 \multicolumn{1}{p{2cm}}{\\footnotesize \centering Non-College \\ Employment Rate}', ' \n',
-            '\t &	 \multicolumn{1}{p{2cm}}{\\footnotesize \centering Non-College \\ Employment (Thous.)}', ' \n',
             '\t &	 \multicolumn{1}{p{2cm}}{\\footnotesize \centering Payroll \\ Tax Rate}', '\\\\', '\n',
-            '\cmidrule{1-6}', '\n']  
+            '\cmidrule{1-5}', '\n']  
 
 headTax = [r'\textbf{Head Tax Equilibrium} \\', ' \n', 
           '\\\\', ' \n'] 
@@ -565,7 +564,7 @@ acrossCollegeDef_H = [r'\ \ \underline{College Definitions:} \\', ' \n ',
     '\\\\', ' \n'] 
 
 
-payrollTax = ['\cmidrule{1-6}', ' \n ',
+payrollTax = ['\cmidrule{1-5}', ' \n ',
               r'\textbf{Payroll Tax Equilibrium} \\ ', ' \n ',
               '\\\\', ' \n ']
 
