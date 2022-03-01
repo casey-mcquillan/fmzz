@@ -47,7 +47,8 @@ e_c_baseline, e_n_baseline = elasticity_baseline[0], elasticity_baseline[1]
 #%%      Calibration while Varying Tau      %%#'
 
 #Parameters to be varied:
-tau_params = ['tau_high', 'tau_baseline', 'tau_low']
+#tau_params = ['tau_high', 'tau_baseline', 'tau_low']
+tau_params = ['tau_baseline', 'tau_high']
 tau2specification_Dict ={'tau_high':'Total Cost with Complete Takeup',
                          'tau_baseline':'Total Cost with Incomplete Takeup',
                          'tau_low':'Cost to Employer with Incomplete Takeup'}
@@ -209,15 +210,14 @@ for tau_param in tau_params:
     
     
 ## Growth over Time 
-header = ['\\begin{tabular}{lccccccc}', '\n',
+header = ['\\begin{tabular}{lccccc}', '\n',
           '\\FL', '\n',
-          '\t & && \multicolumn{5}{c}{Payroll Tax Equilibrium} \\\\', '\n',
-          '\cmidrule{4-8} \n',
+          '\t & && \multicolumn{3}{c}{Payroll Tax Equilibrium} \\\\', '\n',
+          '\cmidrule{4-6} \n',
           '\t &	 \multicolumn{1}{p{2.2cm}}{\centering Head Tax \ Equilibrium}','\n', 
-          '\t &&	 \multicolumn{1}{p{2.2cm}}{\\footnotesize \centering Total Cost, \\\\ Total Coverage}','\n', 
-          '\t &&	 \multicolumn{1}{p{2.4cm}}{\\footnotesize \centering  Total Cost, \\\\ Partial Coverage}','\n', 
-          '\t &&	 \multicolumn{1}{p{2.4cm}}{\\footnotesize \centering Employer Cost, \\\\ Partial Coverage}', '\\\\','\n', 
-          '\cmidrule{1-8}', '\n']
+          '\t &&	 \multicolumn{1}{p{2.4cm}}{\\footnotesize \centering Total Cost, \\\\ Partial Coverage}','\n', 
+          '\t &&	 \multicolumn{1}{p{2.4cm}}{\\footnotesize \centering  Total Cost, \\\\ Total Coverage}', '\\\\','\n', 
+          '\cmidrule{1-6}', '\n']
 
 table_values=['\\underline{ESHI:}', ' \\\\\n', 
               chg_tau_string, ' \\\\\n',
@@ -253,12 +253,11 @@ file.close()
 
 
 ## Difference in Counterfactual Growth
-header = ['\\begin{tabular}{lccccc}', '\n',
+header = ['\\begin{tabular}{lccc}', '\n',
           '\\FL', '\n',
-          '\t &	 \small \multicolumn{1}{p{3cm}}{\centering Total Cost, \\ Complete Takeup}','\n', 
-          '\t &&	 \small \multicolumn{1}{p{3cm}}{\centering  Total Cost, \\ Incomplete Takeup}','\n', 
-          '\t &&	 \small \multicolumn{1}{p{3cm}}{\centering Cost to Employer, \\ Incomplete Takeup}', '\\\\','\n', 
-          '\cmidrule{1-6}', '\n']
+          '\t &	 \multicolumn{1}{p{2.4cm}}{\\footnotesize \centering Total Cost, \\\\ Partial Coverage}','\n', 
+          '\t &&	 \multicolumn{1}{p{2.4cm}}{\\footnotesize \centering  Total Cost, \\\\ Total Coverage}', '\\\\','\n', 
+          '\cmidrule{1-4}', '\n']
 
 table_values=['\\underline{Wages:}', ' \\\\\n',
                 CG_chg_w_C_string, ' \\\\\n',
