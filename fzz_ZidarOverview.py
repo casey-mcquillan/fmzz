@@ -97,7 +97,8 @@ baselines_results_string.append(f' \t & {pct_chg_cwp:,.2f}\\% & {pp_chg_P_C:,.2f
 tau_results_string = []
 
 #Parameters to be varied:
-tau_params = ['tau_high', 'tau_baseline', 'tau_low']
+#tau_params = ['tau_high', 'tau_baseline', 'tau_low']
+tau_params = ['tau_baseline', 'tau_high']
 tau2specification_Dict ={'tau_high':'Total Cost with Complete Takeup',
                          'tau_baseline':'Total Cost with Incomplete Takeup',
                          'tau_low':'Cost to Employer with Incomplete Takeup'}
@@ -157,6 +158,7 @@ for tau_param in tau_params:
                          location=output_path, subtitle=f' using {label}')
     
     #Save Results for Overview
+    '''
     pct_chg_cwp = 100*((model.w2_c/model.w2_n)-(model.w1_c/model.w1_n))/(model.w1_c/model.w1_n -1)
     pp_chg_cwb = 100*(((model.L2_c*model.w2_c)/(model.L2_c*model.w2_c + model.L2_n*model.w2_n))\
                        -((model.L1_c*model.w1_c)/(model.L1_c*model.w1_c + model.L1_n*model.w1_n)))
@@ -164,6 +166,7 @@ for tau_param in tau_params:
     pp_chg_P_N = 100*(model.P2_n - model.P1_n)    
     chg_employment_N = model.employment2_n - model.employment1_n
     tau_results_string.append(f' \t & {pct_chg_cwp:,.2f}\\% & {pp_chg_P_C:,.2f} pp & {pp_chg_P_N:,.2f} pp & {chg_employment_N/1000:,.2f} & {100*((model.t)):,.2f}\\% \\\\ ')
+    '''
     
     #Add values to strings for Eq Comparison Tables
     if i ==1: ampersand = '&'
@@ -188,12 +191,11 @@ for tau_param in tau_params:
     delta_cwb_string = delta_cwb_string + ampersand + \
         f' {100*(((model.L2_c*model.w2_c)/(model.L2_c*model.w2_c + model.L2_n*model.w2_n))-((model.L1_c*model.w1_c)/(model.L1_c*model.w1_c + model.L1_n*model.w1_n))):,.2f} pp'
     
-header = ['\\begin{tabular}{lccccc}', '\n',
+header = ['\\begin{tabular}{lcccc}', '\n',
           '\\FL', '\n',
-          '\t &	 \multicolumn{1}{p{2.7cm}}{\small \centering \\textbf{(1)} \\\\ Total Cost, \\\\ Total Coverage}','\n', 
-          '\t &&	 \multicolumn{1}{p{2.7cm}}{\small \centering \\textbf{(2)} \\\\Total Cost, \\\\ Partial Coverage \\\\ (Baseline)}','\n', 
-          '\t &&	 \multicolumn{1}{p{2.7cm}}{\small \centering \\textbf{(3)} \\\\ Employer Cost, \\\\ Partial Coverage}', '\\\\','\n', 
-          '\cmidrule{1-6}', '\n']
+          '\t &	 \multicolumn{1}{p{2.7cm}}{\small \centering \\textbf{(1)} \\\\ Total Cost, \\\\ Partial Coverage \\\\ (Baseline)}','\n', 
+          '\t &&	 \multicolumn{1}{p{2.7cm}}{\small \centering \\textbf{(2)} \\\\Total Cost, \\\\ Total Coverage}','\\\\','\n', 
+          '\cmidrule{1-4}', '\n']
 
 table_values=[tau_string, ' \\\\\n',
                 '\\\\\n',
@@ -624,14 +626,14 @@ baseline = [r'\underline{Baseline:}', ' \n',
           baselines_results_string[0], ' \n',
           '\\\\', ' \n'] 
 
-acrossTau = [r'\underline{Cost of ESHI:} \\', ' \n',
-    '\ \ \small \shortstack[l]{Total Cost with \\\\ \ \ Complete Takeup}', 
-    ' \n', tau_results_string[0], ' \n',
-    '\ \ \small \shortstack[l]{Total Cost with \\\\ \ \ Incomplete Takeup} (Baseline)', 
-    ' \n', tau_results_string[1], ' \n',
-    '\ \ \small \shortstack[l]{Employer Cost with \\\\ \ \ Incomplete Takeup}',
-    ' \n', tau_results_string[2], ' \n',
-    '\\\\', ' \n ',] 
+# acrossTau = [r'\underline{Cost of ESHI:} \\', ' \n',
+#     '\ \ \small \shortstack[l]{Total Cost with \\\\ \ \ Complete Takeup}', 
+#     ' \n', tau_results_string[0], ' \n',
+#     '\ \ \small \shortstack[l]{Total Cost with \\\\ \ \ Incomplete Takeup} (Baseline)', 
+#     ' \n', tau_results_string[1], ' \n',
+#     '\ \ \small \shortstack[l]{Employer Cost with \\\\ \ \ Incomplete Takeup}',
+#     ' \n', tau_results_string[2], ' \n',
+#     '\\\\', ' \n '] 
 
 acrossElasticity = [r'\underline{Labor Supply Elasticities:} \\', ' \n',
     '\ \small{Derived Group-Specific Elasticities:} \\\\', ' \n ',
