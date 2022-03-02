@@ -18,7 +18,7 @@ os.chdir(code_folder)
 
 #%% Import Data #%%
 os.chdir(data_folder)
-df = pd.read_csv('cps_00011.csv')
+df = pd.read_csv('cps_00012.csv')
 OECD_data = pd.read_csv('OECD_data.csv', index_col='year')
 
 #%% Data Cleaning #%%
@@ -42,9 +42,14 @@ df['Non-College'] = 1-df['College']
 
 # Define Health Insurance
 df['HI'] = 1*(df['ANYCOVLY']==2)
+df['Public HI'] =   1*(df['PUBCOVLY']==2)
+df['Public HI (Medicaid)'] =   1*(df['HIMCAIDLY']==2)
+df['Public HI (Medicare)'] =   1*(df['HIMCARELY']==2)
+df['Private HI'] =   1*(df['PRVTCOVLY']==2)
 df['ESHI'] =   1*(df['GRPCOVLY']==2)
 df['ESHI_own'] = 1*(df['GRPOWNLY']==2)
 df['ESHI_dependent'] = 1*(df['GRPDEPLY']==2)
+df['Other Private'] = df['Private HI'] - df['ESHI']
 df['HI Other'] = df['HI'] - df['ESHI']
 df['No HI'] = 1 - df['HI']
 
@@ -93,9 +98,14 @@ for group in ['Total', 'FTFY', 'PTPY']:
         group_share = np.average(group_var*column_var, weights=df['ASECWT']*group_var)
         
         ## Health Insurance
+        PUB_HI = np.average(df['Public HI'], weights=df['ASECWT']*group_var*column_var)
+        PUB_HI_Medicaid = np.average(df['Public HI (Medicaid)'], weights=df['ASECWT']*group_var*column_var)
+        PUB_HI_Medicare = np.average(df['Public HI (Medicare)'], weights=df['ASECWT']*group_var*column_var)
+        PRVT_HI = np.average(df['Private HI'], weights=df['ASECWT']*group_var*column_var)
         ESHI = np.average(df['ESHI'], weights=df['ASECWT']*group_var*column_var)
         ESHI_own = np.average(df['ESHI_own'], weights=df['ASECWT']*group_var*column_var)
         ESHI_dependent = np.average(df['ESHI_dependent'], weights=df['ASECWT']*group_var*column_var)
+        Other_PRVT_HI = np.average(df['Other Private'], weights=df['ASECWT']*group_var*column_var)
         HI_Other = np.average(df['HI Other'], weights=df['ASECWT']*group_var*column_var)
         No_HI = np.average(df['No HI'], weights=df['ASECWT']*group_var*column_var)
         
@@ -103,22 +113,26 @@ for group in ['Total', 'FTFY', 'PTPY']:
         employment_rate = np.average(group_var*column_var, weights=df['ASECWT']*column_var)
         avg_wages = np.average(df['INCWAGE'], weights=df['ASECWT']*group_var*column_var) 
         
-        
         ### Append to Dataframe
         ### Define rows of table:
         table_data.loc[len(table_data)]= group, column, 'Population (millions)', population_level/1000000
         table_data.loc[len(table_data)]= group, column, 'Share of Population', population_share
         table_data.loc[len(table_data)]= group, column, 'Share of Workforce', workforce_share
         table_data.loc[len(table_data)]= group, column, 'Share of Group', group_share
-        table_data.loc[len(table_data)]= group, column, 'Share with ESHI', ESHI
+        table_data.loc[len(table_data)]= group, column, 'Share with Public HI', PUB_HI
+        table_data.loc[len(table_data)]= group, column, 'Share with Public HI (Medicaid)', PUB_HI_Medicaid
+        table_data.loc[len(table_data)]= group, column, 'Share with Public HI (Medicare)', PUB_HI_Medicare
+        table_data.loc[len(table_data)]= group, column, 'Share with Private HI', PRVT_HI
+        table_data.loc[len(table_data)]= group, column, 'Employer-Sponsored', ESHI
         table_data.loc[len(table_data)]= group, column, 'Policyholder', ESHI_own
         table_data.loc[len(table_data)]= group, column, 'Dependent', ESHI_dependent
         table_data.loc[len(table_data)]= group, column, 'Share with Other HI', HI_Other
-        table_data.loc[len(table_data)]= group, column, 'Share with No HI', No_HI
+        table_data.loc[len(table_data)]= group, column, 'Other Private', Other_PRVT_HI
+        table_data.loc[len(table_data)]= group, column, 'Public', PUB_HI
+        table_data.loc[len(table_data)]= group, column, 'None', No_HI
         table_data.loc[len(table_data)]= group, column, 'Employment Rate', employment_rate
         table_data.loc[len(table_data)]= group, column, 'Avg. Annual Earnings', avg_wages
         
-
 
 #%% Inflation Adjust Wages #%%
 '''
@@ -131,6 +145,101 @@ for var in ['wage1_c', 'wage1_n', 'wage1_c (weighted)', 'wage1_n (weighted)']:
         
 #%% Output Latex Table #%%
 
+#List of variables by Panel
+variables_A = ['Employment Rate', 
+               'Avg. Annual Earnings']
+variables_B = ['Employer-Sponsored',
+               'Policyholder', 
+               'Dependent',
+               'Other Private', 
+               'Public',
+               'None']
+
+#Dictionaries for each group to panel title
+panel2title_Dict={'A':'Panel A: Labor Market Outcomes', 
+                  'B':'Panel B: Health Insurance Coverage'}
+
+# Subset to FTFY Workers
+df_panel = table_data[table_data['Group']=='FTFY']
+        
+# Subset for columns in ['Total', 'College', 'Non-college']:
+df_panel_t = df_panel[df_panel['Subgroup']=='Total']
+df_panel_c = df_panel[df_panel['Subgroup']=='College']
+df_panel_n = df_panel[df_panel['Subgroup']=='Non-College']
+
+# Set index to variable
+df_panel_t=df_panel_t.set_index('Variable')
+df_panel_c=df_panel_c.set_index('Variable')
+df_panel_n=df_panel_n.set_index('Variable')
+
+# Loop through each panel
+table_values = []
+for panel in ['A', 'B']:
+    panel_variables_list = []
+    exec(f'panel_variables_list = variables_{panel}')
+    # Loop through each variable
+    panel_values = []
+    for var in panel_variables_list:
+        var_t = df_panel_t.loc[var, 'Value']
+        var_c = df_panel_c.loc[var, 'Value']
+        var_n = df_panel_n.loc[var, 'Value']
+        string = f'\t {var} & {var_t:,.3f} & {var_c:,.3f} & {var_n:,.3f} & \\\\ \n'
+        
+        '''
+        #Add in break after certain lines
+        if group!='Total'and var=='Share with No HI':
+            string = string.replace('\\\\', '\medskip \\\\')
+        if group=='Total' and var=='Share of Population':
+            string = string.replace('\\\\', '\medskip \\\\')
+        '''
+        
+        #Add LaTeX code for employment rate: 
+        if var == 'Employment Rate':
+            string = f'\t {var} ($P_g$) & {var_t:,.3f} & {var_c:,.3f} & {var_n:,.3f} & \\\\ \n'
+            
+        #Round to nearest dollar and add LaTeX code for wages:
+        if var == 'Avg. Annual Earnings':
+            string = f'\t {var} ($w_g$) & \${var_t:,.0f} & \${var_c:,.0f} & \${var_n:,.0f} & \\\\ \n'
+        
+        
+        #Indent subcategories;
+        if var in ['Policyholder', 'Dependent']:
+            string = '\t \\ \\ \\ \\ \\small '+ string[2:] 
+            
+        #Add row to panel values
+        panel_values.append(string)
+    
+    #Concatenate strigns for the panel
+    panel_header = ['\multicolumn{5}{l} \n{\\textsl{',
+                    panel2title_Dict[panel],
+                    '}} \\\\ \n\hline \n']
+    if panel=='A':
+        panel_header = panel_header \
+                        + ['& Total & College & Non-College \\\\ \n\hline \n']
+    
+    panel_bottom = ['\\\\  \n']
+    if panel=='B':
+        panel_bottom = ['\hline \hline \\\\  \n']
+
+    #Add panel to table values
+    table_values = table_values + panel_header + panel_values + panel_bottom
+    
+## Create Table Header and Bottom
+table_header = ['\centering \n',
+                '\\begin{tabular}{lcccccc} \n']
+
+table_bottom = ['\end{tabular}']
+        
+#Create, write, and close file
+cwd = os.getcwd()
+os.chdir(output_folder)
+file = open(f"summary_stats_{str(year)}.tex","w")
+file.writelines(table_header) 
+file.writelines(table_values)   
+file.writelines(table_bottom)   
+file.close()
+
+'''
 #List of rows
 variables = ['Population (millions)', 'Share of Population', 'Share of Workforce',
                'Share of Group', 'Share with ESHI', 'Policyholder', 'Dependent',
@@ -223,3 +332,4 @@ file.writelines(table_header)
 file.writelines(table_values)   
 file.writelines(table_bottom)   
 file.close()
+'''
