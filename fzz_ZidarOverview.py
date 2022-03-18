@@ -657,14 +657,14 @@ acrossRho = [r'\underline{Substitutability ($\rho$)} \\', ' \n',
     ' \n', rho_results_string[2], ' \n',
     '\\\\', ' \n'] 
 
-acrossCollegeDef = [r'\underline{College Definitions:} \\', ' \n',
-    '\ \ \small{Bachelor\'s or More (Baseline)}', 
-    '\n', collegeDef_results_string[0], ' \n',
-    '\ \ \small{Associate\'s or More  }', 
-    '\n', collegeDef_results_string[1], ' \n',
-    '\ \ \small{Some College or More  }',
-    '\n', collegeDef_results_string[2], ' \n',
-    '\\\\', ' \n'] 
+# acrossCollegeDef = [r'\underline{College Definitions:} \\', ' \n',
+#     '\ \ \small{Bachelor\'s or More (Baseline)}', 
+#     '\n', collegeDef_results_string[0], ' \n',
+#     '\ \ \small{Associate\'s or More  }', 
+#     '\n', collegeDef_results_string[1], ' \n',
+#     '\ \ \small{Some College or More  }',
+#     '\n', collegeDef_results_string[2], ' \n',
+#     '\\\\', ' \n'] 
 
 closer = ['\\bottomrule','\n', '\end{tabular}']
 
@@ -676,7 +676,7 @@ file.writelines(header)
 #file.writelines(baseline)  
 #file.writelines(acrossTau)  
 file.writelines(acrossRho)  
-file.writelines(acrossCollegeDef) 
+#file.writelines(acrossCollegeDef) 
 file.writelines(acrossElasticity)  
 file.writelines(closer)   
 file.close()

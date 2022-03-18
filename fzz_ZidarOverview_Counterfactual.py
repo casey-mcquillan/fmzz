@@ -547,21 +547,23 @@ header = ['\\begin{tabular}{lcccc}', '\n',
             '\t &	 \multicolumn{1}{p{2cm}}{\\footnotesize \centering Payroll \\ Tax Rate}', '\\\\', '\n',
             '\cmidrule{1-5}', '\n']  
 
-headTax = [r'\textbf{Head Tax Equilibrium} \\', ' \n', 
-          '\\\\', ' \n'] 
+headTax = ['\\\\', ' \n',
+           r'\textbf{Head Tax Equilibrium}',
+           '\n', collegeDef_results_string_H[0], ' \n',
+           '\\\\', ' \n'] 
 
-baseline_H = [r'\ \ \underline{Baseline:}', ' \n', 
-          baseline_results_string_H[0], ' \n',
-          '\\\\', ' \n'] 
+# baseline_H = [r'\ \ \underline{Baseline:}', ' \n', 
+#           baseline_results_string_H[0], ' \n',
+#           '\\\\', ' \n'] 
 
-acrossCollegeDef_H = [r'\ \ \underline{College Definitions:} \\', ' \n ',
-    '\ \ \ \ \small{ Bachelor\'s or More  (Baseline)}', 
-    '\n', collegeDef_results_string_H[0], ' \n',
-    '\ \ \ \ \small{  Associate\'s or More  }', 
-    '\n', collegeDef_results_string_H[1], ' \n',
-    '\ \ \ \ \small{ Some College or More  }',
-    '\n', collegeDef_results_string_H[2], ' \n',
-    '\\\\', ' \n'] 
+# acrossCollegeDef_H = [r'\ \ \underline{College Definitions:} \\', ' \n ',
+#     '\ \ \ \ \small{ Bachelor\'s or More  (Baseline)}', 
+#     '\n', collegeDef_results_string_H[0], ' \n',
+#     '\ \ \ \ \small{  Associate\'s or More  }', 
+#     '\n', collegeDef_results_string_H[1], ' \n',
+#     '\ \ \ \ \small{ Some College or More  }',
+#     '\n', collegeDef_results_string_H[2], ' \n',
+#     '\\\\', ' \n'] 
 
 
 payrollTax = ['\cmidrule{1-5}', ' \n ',
@@ -572,14 +574,12 @@ baseline_P = [r'\ \ \underline{Baseline:}', ' \n',
           baseline_results_string_P[0], ' \n',
           '\\\\', ' \n'] 
 
-
 # acrossTau = [r'\ \ \underline{Cost of ESHI:} \\', ' \n ',
 #     '\ \ \ \ \small \shortstack[l]{Total Cost \\\\ \ \ Total Coverage}', 
 #     ' \n', tau_results_string_P[0], ' \n',
 #     '\ \ \ \ \small \shortstack[l]{Employer Cost \\\\ \ \ Partial Coverage}', 
 #     ' \n', tau_results_string_P[1], ' \n',
 #     '\\\\', ' \n ',] 
-
 
 acrossElasticity = [r'\underline{Labor Supply Elasticities:} \\', ' \n',
     '\ \small{Derived Group-Specific Elasticities:} \\\\', ' \n ',
@@ -602,14 +602,15 @@ acrossRho = [r'\underline{Substitutability ($\rho$)} \\', ' \n',
     '\ \ \ \ \small{Cobb-Douglas ($\\rho=0$)}', 
     ' \n', rho_results_string_P[2], ' \n',
     '\\\\', ' \n'] 
-acrossCollegeDef_P = [r'\underline{College Definitions:} \\', ' \n',
-    '\ \ \ \ \small{Bachelor\'s or More  (Baseline)}', 
-    '\n', collegeDef_results_string_P[0], ' \n',
-    '\ \ \ \ \small{Associate\'s or More  }', 
-    '\n', collegeDef_results_string_P[1], ' \n',
-    '\ \ \ \ \small{Some College or More  }',
-    '\n', collegeDef_results_string_P[2], ' \n',
-    '\\\\', ' \n'] 
+
+# acrossCollegeDef_P = [r'\underline{College Definitions:} \\', ' \n',
+#     '\ \ \ \ \small{Bachelor\'s or More  (Baseline)}', 
+#     '\n', collegeDef_results_string_P[0], ' \n',
+#     '\ \ \ \ \small{Associate\'s or More  }', 
+#     '\n', collegeDef_results_string_P[1], ' \n',
+#     '\ \ \ \ \small{Some College or More  }',
+#     '\n', collegeDef_results_string_P[2], ' \n',
+#     '\\\\', ' \n'] 
 
 closer = ['\\bottomrule','\n', '\end{tabular}']
 
@@ -620,12 +621,12 @@ file = open(f"Change_OverTime{year2}_{year1}_Robust.tex","w")
 file.writelines(header) 
 file.writelines(headTax)
 #file.writelines(baseline_H) 
-file.writelines(acrossCollegeDef_H)  
+#file.writelines(acrossCollegeDef_H)  
 file.writelines(payrollTax)  
 #file.writelines(baseline_P)   
 #file.writelines(acrossTau)
 file.writelines(acrossRho)  
-file.writelines(acrossCollegeDef_P) 
+#file.writelines(acrossCollegeDef_P) 
 file.writelines(acrossElasticity)   
 file.writelines(closer)   
 file.close()
