@@ -41,7 +41,9 @@ df_observed = pd.DataFrame({
                 'tau_high': premium_data['Avg Enr Cost'],
                 'tau_baseline': premium_data['Avg Enr Cost']*ASEC_data.loc[2019,'Share ESHI policyholders (weighted)'],
                 'tau_low': premium_data['Avg Emp Cost']*ASEC_data.loc[2019,'Share ESHI policyholders (weighted)'],
-                'Share ESHI policyholders':ASEC_data['Share ESHI policyholders (weighted)']
+                'Share ESHI policyholders':ASEC_data['Share ESHI policyholders (weighted)'],
+                'Share ESHI policyholders, College':ASEC_data['Share ESHI policyholders, College (weighted)'],
+                'Share ESHI policyholders, Non-college':ASEC_data['Share ESHI policyholders, Non-college (weighted)']
             })
 
 #%%  Data Export #%%

@@ -76,7 +76,13 @@ variables = ['N', 'N_college', 'N_FTFY', 'N_college_FTFY',
                     'wage1_c', 'wage1_c (weighted)',
                     'wage1_n', 'wage1_n (weighted)',
                     'Share ESHI policyholders', 
-                    'Share ESHI policyholders (weighted)']
+                    'Share ESHI policyholders (weighted)',
+                    'Share ESHI policyholders, College', 
+                    'Share ESHI policyholders, College (weighted)',
+                    'Share ESHI policyholders, Non-college', 
+                    'Share ESHI policyholders, Non-college (weighted)',
+                    'Share ESHI dependents',
+                    'Share ESHI dependents (weighted)']
 
 # Create dataframe
 data = pd.DataFrame(index=years, columns=variables)
@@ -126,14 +132,31 @@ for year in years:
                                             weights=df['ASECWT']*year_dummy*df['Non-College']*df['FTFY'])
 
     ## Share of FTFY workers that are ESHI policyholders
-    if year >= 1995:  
+    if year >= 1995:
+        # Share ESHI 
         data.loc[year,'Share ESHI policyholders'] = \
             np.average(df['ESHI_own']*df['FTFY'], \
                        weights=year_dummy*df['FTFY'])
         data.loc[year,'Share ESHI policyholders (weighted)'] = \
             np.average(df['ESHI_own']*df['FTFY'], \
-                       weights=df['ASECWT']*year_dummy*df['FTFY'])   
+                       weights=df['ASECWT']*year_dummy*df['FTFY'])
                 
+        # Share ESHI policyholders by college status
+        data.loc[year,'Share ESHI policyholders, College'] = \
+            np.average(df['ESHI_own']*df['FTFY']*df['College'], \
+                       weights=year_dummy*df['FTFY']*df['College'])
+        data.loc[year,'Share ESHI policyholders, College (weighted)'] = \
+            np.average(df['ESHI_own']*df['FTFY']*df['College'], \
+                       weights=df['ASECWT']*year_dummy*df['FTFY']*df['College']) 
+                
+        data.loc[year,'Share ESHI policyholders, Non-college'] = \
+            np.average(df['ESHI_own']*df['FTFY']*df['Non-College'], \
+                       weights=year_dummy*df['FTFY']*df['Non-College'])
+        data.loc[year,'Share ESHI policyholders, Non-college (weighted)'] = \
+            np.average(df['ESHI_own']*df['FTFY']*df['Non-College'], \
+                       weights=df['ASECWT']*year_dummy*df['FTFY']*df['Non-College'])
+        
+        # Share ESHI Dependents
         data.loc[year,'Share ESHI dependents'] = \
             np.average(df['ESHI_dependent']*df['FTFY'], \
                        weights=year_dummy*df['FTFY'])
@@ -160,8 +183,12 @@ data_export = data[['N', 'N_college', 'N_FTFY', 'N_college_FTFY',
                     'P1_n', 'P1_n (weighted)',
                     'wage1_c', 'wage1_c (weighted)',
                     'wage1_n', 'wage1_n (weighted)',
-                    'Share ESHI policyholders',
+                    'Share ESHI policyholders', 
                     'Share ESHI policyholders (weighted)',
+                    'Share ESHI policyholders, College', 
+                    'Share ESHI policyholders, College (weighted)',
+                    'Share ESHI policyholders, Non-college', 
+                    'Share ESHI policyholders, Non-college (weighted)',
                     'Share ESHI dependents',
                     'Share ESHI dependents (weighted)']]
 data_export.to_csv('CPS_ASEC_clean.csv')    
