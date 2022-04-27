@@ -174,8 +174,8 @@ for tau_param in tau_params:
     
     tau_string = tau_string + ampersand + f' \${model.tau:,.0f} '
     payroll_tax_string = payroll_tax_string + ampersand + f' {100*((model.t)):,.2f}\\% '
-    delta_w_C_string = delta_w_C_string + ampersand + f' {model.w2_c-model.w1_c:,.0f} '
-    delta_w_N_string = delta_w_N_string + ampersand + f' {model.w2_n-model.w1_n:,.0f} '
+    delta_w_C_string = delta_w_C_string + ampersand + f' \${model.w2_c-model.w1_c:,.0f} '
+    delta_w_N_string = delta_w_N_string + ampersand + f' \${model.w2_n-model.w1_n:,.0f} '
     pct_chg_cwp_string = pct_chg_cwp_string + ampersand + \
         f' {100*((model.w2_c/model.w2_n)-(model.w1_c/model.w1_n))/(model.w1_c/model.w1_n -1):,.2f}\\% '
     

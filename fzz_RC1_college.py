@@ -232,8 +232,8 @@ df_observed = pd.DataFrame({
                 'epop_ratio': OECD_data['Employment Rate (25-64)']/100,
                 'pop_count': OECD_data['Population (25-64)'],
                 'tau_high': premium_data['Avg Enr Cost'],
-                'tau_baseline': premium_data['Avg Enr Cost']*ASEC_data['Share ESHI policyholders (weighted)'],
-                'tau_low': premium_data['Avg Emp Cost']*ASEC_data['Share ESHI policyholders (weighted)']})
+                'tau_baseline': premium_data['Avg Enr Cost']*ASEC_data.loc[2019,'Share ESHI policyholders (weighted)'],
+                'tau_low': premium_data['Avg Emp Cost']*ASEC_data.loc[2019,'Share ESHI policyholders (weighted)']})
                 
 for def_num in [1,2,3]:              
     df_observed[f'share_pop_c [College Definition {def_num}]'] = ASEC_data[f'share_pop_c (weighted) [College Definition {def_num}]']

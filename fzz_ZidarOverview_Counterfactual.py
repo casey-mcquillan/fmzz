@@ -549,7 +549,7 @@ header = ['\\begin{tabular}{lcccc}', '\n',
 
 headTax = ['\\\\', ' \n',
            r'\textbf{Head Tax Equilibrium}',
-           '\n', collegeDef_results_string_H[0], ' \n',
+           '\n', baseline_results_string_H[0], ' \n',
            '\\\\', ' \n'] 
 
 # baseline_H = [r'\ \ \underline{Baseline:}', ' \n', 
