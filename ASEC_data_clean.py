@@ -15,10 +15,13 @@ code_folder = "/Users/caseymcquillan/Desktop/Research/FZZ/code"
 data_folder = "/Users/caseymcquillan/Desktop/Research/FZZ/data"
 os.chdir(code_folder)
 
+## Import occupational sorting function
+from occ90_sorting import occ90_sorting
+
 
 #%% Import Data #%%
 os.chdir(data_folder)
-df = pd.read_csv('cps_00011.csv')
+df = pd.read_csv('cps_00026.csv')
 
 
 #%% Data Wrangling #%%
@@ -48,18 +51,10 @@ df['FTFY'] = hours_requirement * weeks_requirement
 # Define Health Insurance
 df['ESHI_own'] = 1*(df['GRPOWNLY']==2)
 df['ESHI_dependent'] = 1*(df['GRPDEPLY']==2)
-''' Other variables with different time inconsistencies
-df['HI'] = 1*(df['ANYCOVLY']==2 or df['VERIFY']==2)
-df['ESHI'] =   1*(df['GRPCOVLY']==2) + \
-    1*((1-1*(df['GRPCOVLY']==2))*(1*df['INCLUGH']==2))
-df['ESHI_own'] = 1*(df['GRPOWNLY']==2)
-df['ESHI_dependent'] = 1*(df['GRPDEPLY']==2)
-df['HI Other'] = df['HI'] - df['ESHI']
-df['No HI'] = 1 - df['HI']
-'''
 
 # Constant column
 df['Total'] = 1
+
 
 
 #%% Create Dataframe by year #%%

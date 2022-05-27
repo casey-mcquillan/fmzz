@@ -44,11 +44,7 @@ df = df[df['CLASSWLY']!=99]
 df = df[[(not x in [10,13,14,29]) for x in df['CLASSWLY']]]
 
 #Adjust year bc survey data corresponds to prev year
-#df['YEAR'] = df['YEAR'] - 1
-'''
-For this analysis, it is not helpful since HIOFFER and HIELIGIBLE
-are asked about current jobs
-'''
+df['YEAR'] = df['YEAR'] - 1
 
 # Define college attendance
 df['College'] = \
@@ -80,7 +76,6 @@ df['No HI'] = 1 - df['HI']
 
 # Constant column
 df['Total'] = 1
-
 
 
 #%% Time Series Graphs #%%
@@ -131,8 +126,7 @@ for population in populations:
             
             #Loop through years 
             for year in years:
-                year_dummy = 1*(df['YEAR']==year)
-                
+                year_dummy = 1*(df['YEAR']==year)         
                 data.loc[year, f'Share {outcome} ESHI, {demo}'] = \
                             np.average(df[outcome_var], \
                                 weights=df['ASECWT']*year_dummy*df['FTFY']*df[demo]*pop_weight)
