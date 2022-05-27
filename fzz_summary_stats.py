@@ -53,6 +53,12 @@ df['Other Private'] = df['Private HI'] - df['ESHI']
 df['HI Other'] = df['HI'] - df['ESHI']
 df['No HI'] = 1 - df['HI']
 
+# Offering and Eligibility
+df['ESHI_offered'] = 1*(df['HIOFFER']==2) + \
+    1*((1-1*(df['HIOFFER']==2))*(1*df['GRPOWNLY']==2))
+df['ESHI_eligible'] = 1*(df['HIELIG']==2) + \
+    1*((1-1*(df['HIELIG']==2))*(1*df['GRPOWNLY']==2))
+
 ## Define Full-Time, Full-Year
 hours_requirement_FTFY =  1*(df['UHRSWORKLY'] >= 35)
 weeks_requirement_FTFY =  1*(df['WKSWORK2'] >= 4)
@@ -77,8 +83,8 @@ df['Total'] = 1
 
 ## Choose Relevant year
 year = 2019
-df = df[df['YEAR']==year]
-
+df = df[df['YEAR']==year]   
+        
 ## Pull Total Population
 total_population = OECD_data.loc[year,'Population (25-64)']
 
@@ -109,6 +115,16 @@ for group in ['Total', 'FTFY', 'PTPY']:
         HI_Other = np.average(df['HI Other'], weights=df['ASECWT']*group_var*column_var)
         No_HI = np.average(df['No HI'], weights=df['ASECWT']*group_var*column_var)
         
+        ## Offer, Eligibility, and Take-up
+        ESHI_offered = np.average(df['ESHI_offered'], 
+                                  weights=df['ASECWT']*group_var*column_var)
+        ESHI_offered_takeup = np.average(df['ESHI_own'], 
+                                         weights=df['ASECWT']*group_var*column_var*df['ESHI_offered'])
+        ESHI_eligible = np.average(df['ESHI_eligible'], 
+                                   weights=df['ASECWT']*group_var*column_var)
+        ESHI_eligible_takeup = np.average(df['ESHI_own'], 
+                                          weights=df['ASECWT']*group_var*column_var*df['ESHI_eligible'])
+        
         ### Labor statistics
         employment_rate = np.average(group_var*column_var, weights=df['ASECWT']*column_var)
         avg_wages = np.average(df['INCWAGE'], weights=df['ASECWT']*group_var*column_var) 
@@ -119,6 +135,7 @@ for group in ['Total', 'FTFY', 'PTPY']:
         table_data.loc[len(table_data)]= group, column, 'Share of Population', population_share
         table_data.loc[len(table_data)]= group, column, 'Share of Workforce', workforce_share
         table_data.loc[len(table_data)]= group, column, 'Share of Group', group_share
+        
         table_data.loc[len(table_data)]= group, column, 'Share with Public HI', PUB_HI
         table_data.loc[len(table_data)]= group, column, 'Share with Public HI (Medicaid)', PUB_HI_Medicaid
         table_data.loc[len(table_data)]= group, column, 'Share with Public HI (Medicare)', PUB_HI_Medicare
@@ -130,9 +147,14 @@ for group in ['Total', 'FTFY', 'PTPY']:
         table_data.loc[len(table_data)]= group, column, 'Other Private', Other_PRVT_HI
         table_data.loc[len(table_data)]= group, column, 'Public', PUB_HI
         table_data.loc[len(table_data)]= group, column, 'None', No_HI
+        
+        table_data.loc[len(table_data)]= group, column, 'ESHI Offered', ESHI_offered
+        table_data.loc[len(table_data)]= group, column, 'Take-up | ESHI Offered', ESHI_offered_takeup
+        table_data.loc[len(table_data)]= group, column, 'ESHI Eligible', ESHI_eligible
+        table_data.loc[len(table_data)]= group, column, 'Take-up | ESHI Eligible', ESHI_eligible_takeup
+        
         table_data.loc[len(table_data)]= group, column, 'Employment Rate', employment_rate
         table_data.loc[len(table_data)]= group, column, 'Avg. Annual Earnings', avg_wages
-        
 
 #%% Inflation Adjust Wages #%%
 '''
@@ -154,10 +176,15 @@ variables_B = ['Employer-Sponsored',
                'Other Private', 
                'Public',
                'None']
+variables_C = ['ESHI Offered',
+               'Take-up | ESHI Offered', 
+               'ESHI Eligible',
+               'Take-up | ESHI Eligible']
 
 #Dictionaries for each group to panel title
 panel2title_Dict={'A':'Panel A: Labor Market Outcomes', 
-                  'B':'Panel B: Health Insurance Coverage'}
+                  'B':'Panel B: Health Insurance Coverage',
+                  'C':'Panel C: Offering, Eligibility, and Take-up'}
 
 # Subset to FTFY Workers
 df_panel = table_data[table_data['Group']=='FTFY']
@@ -174,7 +201,7 @@ df_panel_n=df_panel_n.set_index('Variable')
 
 # Loop through each panel
 table_values = []
-for panel in ['A', 'B']:
+for panel in ['A', 'B', 'C']:
     panel_variables_list = []
     exec(f'panel_variables_list = variables_{panel}')
     # Loop through each variable
@@ -192,7 +219,7 @@ for panel in ['A', 'B']:
         if group=='Total' and var=='Share of Population':
             string = string.replace('\\\\', '\medskip \\\\')
         '''
-        
+            
         #Add LaTeX code for employment rate: 
         if var == 'Employment Rate':
             string = f'\t {var} ($P_g$) & {var_t:,.3f} & {var_c:,.3f} & {var_n:,.3f} & \\\\ \n'
@@ -201,11 +228,17 @@ for panel in ['A', 'B']:
         if var == 'Avg. Annual Earnings':
             string = f'\t {var} ($w_g$) & \${var_t:,.0f} & \${var_c:,.0f} & \${var_n:,.0f} & \\\\ \n'
         
-        
         #Indent subcategories;
-        if var in ['Policyholder', 'Dependent']:
+        if var in ['Policyholder', 'Dependent', 'Take-up | ESHI Offered', 'Take-up | ESHI Eligible']:
             string = '\t \\ \\ \\ \\ \\small '+ string[2:] 
+        
+        #Vertical bar is math symbol
+        if var in ['Take-up | ESHI Offered', 'Take-up | ESHI Eligible']:
+            string=string.replace('|','$|$')
             
+        if var == 'Take-up | ESHI Offered':
+            string=string.replace(' & \\\\ \n',' & \\medskip \\\\ \n')
+        
         #Add row to panel values
         panel_values.append(string)
     
@@ -218,7 +251,7 @@ for panel in ['A', 'B']:
                         + ['& Total & College & Non-College \\\\ \n\hline \n']
     
     panel_bottom = ['\\\\  \n']
-    if panel=='B':
+    if panel=='C':
         panel_bottom = ['\hline \hline \\\\  \n']
 
     #Add panel to table values
@@ -238,98 +271,3 @@ file.writelines(table_header)
 file.writelines(table_values)   
 file.writelines(table_bottom)   
 file.close()
-
-'''
-#List of rows
-variables = ['Population (millions)', 'Share of Population', 'Share of Workforce',
-               'Share of Group', 'Share with ESHI', 'Policyholder', 'Dependent',
-               'Share with Other HI', 'Share with No HI', 
-               'Employment Rate', 'Avg. Annual Earnings']
-
-#Dictionaries for each group to panel title
-group2title_Dict={'Total':'Panel A: Population ages 25-64', 
-                  'FTFY':'Panel B: Full-Time, Full-Year Workers ages 25-64', 
-                  'PTPY':'Panel C: Part-Time or Part-Year Workers ages 25-64'}
-
-#Loop through each group
-table_values = []
-for group in ['Total', 'FTFY', 'PTPY']:
-    df_panel = table_data[table_data['Group']==group]
-        
-    # For column in ['Total', 'College', 'Non-college']:
-    df_panel_t = df_panel[df_panel['Subgroup']=='Total']
-    df_panel_c = df_panel[df_panel['Subgroup']=='College']
-    df_panel_n = df_panel[df_panel['Subgroup']=='Non-College']
-    
-    # Set index to variable
-    df_panel_t=df_panel_t.set_index('Variable')
-    df_panel_c=df_panel_c.set_index('Variable')
-    df_panel_n=df_panel_n.set_index('Variable')
-    
-    # Remove certain variables for 'Total' Panel
-    if group == 'Total':  
-        var_list = variables[:-2]
-        var_list.remove('Share of Workforce')
-        var_list.remove('Share of Group')
-    else: var_list = variables
-    
-    # Loop through each variable
-    panel_values = []
-    for var in var_list:
-        var_t = df_panel_t.loc[var, 'Value']
-        var_c = df_panel_c.loc[var, 'Value']
-        var_n = df_panel_n.loc[var, 'Value']
-        string = f'\t {var} & {var_t:,.3f} & {var_c:,.3f} & {var_n:,.3f} & \\\\ \n'
-        
-        #Add in break after certain lines
-        if group!='Total'and var=='Share with No HI':
-            string = string.replace('\\\\', '\medskip \\\\')
-        if group=='Total' and var=='Share of Population':
-            string = string.replace('\\\\', '\medskip \\\\')
-        
-        #Adjust Share of Group
-        if var=='Share of Group':
-            string = f'\t {var} & & {var_c:,.3f} & {var_n:,.3f} & \medskip \\\\ \n'
-        
-        #Indent 'policyholder' and 'depenndent;
-        if var=='Policyholder' or var=='Dependent':
-            string = '\t \\ \\ \\ \\ \\small '+ string[2:] 
-            
-        #Round to nearest dollar for wages
-        if var == 'Avg. Annual Earnings':
-            string = f'\t {var} & \${var_t:,.0f} & \${var_c:,.0f} & \${var_n:,.0f} & \\\\ \n'
-        
-       
-        
-        #Add row to panel values
-        panel_values.append(string)
-        
-    #Concatenate strigns for the panel
-    panel_header = ['\multicolumn{5}{l} \n{\\textsl{',
-                    group2title_Dict[group],
-                    '}} \\\\ \n\hline \n',
-                    '& Total & College & Non-College \\\\ \n\hline \n']
-    
-    panel_bottom = ['\hline \hline \\\\  \n']
-    
-    #Add panel to table values
-    table_values = table_values + panel_header + panel_values + panel_bottom
-
-
-## Create Table Header and Bottom
-table_header = ['\centering \n',
-                '\\begin{tabular}{lcccccc} \n'
-                '\hline  \n']
-
-
-table_bottom = ['\end{tabular}']
-        
-#Create, write, and close file
-cwd = os.getcwd()
-os.chdir(output_folder)
-file = open(f"summary_stats_{str(year)}.tex","w")
-file.writelines(table_header) 
-file.writelines(table_values)   
-file.writelines(table_bottom)   
-file.close()
-'''
