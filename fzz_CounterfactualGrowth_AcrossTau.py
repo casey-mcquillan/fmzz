@@ -34,7 +34,7 @@ df_observed_RC1 = pd.read_csv('observed_data_RC1.csv', index_col=0)
 # Parameter assumptions:
 alpha_c=1
 alpha_n=1
-year1 = 1987
+year1 = 1977
 year2 = 2019
 
 #Baseline Parameters
@@ -215,8 +215,8 @@ header = ['\\begin{tabular}{lccccc}', '\n',
           '\t & && \multicolumn{3}{c}{Payroll Tax Equilibrium} \\\\', '\n',
           '\cmidrule{4-6} \n',
           '\t &	 \multicolumn{1}{p{2.2cm}}{\centering Head Tax \ Equilibrium}','\n', 
-          '\t &&	 \multicolumn{1}{p{2.4cm}}{\\footnotesize \centering Total Cost, \\\\ Partial Coverage}','\n', 
-          '\t &&	 \multicolumn{1}{p{2.4cm}}{\\footnotesize \centering  Total Cost, \\\\ Total Coverage}', '\\\\','\n', 
+          '\t &&	 \multicolumn{1}{p{2.4cm}}{\\footnotesize \centering \\textbf{Baseline}}','\n', 
+          '\t &&	 \multicolumn{1}{p{2.4cm}}{\\footnotesize \centering  Total Cost, \\\\ FTFY Workers}', '\\\\','\n', 
           '\cmidrule{1-6}', '\n']
 
 table_values=['\\underline{ESHI:}', ' \\\\\n', 
@@ -255,8 +255,8 @@ file.close()
 ## Difference in Counterfactual Growth
 header = ['\\begin{tabular}{lccc}', '\n',
           '\\FL', '\n',
-          '\t &	 \multicolumn{1}{p{2.4cm}}{\\footnotesize \centering Total Cost, \\\\ Partial Coverage}','\n', 
-          '\t &&	 \multicolumn{1}{p{2.4cm}}{\\footnotesize \centering  Total Cost, \\\\ Total Coverage}', '\\\\','\n', 
+          '\t &	 \multicolumn{1}{p{2.4cm}}{\\footnotesize \centering \\textbf{Baseline}}','\n', 
+          '\t &&	 \multicolumn{1}{p{2.4cm}}{\\footnotesize \centering  Total Cost, \\\\ FTFY Workers}', '\\\\','\n', 
           '\cmidrule{1-4}', '\n']
 
 table_values=['\\underline{Wages:}', ' \\\\\n',

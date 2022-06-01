@@ -19,9 +19,8 @@ output_path = '/Users/caseymcquillan/Desktop/Research/FZZ/output/Tables/Counterf
 ### Import calibration class
 os.chdir(code_folder)
 
-#from fzz_calibration import calibration_model 
-from fzz_calibration_RC4_zwick import calibration_model_RC4 
-
+#from fzz_calibration import calibration_model
+from fzz_calibration import calibration_model
 
 #%%      Establishing Baseline:      %%#
 
@@ -33,7 +32,7 @@ df_observed_RC1 = pd.read_csv('observed_data_RC1.csv', index_col=0)
 # Parameter assumptions:
 alpha_c=1
 alpha_n=1
-year1 = 1987
+year1 = 1977
 year2 = 2019
 
 #Baseline Parameters
@@ -50,7 +49,7 @@ baseline_results_string_P = []
 baseline_results_string_CG = []
 
 #Define Models
-model_year1 = calibration_model_RC4(alpha_c, alpha_n,
+model_year1 = calibration_model(alpha_c, alpha_n,
                     rho=rho_baseline,
                     tau=df_observed.loc[year1, tau_baseline],
                     elasticity_c=e_c_baseline, elasticity_n=e_n_baseline,
@@ -63,7 +62,7 @@ model_year1 = calibration_model_RC4(alpha_c, alpha_n,
                     pop_count=df_observed.loc[year1, 'pop_count'])
 
 
-model_year2 = calibration_model_RC4(alpha_c, alpha_n,
+model_year2 = calibration_model(alpha_c, alpha_n,
                     rho=rho_baseline,
                     tau=df_observed.loc[year2, tau_baseline],
                     elasticity_c=e_c_baseline, elasticity_n=e_n_baseline,
@@ -152,7 +151,7 @@ for tau_param in tau_params:
     label = tau2specification_Dict[tau_param]
     
     #Define Model
-    model_year1 = calibration_model_RC4(alpha_c, alpha_n,
+    model_year1 = calibration_model(alpha_c, alpha_n,
                         rho=rho_baseline,
                         tau=df_observed.loc[year1, tau_param],
                         elasticity_c=e_c_baseline, elasticity_n=e_n_baseline,
@@ -164,7 +163,7 @@ for tau_param in tau_params:
                         share_pop_c=df_observed.loc[year1, 'share_pop_c'],
                         pop_count=df_observed.loc[year1, 'pop_count'])
     
-    model_year2 = calibration_model_RC4(alpha_c, alpha_n,
+    model_year2 = calibration_model(alpha_c, alpha_n,
                     rho=rho_baseline,
                     tau=df_observed.loc[year2, tau_param],
                     elasticity_c=e_c_baseline, elasticity_n=e_n_baseline,
@@ -255,7 +254,7 @@ for elasticity_value in elasticity_values:
     label = elasticity2specification_Dict[str(elasticity_value)]
     
     #Define and calibrate model
-    model_year1 = calibration_model_RC4(alpha_c, alpha_n,
+    model_year1 = calibration_model(alpha_c, alpha_n,
                 rho=rho_baseline,
                 tau=df_observed.loc[year1, tau_baseline],
                 elasticity_c=e_c, elasticity_n=e_n,
@@ -267,7 +266,7 @@ for elasticity_value in elasticity_values:
                 share_pop_c=df_observed.loc[year1, 'share_pop_c'],
                 pop_count=df_observed.loc[year1, 'pop_count'])
     
-    model_year2 = calibration_model_RC4(alpha_c, alpha_n,
+    model_year2 = calibration_model(alpha_c, alpha_n,
                 rho=rho_baseline,
                 tau=df_observed.loc[year2, tau_baseline],
                 elasticity_c=e_c, elasticity_n=e_n,
@@ -355,7 +354,7 @@ for rho_value in rho_values:
     label = rho2specification_Dict[str(rho_value)]
     
     #Define and calibrate model    
-    model_year1 = calibration_model_RC4(alpha_c, alpha_n,
+    model_year1 = calibration_model(alpha_c, alpha_n,
                 rho=rho_value,
                 tau=df_observed.loc[year1, tau_baseline],
                 elasticity_c=e_c_baseline, elasticity_n=e_n_baseline,
@@ -367,7 +366,7 @@ for rho_value in rho_values:
                 share_pop_c=df_observed.loc[year1, 'share_pop_c'],
                 pop_count=df_observed.loc[year1, 'pop_count'])
 
-    model_year2 = calibration_model_RC4(alpha_c, alpha_n,
+    model_year2 = calibration_model(alpha_c, alpha_n,
                 rho=rho_value,
                 tau=df_observed.loc[year2, tau_baseline],
                 elasticity_c=e_c_baseline, elasticity_n=e_n_baseline,
@@ -455,7 +454,7 @@ for def_num in [1,2,3]:
     label = college_defs2specification_Dict[def_num]
     
     #Define and calibrate model
-    model_year1 = calibration_model_RC4(alpha_c, alpha_n,
+    model_year1 = calibration_model(alpha_c, alpha_n,
                 rho=rho_baseline,
                 tau=df_observed.loc[year1, tau_baseline],
                 elasticity_c=e_c_baseline, elasticity_n=e_c_baseline,
@@ -467,7 +466,7 @@ for def_num in [1,2,3]:
                 share_pop_c=df_observed_RC1.loc[year1, f'share_pop_c [College Definition {def_num}]'],
                 pop_count=df_observed_RC1.loc[year1, 'pop_count'])
     
-    model_year2 = calibration_model_RC4(alpha_c, alpha_n,
+    model_year2 = calibration_model(alpha_c, alpha_n,
             rho=rho_baseline,
             tau=df_observed.loc[year2, tau_baseline],
             elasticity_c=e_c_baseline, elasticity_n=e_c_baseline,
