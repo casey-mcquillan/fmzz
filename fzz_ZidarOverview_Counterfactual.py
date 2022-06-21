@@ -540,10 +540,10 @@ for def_num in [1,2,3]:
 ## Table 1: Results under different counterfactuals
 header = ['\\begin{tabular}{lcccc}', '\n',
           '\\FL', '\n',
-            '\t &    \multicolumn{1}{p{2.15cm}}{\\footnotesize \centering College \\ Wage Premium}', ' \n',
-            '\t &	 \multicolumn{1}{p{2cm}}{\\footnotesize \centering  College \\ Employment Rate}', ' \n',
-            '\t &	 \multicolumn{1}{p{2cm}}{\\footnotesize \centering Non-College \\ Employment Rate}', ' \n',
-            '\t &	 \multicolumn{1}{p{2cm}}{\\footnotesize \centering Payroll \\ Tax Rate}', '\\\\', '\n',
+            '\t &    \small \multicolumn{1}{p{2.7cm}}{\\footnotesize \centering Change in College \\ Wage Premium $(w_C/w_N - 1)_{2019} - (w_C/w_N - 1)_{1977}$}', ' \n',
+            '\t &	 \small \multicolumn{1}{p{2.6cm}}{\\footnotesize \centering Change in College \\ Employment Rate $P_{C,2019}-P_{C,1977}$}', ' \n',
+            '\t &	 \small \multicolumn{1}{p{2.6cm}}{\\footnotesize \centering Change in Non-College \\ Employment Rate $P_{N,2019}-P_{N,1977}$}', ' \n',
+            '\t &	 \small \multicolumn{1}{p{2.6cm}}{\\footnotesize \centering Change in Payroll \\ Tax Rate \\ $t_{2019}-t_{1977}$}','\\\\', '\n',
             '\cmidrule{1-5}', '\n']  
 
 headTax = ['\\\\', ' \n',

@@ -55,6 +55,10 @@ df_observed = pd.read_csv('observed_data.csv', index_col=0)
 # Parameter assumptions:
 alpha_c=1
 alpha_n=1
+tau_baseline = 'tau_baseline'
+rho_baseline = 0.3827
+elasticity_baseline = ['common', 'common']
+e_c_baseline, e_n_baseline = elasticity_baseline[0], elasticity_baseline[1]
 
 #Output path and define years
 years = [1977,1987] + list(range(1996, 2020))
@@ -75,23 +79,28 @@ for year in years:
     
     #Define and calibrate model
     model = calibration_model(alpha_c, alpha_n,
-                tau=df_observed.loc[year, 'tau_high'], 
-                w1_c=df_observed.loc[year, 'wage1_c'], 
-                w1_n=df_observed.loc[year, 'wage1_n'],
-                P1_c=df_observed.loc[year, 'P1_c'], 
-                P1_n=df_observed.loc[year, 'P1_n'],
-                share_workers1_c=df_observed.loc[year, 'share_workers1_c'],
-                share_pop_c=df_observed.loc[year, 'share_pop_c'],
-                pop_count=df_observed.loc[year, 'pop_count'])
-
+                        rho=rho_baseline,
+                        tau=df_observed.loc[year, tau_baseline],
+                        elasticity_c=e_c_baseline, elasticity_n=e_n_baseline,
+                        w1_c=df_observed.loc[year, 'wage1_c'], 
+                        w1_n=df_observed.loc[year, 'wage1_n'],
+                        P1_c=df_observed.loc[year, 'P1_c'], 
+                        P1_n=df_observed.loc[year, 'P1_n'],
+                        share_workers1_c=df_observed.loc[year, 'share_workers1_c'],
+                        share_pop_c=df_observed.loc[year, 'share_pop_c'],
+                        pop_count=df_observed.loc[year, 'pop_count'])
 
     #Make sure there are no NANs in model before calibration
-    if any(np.isnan([vars(model)[x] for x in vars(model).keys()])):
+    # Remove elasticities if specified to be common
+    if model.elasticity_c == model.elasticity_n == 'common': 
+        check = set(list(vars(model).keys())) - set(['elasticity_c', 'elasticity_n'])
+    else: check = vars(model).keys()
+    #And now check
+    if any(np.isnan([vars(model)[x] for x in check])):
         print("NAN value entered into calibration model for:")
-        for var in vars(model).keys():
+        for var in check:
             if np.isnan(vars(model)[var])==True: print("    "+var)
         print("for year: " + str(year))
-        continue
     
     #Calibrate Model
     model.calibrate()
@@ -113,6 +122,23 @@ matplotlib.rcParams['axes.spines.top'] = False
 os.chdir(output_folder)
 
 ## Graphs ###
+#  Share of population with a college degree
+plt.plot(df_results['payroll tax']*100, 
+         color='navy', marker='.')
+plt.title("Payroll Tax Necessary to Finance ESHI", fontsize=14)
+plt.gca().yaxis.set_major_formatter(plt.matplotlib.ticker.StrMethodFormatter('{x:,.0f}%'))
+plt.ylim([0,15])
+plt.grid(axis='y', color='gainsboro')
+plt.savefig('payroll_tax.png', dpi=500)
+plt.clf() 
+
+
+plt.ylim([0,0.55])
+plt.title("Share of Population with Bachelor's Degree or More", fontsize=14)
+plt.grid(axis='y', color='gainsboro')
+plt.savefig('share_pop_c.png', dpi=500)
+plt.clf() 
+
 #  Share of population with a college degree
 plt.plot(df_observed['share_pop_c'])
 plt.ylim([0,0.55])
@@ -315,7 +341,7 @@ plt.clf()
 
 
 
-
+'''
 #%%  Summary Table Over Time and Tau #%% 
 # Parameter assumptions:
 alpha_c=1
@@ -409,5 +435,6 @@ plt.title("Payroll Tax Necessary to Finance ESHI", fontsize=14)
 plt.grid(axis='y', color='gainsboro')
 plt.legend()
 plt.savefig('payroll_tax_acrossTau.png', dpi=500)
-plt.clf() 
+plt.clf()
+'''
 

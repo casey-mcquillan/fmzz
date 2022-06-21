@@ -148,7 +148,7 @@ for group in ['Total', 'FTFY', 'PTPY']:
         table_data.loc[len(table_data)]= group, column, 'Public', PUB_HI
         table_data.loc[len(table_data)]= group, column, 'None', No_HI
         
-        table_data.loc[len(table_data)]= group, column, 'ESHI Offered', ESHI_offered
+        table_data.loc[len(table_data)]= group, column, 'Offered Employer-Sponsored Health Insurance', ESHI_offered
         table_data.loc[len(table_data)]= group, column, 'Take-up | ESHI Offered', ESHI_offered_takeup
         table_data.loc[len(table_data)]= group, column, 'ESHI Eligible', ESHI_eligible
         table_data.loc[len(table_data)]= group, column, 'Take-up | ESHI Eligible', ESHI_eligible_takeup
@@ -176,15 +176,15 @@ variables_B = ['Employer-Sponsored',
                'Other Private', 
                'Public',
                'None']
-variables_C = ['ESHI Offered',
-               'Take-up | ESHI Offered', 
-               'ESHI Eligible',
-               'Take-up | ESHI Eligible']
+variables_C = ['Offered Employer-Sponsored Health Insurance',
+               'Take-up | ESHI Offered']
+               #'ESHI Eligible',
+               #'Take-up | ESHI Eligible']
 
 #Dictionaries for each group to panel title
 panel2title_Dict={'A':'Panel A: Labor Market Outcomes', 
                   'B':'Panel B: Health Insurance Coverage',
-                  'C':'Panel C: Offering, Eligibility, and Take-up'}
+                  'C':'Panel C: Offering and Take-up'}
 
 # Subset to FTFY Workers
 df_panel = table_data[table_data['Group']=='FTFY']

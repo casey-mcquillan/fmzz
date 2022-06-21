@@ -80,17 +80,17 @@ chg_cwb_observed = 100*(((df_observed.loc[year2,'share_pop_c']*df_observed.loc[y
     
 ### Initialize strings
 # Growth over Time
-chg_tau_string = f'\\ \\ Cost $(\\tau)$ \n \t & - '
-chg_t_string = f'\\ \\ Payroll Tax $(t)$ \n \t & - '
-chg_w_C_string = f'\\ \\ $w_C$ \n \t & \${chg_w_C_observed:,.0f}'
-chg_w_N_string = f'\\ \\ $w_N$ \n \t & \${chg_w_N_observed:,.0f}'
-chg_cwp_string = f'\\ \\ $w_C/w_N - 1$ \n \t & {chg_cwp_observed:,.2f} pp'
-chg_P_c_string = f'\\ \\ \\small College \n \t & {chg_P_C_observed:,.2f} pp'
-chg_P_n_string = f'\\ \\ \\small Non-College \n \t & {chg_P_N_observed:,.2f} pp'
+chg_tau_string = '\\ \\ Change in Cost  $(\\tau_{2019}-\\tau_{1977})$ \n \t & - '
+chg_t_string = '\\ \\ Payroll Tax $(t_{2019}-t_{1977})$ \n \t & - '
+chg_w_C_string = '\\ \\ Change in College Wages $w_{C,2019}-w_{C,1977}$ \n \t '+f'& \${chg_w_C_observed:,.0f}'
+chg_w_N_string = '\\ \\ Change in Non-college Wages $w_{N,2019}-w_{N,1977}$ \n \t '+f'& \${chg_w_N_observed:,.0f}'
+chg_cwp_string = '\\ \\ PP Change in College Wage Premium \n \t '+f'& {chg_cwp_observed:,.2f} pp'
+chg_P_c_string = '\\ \\ \\small Change in College Employment Rate $P_{C,2019}-P_{C,1977}$ \n \t '+f'& {chg_P_C_observed:,.2f} pp'
+chg_P_n_string = '\\ \\ \\small Change in Non-college Employment Rate $P_{N,2019}-P_{N,1977}$ \n \t '+f'& {chg_P_N_observed:,.2f} pp'
 chg_employment_string = r'\underline{Total Employment (\textit{M}):}' +f' \n \t & {chg_employment_observed:,.2f}'
 chg_employment_C_string = f'\\ \\ \\small College \n \t & {chg_employment_C_observed:,.2f}'
 chg_employment_N_string = f'\\ \\ \\small Non-College \n \t & {chg_employment_N_observed:,.2f}'
-chg_cwb_string = f'\\ \\ College Share: \n \t & {chg_cwb_observed:,.2f} pp'
+chg_cwb_string = f'\\ \\ College Share of the Wage Bill \n \t & {chg_cwb_observed:,.2f} pp'
 
 # Difference over Time
 CG_chg_w_C_string = '\\ \\ $\Delta(w_C)$ \n \t'
@@ -155,8 +155,7 @@ for tau_param in tau_params:
     #Add values to strings for Eq Comparison Table
     if i ==1: ampersand = '&'
     if i > 1: ampersand = ' &&'
-    
-    
+
     #Calculate Change over Time in Payroll Tax counterfactual
     chg_tau = model_year2.tau-model_year1.tau
     chg_t = 100*(model_year2.t-model_year1.t)
@@ -219,7 +218,7 @@ header = ['\\begin{tabular}{lccccc}', '\n',
           '\t &&	 \multicolumn{1}{p{2.4cm}}{\\footnotesize \centering  Total Cost, \\\\ FTFY Workers}', '\\\\','\n', 
           '\cmidrule{1-6}', '\n']
 
-table_values=['\\underline{ESHI:}', ' \\\\\n', 
+table_values=['\\underline{Employer-Sponsored Health Insurance:}', ' \\\\\n', 
               chg_tau_string, ' \\\\\n',
               chg_t_string, ' \\\\\n',
               '\\\\\n',
@@ -227,6 +226,7 @@ table_values=['\\underline{ESHI:}', ' \\\\\n',
               chg_w_C_string, ' \\\\\n',
               chg_w_N_string, ' \\\\\n',
               chg_cwp_string, ' \\\\\n',
+              '\\ \\ ${(w_c/w_N - 1)}_{2019}-{(w_c/w_N - 1)}_{1977}$', ' \\\\\n',
               '\\\\\n',
               '\\underline{Employment Rate:}', ' \\\\\n',
               chg_P_c_string, ' \\\\\n',
@@ -237,7 +237,8 @@ table_values=['\\underline{ESHI:}', ' \\\\\n',
               #chg_employment_N_string, ' \\\\\n',
               #'\\\\\n',
               '\\underline{Wage Bill:}', ' \\\\\n',
-              chg_cwb_string,' \\\\\n']
+              chg_cwb_string,' \\\\\n',
+              '\\ \\ ${\\left(\\frac{w_C L_C}{w_N L_N + w_C L_C}\\right)}_{2019}-{\\left(\\frac{w_C L_C}{w_N L_N + w_C L_C}\\right)}_{1977}$', ' \\\\\n']
 
 closer = ['\\bottomrule','\n', '\end{tabular}']
 

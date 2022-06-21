@@ -104,17 +104,17 @@ tau2specification_Dict ={'tau_high':'Total Cost with Complete Takeup',
                          'tau_low':'Cost to Employer with Incomplete Takeup'}
 
 #Initialize strings for tables
-tau_string = '\\underline{Fixed Per Worker Cost $\\tau$:} \n \t'
-payroll_tax_string = '\\underline{Payroll Tax Rate:} \n \t'
-delta_w_C_string = '\\ \\ $\Delta(w_C)$ \n \t'
-delta_w_N_string = '\\ \\ $\Delta(w_N)$ \n \t'
-pct_chg_cwp_string = '\\ \\ $\\%\\Delta(w_C/w_N - 1)$ \n \t'
-delta_P_n_string = '\\ \\ $\Delta(P_N)$ \n \t'
-delta_P_c_string = '\\ \\ $\Delta(P_C)$ \n \t'
-delta_employment_string = '$\Delta$(\\small Total Employment): \n \t'
-delta_employment_C_string = '\\ \\ \\small College \n \t'
-delta_employment_N_string = '\\ \\ \\small Non-College \n \t'
-delta_cwb_string = '$\\Delta$(\\small College Share): \n \t'
+tau_string = '\\underline{Fixed Per Worker Cost, $\\tau$:} \n \t'
+payroll_tax_string = '\\underline{Payroll Tax Rate, $t$:} \n \t'
+delta_w_C_string = '\\ \\ Change in College Wage, $\Delta(w_C)$ \n \t'
+delta_w_N_string = '\\ \\ Change in Non-college Wage, $\Delta(w_N)$ \n \t'
+pct_chg_cwp_string = '\\ \\ Pct. Change in College Wage Premium, $\\%\\Delta(w_C/w_N - 1)$ \n \t'
+delta_P_c_string = '\\ \\ Change in College Employment Rate, $\Delta(P_C)$ \n \t'
+delta_P_n_string = '\\ \\ Change in Non-college Employment Rate, $\Delta(P_N)$ \n \t'
+delta_employment_string = 'Change in Total Employment, $\Delta(L)$ \n \t'
+delta_employment_C_string = '\\ \\ \\small Change in College Employment, $\Delta(L_C)$ \n \t'
+delta_employment_N_string = '\\ \\ \\small Change in Non-college Employment, $\Delta(L_N)$ \n \t'
+delta_cwb_string = 'Change in College Share of Wage Bill, $\Delta(\\frac{w_C L_C}{w_N L_N+w_C L_C})$: \n \t'
 
 
 #Loop through
@@ -193,8 +193,8 @@ for tau_param in tau_params:
     
 header = ['\\begin{tabular}{lcccc}', '\n',
           '\\FL', '\n',
-          '\t &	 \multicolumn{1}{p{2.7cm}}{\small \centering \\textbf{(1)} \\\\ Total Cost, \\\\ Partial Coverage \\\\ (Baseline)}','\n', 
-          '\t &&	 \multicolumn{1}{p{2.7cm}}{\small \centering \\textbf{(2)} \\\\Total Cost, \\\\ Total Coverage}','\\\\','\n', 
+          '\t &	 \multicolumn{1}{p{2.7cm}}{\small \centering \\textbf{(1)} \\\\ {\\bf Baseline}}','\n', 
+          '\t &&	 \multicolumn{1}{p{2.7cm}}{\small \centering \\textbf{(2)} \\\\Total Coverage \\\\ FTFY Workers}','\\\\','\n', 
           '\cmidrule{1-4}', '\n']
 
 table_values=[tau_string, ' \\\\\n',
@@ -614,11 +614,11 @@ file.close()
 #%%      Compile Overview Tables:      %%#
 header = ['\\begin{tabular}{lccccc}', ' \n',
             '\\FL', '\n',
-            '\t &    \multicolumn{1}{p{2.2cm}}{\\footnotesize \centering College \\\\ Wage Premium} ', ' \n',
-            '\t &	 \multicolumn{1}{p{1.8cm}}{\\footnotesize \centering College \\\\ Employment Rate}', '\n',
-            '\t &	 \multicolumn{1}{p{1.8cm}}{\\footnotesize \centering Non-College \\\\ Employment Rate}', '\n',
-            '\t &	 \multicolumn{1}{p{1.8cm}}{\\footnotesize \centering Non-College \\\\ Employment (Thous.)}', '\n',
-            '\t &	 \multicolumn{1}{p{1.8cm}}{\\footnotesize \centering Payroll \\\\ Tax Rate}', '\\\\', '\n',
+            '\t &    \multicolumn{1}{p{2.4cm}}{\\footnotesize \centering Percent Change \\\\ in College \\\\ Wage Premium \\\\ $\%\Delta(w_C/w_N - 1)$} ', ' \n',
+            '\t &	 \multicolumn{1}{p{2.0cm}}{\\footnotesize \centering Change in \\\\ College Employment \\\\ Rate \\\\ $\Delta(P_C)$}', '\n',
+            '\t &	 \multicolumn{1}{p{2.0cm}}{\\footnotesize \centering Change in \\\\ Non-College Employment \\\\ Rate \\\\ $\Delta(P_C)$}', '\n',
+            '\t &	 \multicolumn{1}{p{2.0cm}}{\\footnotesize \centering Change in \\\\ Non-College \\\\ Employment (Thous.) \\\\ $\Delta(L_N)$}', '\n',
+            '\t &	 \multicolumn{1}{p{2.0cm}}{\\footnotesize \centering Payroll \\\\ Tax Rate \\\\ $t$}', '\\\\', '\n',
             '\cmidrule{1-6}', '\n',
             '\\\\' '\n']  
 
