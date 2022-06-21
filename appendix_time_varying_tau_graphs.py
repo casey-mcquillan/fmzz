@@ -14,7 +14,7 @@ import numpy as np
 main_folder = "/Users/caseymcquillan/Desktop/Research/FZZ"
 code_folder = main_folder+"/code"
 data_folder = main_folder+"/data"
-output_folder = main_folder +"/output/Graphs/Appendix C"
+output_folder = main_folder +"/output/Graphs/Time Varying Tau"
 os.chdir(code_folder)
 
 ### Import calibration class
@@ -54,21 +54,20 @@ df_observed = pd.DataFrame({
                 'P1_n': ASEC_data['P1_n (weighted)'],
                 'tau_high': premium_data['Avg Enr Cost'],
                 'tau_baseline': premium_data['Avg Enr Cost']*ASEC_data.loc[2019,'Share ESHI policyholders (weighted)'],
-                'tau_dynamic':premium_data['Avg Enr Cost']*ASEC_data['Share ESHI policyholders (weighted)'], #Added for this Appendix
-                'tau_low': premium_data['Avg Emp Cost']*ASEC_data.loc[2019,'Share ESHI policyholders (weighted)'],
+                'tau_dynamic':premium_data['Avg Enr Cost']*ASEC_data['Share ESHI policyholders (weighted)'].backfill(), #Added for this Appendix
+                'tau_low': premium_data['Avg Emp Cost']**ASEC_data['Share ESHI policyholders (weighted)'].backfill(),
                 'Share ESHI policyholders':ASEC_data['Share ESHI policyholders (weighted)'],
                 'Share ESHI policyholders, College':ASEC_data['Share ESHI policyholders, College (weighted)'],
                 'Share ESHI policyholders, Non-college':ASEC_data['Share ESHI policyholders, Non-college (weighted)']
             })
 
 
-#%%  Analysis  #%%  
+#%%  Analysis for Graphs  #%%  
 
 ### Set up
 versions = ['Baseline', 'Dynamic']
 
-versions2year_Dict = {'Baseline': [1977,1987] + list(range(1996, 2020)), 
-                      'Dynamic': list(range(1996, 2020))}
+years = [1977,1987] + list(range(1996, 2020))
 
 versions2tau_Dict = {'Baseline':'tau_baseline', 
                       'Dynamic':'tau_dynamic'}
@@ -100,7 +99,6 @@ e_c_baseline, e_n_baseline = elasticity_baseline[0], elasticity_baseline[1]
 ### Loop through and calculate
 output = pd.DataFrame()
 for version in versions:
-    years = versions2year_Dict[version]
     tau_param = versions2tau_Dict[version]
     
     for year in years:
@@ -162,12 +160,14 @@ for version in versions:
         output.loc[year, f'Change in College Share of the Wage Bill ({version})'] = chg_cwb
 
 #%%  Data Export #%%
+'''
 ## Select relevant variables
 data_export = output
 
 ## Export data
 os.chdir(data_folder)
-data_export.to_csv('output_AppendixC.csv')
+data_export.to_csv('output_time_varying_tau.csv')
+'''
                      
 #%%  Graphs  #%%
 os.chdir(output_folder)
