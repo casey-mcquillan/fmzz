@@ -11,12 +11,10 @@ import pandas as pd
 import numpy as np
 
 ### Set working directory and folders
-code_folder = "/Users/caseymcquillan/Desktop/Research/FZZ/code"
-data_folder = "/Users/caseymcquillan/Desktop/Research/FZZ/data"
+main_folder = "/Users/caseymcquillan/Desktop/Research/FZZ"
+code_folder = main_folder+"/code"
+data_folder = main_folder+"/data"
 os.chdir(code_folder)
-
-## Import occupational sorting function
-from occ90_sorting import occ90_sorting
 
 
 #%% Import Data #%%

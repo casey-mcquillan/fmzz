@@ -47,11 +47,7 @@ e_c_baseline, e_n_baseline = elasticity_baseline[0], elasticity_baseline[1]
 #%%      Calibration while Varying Tau      %%#'
 
 #Parameters to be varied:
-#tau_params = ['tau_high', 'tau_baseline', 'tau_low']
 tau_params = ['tau_baseline', 'tau_high']
-tau2specification_Dict ={'tau_high':'Total Cost with Complete Takeup',
-                         'tau_baseline':'Total Cost with Incomplete Takeup',
-                         'tau_low':'Cost to Employer with Incomplete Takeup'}
 
 #Calculate Observed Change over Time
 chg_w_C_observed = df_observed.loc[year2, 'wage1_c']-df_observed.loc[year1, 'wage1_c']
@@ -105,7 +101,6 @@ CG_chg_cwb_string = '$\\ \\ \\Delta$(\\small College Share): \n \t'
 i = 0
 for tau_param in tau_params:
     i = i+1
-    label = tau2specification_Dict[tau_param]
     
     #Define Model
     model_year1 = calibration_model(alpha_c, alpha_n,

@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 """
 Created on Mon Aug 30 15:01:21 2021
+
 @author: caseymcquillan
 """
 #%%  Preamble: Import packages, set directory #%%  
@@ -129,8 +130,8 @@ class calibration_model:
         #Let initial guess be based on Head Tax Eq   
         w0_n_guess = w1_n + tau
         w0_c_guess = w1_c + tau
-        L0_n_guess = share_pop_n*((w0_n_guess+alpha_n*tau-kappa_lb_n)/kappa_dist_n)
-        L0_c_guess = share_pop_c*((w0_c_guess+alpha_c*tau-kappa_lb_c)/kappa_dist_c)
+        L0_n_guess = share_pop_n*((w0_n_guess-kappa_lb_n)/kappa_dist_n)
+        L0_c_guess = share_pop_c*((w0_c_guess-kappa_lb_c)/kappa_dist_c)
         w0_n, w0_c, L0_n, L0_c =  fsolve(equations, (w0_n_guess, w0_c_guess,
                                                      L0_n_guess, L0_c_guess))
         #Solve for value of employment
@@ -378,6 +379,7 @@ class calibration_model:
 
 
 #%%  Create Instance #%%
+
 '''
 # Importing Data
 os.chdir(data_folder)
@@ -390,7 +392,7 @@ alpha_n=1
 year = 2019
 
 #Baseline Parameters
-tau_baseline = 'tau_high'
+tau_baseline = 'tau_baseline'
 rho_baseline = 0.3827
 elasticity_baseline = ['common', 'common']
 e_c_baseline, e_n_baseline = elasticity_baseline[0], elasticity_baseline[1]
@@ -422,6 +424,7 @@ if any(np.isnan([vars(model)[x] for x in check])):
 
 #Calibrate Model
 model.calibrate()
+
 
 #Output LaTeX Tables
 output_path = '/Users/caseymcquillan/Desktop/'
