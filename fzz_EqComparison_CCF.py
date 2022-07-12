@@ -119,6 +119,7 @@ for cost_CCF in CCFs:
         delta_cwb_string = delta_cwb_string + ampersand + \
             f' {100*(((model.L_c_CCF*model.w_c_CCF)/(model.L_c_CCF*model.w_c_CCF + model.L_n_CCF*model.w_n_CCF))-((model.L_c*model.w_c)/(model.L_c*model.w_c + model.L_n*model.w_n))):,.2f} pp'
     
+    #Output Table
     header = ['\\begin{tabular}{lcccccccc}', '\n',
               '\\FL', '\n',
               '\t &	 \multicolumn{1}{p{1.2cm}}{\\footnotesize \centering $\\alpha=0$}','\n', 
