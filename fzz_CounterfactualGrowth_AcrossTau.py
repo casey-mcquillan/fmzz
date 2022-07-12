@@ -163,7 +163,7 @@ for tau_param in tau_params:
     chg_employment_C = (model_year2.employment2_c-model_year1.employment2_c)/1e6
     chg_employment_N = (model_year2.employment2_n-model_year1.employment2_n)/1e6
     chg_cwb = 100*(((model_year2.L2_c*model_year2.w2_c)/(model_year2.L2_c*model_year2.w2_c + model_year2.L2_n*model_year2.w2_n))\
-                   -((model_year1.L2_c*model_year1.w2_c)/(model_year1.L2_c*model_year1.w2_c + model_year1.L2_n*model_year1.w1_n)))
+                   -((model_year1.L2_c*model_year1.w2_c)/(model_year1.L2_c*model_year1.w2_c + model_year1.L2_n*model_year1.w2_n)))
     
     #Calculate Change relative to Head Tax
     CG_chg_w_C = chg_w_C - chg_w_C_observed
