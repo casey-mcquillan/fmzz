@@ -424,17 +424,16 @@ if any(np.isnan([vars(model)[x] for x in check])):
 
 #Calibrate Model
 model.calibrate()
-
-
-#Output LaTeX Tables
-output_path = '/Users/caseymcquillan/Desktop/'
-model.generate_table(file_name='SummaryTable'+str(year)+"_Baseline", year=year, 
-                     table_type="equilibrium summary",
-                     table_label="SummaryTable"+str(year)+"baseline", 
-                     location=output_path, subtitle=" under Baseline Specification")
-
-model.generate_table(file_name='EqComparison'+str(year)+"_Baseline", year=year, 
-                 table_type="equilibrium comparison", 
-                 table_label="EqComparison"+str(year)+"baseline", 
-                 location=output_path, subtitle=" under Baseline Specification")
 '''
+
+# #Output LaTeX Tables
+# output_path = '/Users/caseymcquillan/Desktop/'
+# model.generate_table(file_name='SummaryTable'+str(year)+"_Baseline", year=year, 
+#                      table_type="equilibrium summary",
+#                      table_label="SummaryTable"+str(year)+"baseline", 
+#                      location=output_path, subtitle=" under Baseline Specification")
+
+# model.generate_table(file_name='EqComparison'+str(year)+"_Baseline", year=year, 
+#                  table_type="equilibrium comparison", 
+#                  table_label="EqComparison"+str(year)+"baseline", 
+#                  location=output_path, subtitle=" under Baseline Specification")
