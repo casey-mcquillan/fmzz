@@ -32,10 +32,14 @@ premium_data = pd.read_excel('premium_series.xlsx', index_col=0)
 # Create dataframe with necessary observed variables
 df_observed = pd.DataFrame({
                 'pop_count': OECD_data['Population (25-64)'],
+                'P1_c': ASEC_data['P1_c'],
+                'P1_n': ASEC_data['P1_n'],
                 'P1_c_m': ASEC_data['P1_c_m'],
                 'P1_n_m': ASEC_data['P1_n_m'],
                 'P1_c_f': ASEC_data['P1_c_f'],
                 'P1_n_f': ASEC_data['P1_n_f'],
+                'wage1_c': ASEC_data['wage1_c'],
+                'wage1_n': ASEC_data['wage1_n'],
                 'wage1_c_m': ASEC_data['wage1_c_m'],
                 'wage1_n_m': ASEC_data['wage1_n_m'],
                 'wage1_c_f': ASEC_data['wage1_c_f'],

@@ -65,7 +65,9 @@ years = range(1975,2021)
 
 # Define variables
 variables = ['N', 'N_college', 'N_FTFY', 'N_college_FTFY',
+                    'P1_c', 'P1_n',
                     'P1_c_m', 'P1_n_m', 'P1_c_f', 'P1_n_f',
+                    'wage1_c', 'wage1_n',
                     'wage1_c_m', 'wage1_n_m', 'wage1_c_f', 'wage1_n_f',
                     'share_workers1_c', 'share_workers1_c_m', 'share_workers1_c_f',
                     'share_workers1_n', 'share_workers1_n_m', 'share_workers1_n_f',
@@ -88,6 +90,10 @@ for year in years:
     data.loc[year,'N_college_FTFY'] = np.sum(df['College']*df['FTFY']*year_dummy)       
 
     ## Employment Rates
+    data.loc[year,'P1_c'] = np.average(df['FTFY'], \
+                                        weights=df['ASECWT']*year_dummy*df['College'])    
+    data.loc[year,'P1_n'] = np.average(df['FTFY'], \
+                                        weights=df['ASECWT']*year_dummy*df['Non-College'])
     data.loc[year,'P1_c_m'] = np.average(df['FTFY'], \
                                         weights=df['ASECWT']*year_dummy*df['College']*df['Male'])
     data.loc[year,'P1_n_m'] = np.average(df['FTFY'], \
@@ -98,6 +104,10 @@ for year in years:
                                         weights=df['ASECWT']*year_dummy*df['Non-College']*df['Female'])
     
     ## Wage Data
+    data.loc[year,'wage1_c'] = np.average(df['INCWAGE'], \
+                                            weights=df['ASECWT']*year_dummy*df['College']*df['FTFY'])
+    data.loc[year,'wage1_n'] = np.average(df['INCWAGE'], \
+                                            weights=df['ASECWT']*year_dummy*df['Non-College']*df['FTFY'])
     data.loc[year,'wage1_c_m'] = np.average(df['INCWAGE'], \
                                             weights=df['ASECWT']*year_dummy*df['College']*df['Male']*df['FTFY'])
     data.loc[year,'wage1_n_m'] = np.average(df['INCWAGE'], \
@@ -121,7 +131,6 @@ for year in years:
     data.loc[year,'share_workers1_n_f'] = np.average((1-df['College'])*df['Female']*df['FTFY'], 
                                                     weights=df['ASECWT']*year_dummy*df['FTFY'])
 
-        
     ## Share of Population        
     data.loc[year,'share_pop_c'] = np.average(df['College'], 
                                                     weights=df['ASECWT']*year_dummy)
@@ -148,14 +157,16 @@ os.chdir(data_folder)
 price_data = pd.read_csv('PCEPI_data.csv', index_col=0)
 for year in data.index:
     adj_factor = price_data.loc[year, 'PCEPI Adjustment Factor (2019 Dollars)']
-    for var in ['wage1_c_m', 'wage1_n_m', 'wage1_c_f', 'wage1_n_f']:
+    for var in ['wage1_c', 'wage1_n', 'wage1_c_m', 'wage1_n_m', 'wage1_c_f', 'wage1_n_f']:
         data.loc[year, var] = adj_factor*data.loc[year, var]
         
 
 #%% Export Data #%%
 os.chdir(data_folder)
 data_export = data[['N', 'N_college', 'N_FTFY', 'N_college_FTFY',
+                    'P1_c', 'P1_n',
                     'P1_c_m', 'P1_n_m', 'P1_c_f', 'P1_n_f',
+                    'wage1_c', 'wage1_n',
                     'wage1_c_m', 'wage1_n_m', 'wage1_c_f', 'wage1_n_f',
                     'share_workers1_c', 'share_workers1_c_m', 'share_workers1_c_f',
                     'share_workers1_n', 'share_workers1_n_m', 'share_workers1_n_f',
