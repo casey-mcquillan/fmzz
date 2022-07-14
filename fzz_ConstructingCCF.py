@@ -52,26 +52,25 @@ df_canada_CF=df_canada_CF.pivot(index='year', columns='country')
 df_canada_CF.columns=df_canada_CF.columns.droplevel(0)
 df_canada_CF['Canada-US Ratio'] = df_canada_CF['Canada']/df_canada_CF['United States']
 
-# Calculate Canada Cost Counterfactual 1
+# Calculate Canada Cost Counterfactual 
+years = [1977,1987] + list(range(1996, 2020))
+df_observed['tau_CCF_Canada'] = np.nan
+for year in years:
+    if year ==1977: scale=1
+    else: scale=df_canada_CF.loc[year,'Canada-US Ratio']
+    df_observed.loc[year,'tau_CCF_Canada'] = \
+        df_observed.loc[year,tau_baseline]*scale
+
+# Calculate Canada Cost Counterfactual 2
 theta_US_1977 = df_canada_CF.loc[1977,'United States']
 theta_CAN_1977 = df_canada_CF.loc[1977,'Canada']
 
 years = [1977,1987] + list(range(1996, 2020))
-df_observed['tau_CCF_Canada1'] = np.nan
+df_observed['tau_CCF_Canada2'] = np.nan
 for year in years:
     theta_US_year = df_canada_CF.loc[year,'United States']
     theta_CAN_year = df_canada_CF.loc[year,'Canada']
     scale = (theta_US_1977 + (theta_CAN_year-theta_CAN_1977)) / theta_US_year
-    df_observed.loc[year,'tau_CCF_Canada1'] = \
-        df_observed.loc[year,tau_baseline]*scale
-
-
-# Calculate Canada Cost Counterfactual 2    
-years = [1977,1987] + list(range(1996, 2020))
-df_observed['tau_CCF_Canada2'] = np.nan
-for year in years:
-    if year ==1977: scale=1
-    else: scale=df_canada_CF.loc[year,'Canada-US Ratio']
     df_observed.loc[year,'tau_CCF_Canada2'] = \
         df_observed.loc[year,tau_baseline]*scale
 
@@ -94,10 +93,10 @@ matplotlib.rcParams['axes.spines.top'] = False
 # Plot
 plt.plot(df_observed['tau_baseline'].dropna(), label='Observed',
          marker='.', ms=5, color='black')
-plt.plot(df_observed['tau_CCF_Canada1'].dropna(), label='Canada Counterfactual 1',
+plt.plot(df_observed['tau_CCF_Canada'].dropna(), label='Canada Counterfactual',
          marker='.', ms=5, color='maroon')
-plt.plot(df_observed['tau_CCF_Canada2'].dropna(), label='Canada Counterfactual 2',
-         marker='.', ms=5, color='indianred')
+# plt.plot(df_observed['tau_CCF_Canada2'].dropna(), label='Canada Counterfactual 1',
+#          marker='.', ms=5, color='indianred')
 plt.plot(df_observed['tau_CCF_NoGrowth'].dropna(), label='No Growth Counterfactual',
          marker='.', ms=5, color='navy')
 plt.ylim([0,8000])

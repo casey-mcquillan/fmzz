@@ -75,37 +75,32 @@ chg_cwb_observed = 100*(((df_observed.loc[year2,'share_pop_c']*df_observed.loc[y
     
 #%%      Calculations for Counterfactual Path      %%#'
 
+### Initialize strings
+chg_tau_string = '\\ \\ Change in Cost  $(\\tau_{2019}-\\tau_{1977})$ \n \t '+f'& \${chg_tau_observed:,.0f}'
+chg_w_C_string = '\\ \\ Change in College Wages $w_{C,2019}-w_{C,1977}$ \n \t '+f'& \${chg_w_C_observed:,.0f}'
+chg_w_N_string = '\\ \\ Change in Non-college Wages $w_{N,2019}-w_{N,1977}$ \n \t '+f'& \${chg_w_N_observed:,.0f}'
+chg_cwp_string = '\\ \\ PP Change in College Wage Premium \n \t '+f'& {chg_cwp_observed:,.2f} pp'
+chg_P_c_string = '\\ \\ \\small Change in College Employment Rate $P_{C,2019}-P_{C,1977}$ \n \t '+f'& {chg_P_C_observed:,.2f} pp'
+chg_P_n_string = '\\ \\ \\small Change in Non-college Employment Rate $P_{N,2019}-P_{N,1977}$ \n \t '+f'& {chg_P_N_observed:,.2f} pp'
+chg_employment_string = r'\underline{Total Employment (\textit{M}):}' +f' \n \t & {chg_employment_observed:,.2f}'
+chg_employment_C_string = f'\\ \\ \\small College \n \t & {chg_employment_C_observed:,.2f}'
+chg_employment_N_string = f'\\ \\ \\small Non-College \n \t & {chg_employment_N_observed:,.2f}'
+chg_cwb_string = f'\\ \\ College Share of the Wage Bill \n \t & {chg_cwb_observed:,.2f} pp'  
+    
 #Parameters to be varied:
-CCFs = ['NoGrowth', 'Canada1', 'Canada2']
+CCFs = ['NoGrowth', 'Canada']
 alpha_params = [0, 0.75, 1, 1.25]
 
 #Loop through CCFs
+i = 0
 for cost_CCF in CCFs:
     tau_param_CCF='tau_CCF_'+cost_CCF
-    
-    ### Initialize strings
-    chg_tau_string = '\\ \\ Change in Cost  $(\\tau_{2019}-\\tau_{1977})$ \n \t '+f'& \${chg_tau_observed:,.0f}'
-    chg_w_C_string = '\\ \\ Change in College Wages $w_{C,2019}-w_{C,1977}$ \n \t '+f'& \${chg_w_C_observed:,.0f}'
-    chg_w_N_string = '\\ \\ Change in Non-college Wages $w_{N,2019}-w_{N,1977}$ \n \t '+f'& \${chg_w_N_observed:,.0f}'
-    chg_cwp_string = '\\ \\ PP Change in College Wage Premium \n \t '+f'& {chg_cwp_observed:,.2f} pp'
-    chg_P_c_string = '\\ \\ \\small Change in College Employment Rate $P_{C,2019}-P_{C,1977}$ \n \t '+f'& {chg_P_C_observed:,.2f} pp'
-    chg_P_n_string = '\\ \\ \\small Change in Non-college Employment Rate $P_{N,2019}-P_{N,1977}$ \n \t '+f'& {chg_P_N_observed:,.2f} pp'
-    chg_employment_string = r'\underline{Total Employment (\textit{M}):}' +f' \n \t & {chg_employment_observed:,.2f}'
-    chg_employment_C_string = f'\\ \\ \\small College \n \t & {chg_employment_C_observed:,.2f}'
-    chg_employment_N_string = f'\\ \\ \\small Non-College \n \t & {chg_employment_N_observed:,.2f}'
-    chg_cwb_string = f'\\ \\ College Share of the Wage Bill \n \t & {chg_cwb_observed:,.2f} pp'  
-    
-    #Loop through different alpha parameters    
-    i=0
+
+    #Loop through alpha parameters
     for alpha in alpha_params:
-        i = i+1
-        
-        #Set alpha
-        alpha_c=alpha_n=alpha
-        
-        ####   Model Calibration   ####   
+        i = i+1 
         #Define Model
-        model_year1 = calibration_model_CCF(alpha_c, alpha_n,
+        model_year1 = calibration_model_CCF(alpha, alpha,
                         rho=rho_baseline,
                         tau=df_observed.loc[year1, tau_baseline],
                         tau_CCF=df_observed.loc[year1, tau_param_CCF],
@@ -118,7 +113,7 @@ for cost_CCF in CCFs:
                         share_pop_c=df_observed.loc[year1, 'share_pop_c'],
                         pop_count=df_observed.loc[year1, 'pop_count'])
         
-        model_year2 = calibration_model_CCF(alpha_c, alpha_n,
+        model_year2 = calibration_model_CCF(alpha, alpha,
                         rho=rho_baseline,
                         tau=df_observed.loc[year2, tau_baseline],
                         tau_CCF=df_observed.loc[year2, tau_param_CCF],
@@ -186,47 +181,53 @@ for cost_CCF in CCFs:
         chg_cwb_string = chg_cwb_string + f' && {chg_cwb:,.2f} pp'
         
         
-    ####   Creating Tables   ####   
-    ## Growth over Time 
-    header = ['\\begin{tabular}{lccccccccc}', '\n',
-              '\\FL', '\n',
-              '\t & && \multicolumn{7}{c}{Cost Counterfactual} \\\\', '\n',
-              '\cmidrule{4-10} \n',
-              '\t &	 \multicolumn{1}{p{1.5cm}}{Observed}','\n', 
-              '\t &&	 \multicolumn{1}{p{1.2cm}}{\\footnotesize \centering $\\alpha=0$}','\n', 
-              '\t &&	 \multicolumn{1}{p{1.2cm}}{\\footnotesize \centering $\\alpha=0.75$}','\n', 
-              '\t &&	 \multicolumn{1}{p{1.2cm}}{\\footnotesize \centering $\\alpha=1$}','\n', 
-              '\t &&	 \multicolumn{1}{p{1.2cm}}{\\footnotesize \centering $\\alpha=1.25$}', '\\\\','\n',  
-              '\cmidrule{1-10}', '\n']
-    
-    table_values=['\\underline{Employer-Sponsored Health Insurance:}', ' \\\\\n', 
-                  chg_tau_string, ' \\\\\n',
-                  '\\\\\n',
-                  '\\underline{Wages:}', ' \\\\\n', 
-                  chg_w_C_string, ' \\\\\n',
-                  chg_w_N_string, ' \\\\\n',
-                  chg_cwp_string, ' \\\\\n',
-                  '\\ \\ ${(w_c/w_N - 1)}_{2019}-{(w_c/w_N - 1)}_{1977}$', ' \\\\\n',
-                  '\\\\\n',
-                  '\\underline{Employment Rate:}', ' \\\\\n',
-                  chg_P_c_string, ' \\\\\n',
-                  chg_P_n_string, ' \\\\\n',
-                  '\\\\\n',
-                  #chg_employment_string, ' \\\\\n',
-                  #chg_employment_C_string, ' \\\\\n',
-                  #chg_employment_N_string, ' \\\\\n',
-                  #'\\\\\n',
-                  '\\underline{Wage Bill:}', ' \\\\\n',
-                  chg_cwb_string,' \\\\\n',
-                  '\\ \\ ${\\left(\\frac{w_C L_C}{w_N L_N + w_C L_C}\\right)}_{2019}-{\\left(\\frac{w_C L_C}{w_N L_N + w_C L_C}\\right)}_{1977}$', ' \\\\\n']
-    
-    closer = ['\\bottomrule','\n', '\end{tabular}']
-    
-    #Create, write, and close file
-    cwd = os.getcwd()
-    os.chdir(output_folder_tables)
-    file = open(f"Change_OverTime{year2}_{year1}_CCF_{cost_CCF}.tex","w")
-    file.writelines(header) 
-    file.writelines(table_values)   
-    file.writelines(closer)   
-    file.close()
+#%%      Output Latex Tables:      %%#
+
+header = ['\\begin{tabular}{lcccccccccccccccccc}', '\n',
+          '\\FL', '\n',
+          '\t &', '\n', 
+          '\t && \multicolumn{7}{c}{No Growth Counterfactual}', '\n',
+          '\t && \multicolumn{7}{c}{Canada Counterfactual}', '\n',
+          '\\\\',  '\cmidrule{4-10}', '\cmidrule{12-18}', '\n', 
+          '\t &	 Observed','\n', 
+          '\t &&	 $\\alpha=0$','\n',
+          '\t &&	 $\\alpha=0.75$','\n', 
+          '\t &&	 $\\alpha=1$','\n',
+          '\t &&	 $\\alpha=1.25$','\n', 
+          '\t &&	 $\\alpha=0$','\n', 
+          '\t &&	 $\\alpha=0.75$','\n', 
+          '\t &&	 $\\alpha=1$','\n', 
+          '\t &&	 $\\alpha=1.25$', '\\\\','\n',  
+          '\cmidrule{1-18}', '\n']
+
+table_values=['\\underline{Employer-Sponsored Health Insurance:}', ' \\\\\n', 
+              chg_tau_string, ' \\\\\n',
+              '\\\\\n',
+              '\\underline{Wages:}', ' \\\\\n', 
+              chg_w_C_string, ' \\\\\n',
+              chg_w_N_string, ' \\\\\n',
+              chg_cwp_string, ' \\\\\n',
+              '\\ \\ ${(w_c/w_N - 1)}_{2019}-{(w_c/w_N - 1)}_{1977}$', ' \\\\\n',
+              '\\\\\n',
+              '\\underline{Employment Rate:}', ' \\\\\n',
+              chg_P_c_string, ' \\\\\n',
+              chg_P_n_string, ' \\\\\n',
+              '\\\\\n',
+              chg_employment_string, ' \\\\\n',
+              chg_employment_C_string, ' \\\\\n',
+              chg_employment_N_string, ' \\\\\n',
+              '\\\\\n',
+              '\\underline{Wage Bill:}', ' \\\\\n',
+              chg_cwb_string,' \\\\\n',
+              '\\ \\ ${\\left(\\frac{w_C L_C}{w_N L_N + w_C L_C}\\right)}_{2019}-{\\left(\\frac{w_C L_C}{w_N L_N + w_C L_C}\\right)}_{1977}$', ' \\\\\n']
+
+closer = ['\\bottomrule','\n', '\end{tabular}']
+
+#Create, write, and close file
+cwd = os.getcwd()
+os.chdir(output_folder_tables)
+file = open(f"Change_OverTime{year2}_{year1}_CCF.tex","w")
+file.writelines(header) 
+file.writelines(table_values)   
+file.writelines(closer)   
+file.close()
