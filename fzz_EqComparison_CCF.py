@@ -44,13 +44,13 @@ e_c_baseline, e_n_baseline = elasticity_baseline[0], elasticity_baseline[1]
 tau_string = '\\underline{Fixed Per Worker Cost, $\\tau$:} \n \t'
 delta_w_C_string = '\\ \\ Change in College Wage, $\Delta(w_C)$ \n \t'
 delta_w_N_string = '\\ \\ Change in Non-college Wage, $\Delta(w_N)$ \n \t'
-pct_chg_cwp_string = '\\ \\ Pct. Change in College Wage Premium, $\\%\\Delta(w_C/w_N - 1)$ \n \t'
+pct_chg_cwp_string = '\\ \\ Pct. Change in College Wage Premium, \n \t'
 delta_P_c_string = '\\ \\ Change in College Employment Rate, $\Delta(P_C)$ \n \t'
 delta_P_n_string = '\\ \\ Change in Non-college Employment Rate, $\Delta(P_N)$ \n \t'
 delta_employment_string = 'Change in Total Employment, $\Delta(L)$ \n \t'
 delta_employment_C_string = '\\ \\ \\small Change in College Employment, $\Delta(L_C)$ \n \t'
 delta_employment_N_string = '\\ \\ \\small Change in Non-college Employment, $\Delta(L_N)$ \n \t'
-delta_cwb_string = 'Change in College Share of Wage Bill, $\Delta(\\frac{w_C L_C}{w_N L_N+w_C L_C})$: \n \t'
+delta_cwb_string = 'Change in College Share of Wage Bill, \n \t'
     
 #Parameters to be varied:
 CCFs = ['NoGrowth', 'Canada']
@@ -97,7 +97,7 @@ for cost_CCF in CCFs:
         if i ==1: ampersand = '&'
         if i > 1: ampersand = ' &&'
         
-        tau_string = tau_string + ampersand + f' \${model.tau-model.tau_CCF:,.0f} '
+        tau_string = tau_string + ampersand + f' \${model.tau_CCF-model.tau:,.0f} '
         delta_w_C_string = delta_w_C_string + ampersand + f' \${model.w_c_CCF-model.w_c:,.0f} '
         delta_w_N_string = delta_w_N_string + ampersand + f' \${model.w_n_CCF-model.w_n:,.0f} '
         pct_chg_cwp_string = pct_chg_cwp_string + ampersand + \
@@ -138,16 +138,18 @@ table_values=[tau_string, ' \\\\\n',
                 delta_w_C_string, ' \\\\\n',
                 delta_w_N_string, ' \\\\\n',
                 pct_chg_cwp_string, ' \\\\\n',
+                '\\ \\ $\\%\\Delta(w_C/w_N - 1)$', ' \\\\\n',
                 '\\\\\n',
                 '\\underline{Employment Rate:}', ' \\\\\n',
                 delta_P_c_string, ' \\\\\n',
                 delta_P_n_string, ' \\\\\n',
-                delta_employment_string, ' \\\\\n',
-                delta_employment_C_string, ' \\\\\n',
-                delta_employment_N_string, ' \\\\\n',
+                # delta_employment_string, ' \\\\\n',
+                # delta_employment_C_string, ' \\\\\n',
+                # delta_employment_N_string, ' \\\\\n',
                 '\\\\\n',
                 '\\underline{Wage Bill:}', ' \\\\\n',
-                delta_cwb_string,' \\\\\n']
+                delta_cwb_string,' \\\\\n',
+                '\\ \\ $\Delta(\\frac{w_C L_C}{w_N L_N+w_C L_C})$', ' \\\\\n']
 
 closer = ['\\bottomrule','\n', '\end{tabular}']
 
