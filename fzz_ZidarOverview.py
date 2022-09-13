@@ -193,8 +193,8 @@ for tau_param in tau_params:
     
 header = ['\\begin{tabular}{lcccc}', '\n',
           '\\FL', '\n',
-          '\t &	 \multicolumn{1}{p{2.7cm}}{\small \centering \\textbf{(1)} \\\\ {\\bf Baseline}}','\n', 
-          '\t &&	 \multicolumn{1}{p{2.7cm}}{\small \centering \\textbf{(2)} \\\\Total Coverage \\\\ FTFY Workers}','\\\\','\n', 
+          '\t &	 \multicolumn{1}{p{2.7cm}}{\small \centering \\textbf{(1)} \\\\ Baseline}','\n', 
+          '\t &&	 \multicolumn{1}{p{2.7cm}}{\small \centering \\textbf{(2)} \\\\ Full Coverage}','\\\\','\n', 
           '\cmidrule{1-4}', '\n']
 
 table_values=[tau_string, ' \\\\\n',
@@ -217,6 +217,9 @@ table_values=[tau_string, ' \\\\\n',
                 delta_cwb_string,' \\\\\n']
 
 closer = ['\\bottomrule','\n', '\end{tabular}']
+
+#Adjust dollar signs for negative values in the table
+table_values = [x.replace('\\$-', '-\\$') for x in table_values]
 
 #Create, write, and close file
 cwd = os.getcwd()

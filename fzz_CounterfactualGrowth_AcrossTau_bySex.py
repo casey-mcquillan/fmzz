@@ -192,8 +192,8 @@ for _sex in ['_m', '_f']:
               '\t & && \multicolumn{3}{c}{Payroll Tax Equilibrium} \\\\', '\n',
               '\cmidrule{4-6} \n',
               '\t &	 \multicolumn{1}{p{2.2cm}}{\centering Head Tax \ Equilibrium}','\n', 
-              '\t &&	 \multicolumn{1}{p{2.4cm}}{\\footnotesize \centering \\textbf{Baseline}}','\n', 
-              '\t &&	 \multicolumn{1}{p{2.4cm}}{\\footnotesize \centering  Total Cost, \\\\ FTFY Workers}', '\\\\','\n', 
+              '\t &&	 \multicolumn{1}{p{2.4cm}}{\centering Baseline}','\n', 
+              '\t &&	 \multicolumn{1}{p{2.4cm}}{\centering  Full Coverage}', '\\\\','\n', 
               '\cmidrule{1-6}', '\n']
     
     table_values=['\\underline{Employer-Sponsored Health Insurance:}', ' \\\\\n', 

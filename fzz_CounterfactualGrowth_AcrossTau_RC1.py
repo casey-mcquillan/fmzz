@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Mon Feb  7 19:14:35 2022
+Created on Wed Aug 31 21:29:38 2022
 
 @author: caseymcquillan
 """
@@ -14,8 +14,7 @@ import numpy as np
 ### Set working directory and folders
 code_folder = "/Users/caseymcquillan/Desktop/Research/FZZ/code"
 data_folder = "/Users/caseymcquillan/Desktop/Research/FZZ/data"
-output_path = '/Users/caseymcquillan/Desktop/Research/FZZ/output/Tables/Counterfactual Growth'
-
+output_path = '/Users/caseymcquillan/Desktop/Research/FZZ/output/Tables/Appendix_RC1'
 
 ### Import calibration class
 os.chdir(code_folder)
@@ -23,12 +22,11 @@ os.chdir(code_folder)
 #from fzz_calibration import calibration_model 
 from fzz_calibration import calibration_model
 
-
 #%%      Establishing Baseline:      %%#
 
 # Importing Data
 os.chdir(data_folder)
-df_observed = pd.read_csv('observed_data.csv', index_col=0)
+df_observed = pd.read_csv('observed_data_CollegeDef3.csv', index_col=0)
 
 # Parameter assumptions:
 alpha_c=1
@@ -72,7 +70,6 @@ chg_cwb_observed = 100*(((df_observed.loc[year2,'share_pop_c']*df_observed.loc[y
                     (df_observed.loc[year1,'share_pop_c']*df_observed.loc[year1, 'P1_c']*df_observed.loc[year1, 'wage1_c'] \
                      + (1-df_observed.loc[year1,'share_pop_c'])*df_observed.loc[year1,'P1_n']*df_observed.loc[year1, 'wage1_n'])))
 
-    
 ### Initialize strings
 # Growth over Time
 chg_tau_string = '\\ \\ Change in Cost  $(\\tau_{2019}-\\tau_{1977})$ \n \t & - '
@@ -86,14 +83,6 @@ chg_employment_string = r'\underline{Total Employment (\textit{M}):}' +f' \n \t 
 chg_employment_C_string = f'\\ \\ \\small College \n \t & {chg_employment_C_observed:,.2f}'
 chg_employment_N_string = f'\\ \\ \\small Non-College \n \t & {chg_employment_N_observed:,.2f}'
 chg_cwb_string = f'\\ \\ College Share of the Wage Bill \n \t & {chg_cwb_observed:,.2f} pp'
-
-# Difference over Time
-CG_chg_w_C_string = '\\ \\ $\Delta(w_C)$ \n \t'
-CG_chg_w_N_string = '\\ \\ $\Delta(w_N)$ \n \t'
-CG_chg_cwp_string = '\\ \\ $\Delta(w_C/w_N - 1)$ \n \t'
-CG_chg_P_c_string = '\\ \\ $\Delta(P_C)$ \n \t'
-CG_chg_P_n_string = '\\ \\ $\Delta(P_N)$ \n \t'
-CG_chg_cwb_string = '$\\ \\ \\Delta$(\\small College Share): \n \t'
 
 
 #Loop through different tau parameters
@@ -164,14 +153,6 @@ for tau_param in tau_params:
     chg_cwb = 100*(((model_year2.L2_c*model_year2.w2_c)/(model_year2.L2_c*model_year2.w2_c + model_year2.L2_n*model_year2.w2_n))\
                    -((model_year1.L2_c*model_year1.w2_c)/(model_year1.L2_c*model_year1.w2_c + model_year1.L2_n*model_year1.w2_n)))
     
-    #Calculate Change relative to Head Tax
-    CG_chg_w_C = chg_w_C - chg_w_C_observed
-    CG_chg_w_N = chg_w_N - chg_w_N_observed
-    CG_chg_cwp = chg_cwp - chg_cwp_observed
-    CG_chg_P_C = chg_P_C - chg_P_C_observed
-    CG_chg_P_N = chg_P_N - chg_P_N_observed
-    CG_chg_cwb = chg_cwb - chg_cwb_observed
-    
     ## Add Values to Strings
     # Change over time
     chg_tau_string = chg_tau_string + f' && \${chg_tau:,.0f} '
@@ -187,17 +168,7 @@ for tau_param in tau_params:
     chg_employment_N_string = chg_employment_N_string + f' && {chg_employment_N:,.2f} '
     
     chg_cwb_string = chg_cwb_string + f' && {chg_cwb:,.2f} pp'
-    
-    # Difference in Counterfactuals
-    CG_chg_w_C_string = CG_chg_w_C_string + ampersand + f' \${CG_chg_w_C:,.0f} '
-    CG_chg_w_N_string = CG_chg_w_N_string + ampersand + f' \${CG_chg_w_N:,.0f} '
-    CG_chg_cwp_string = CG_chg_cwp_string + ampersand + f' {CG_chg_cwp:,.2f} pp '
-    
-    CG_chg_P_c_string = CG_chg_P_c_string + ampersand + f' {CG_chg_P_C:,.2f} pp '
-    CG_chg_P_n_string = CG_chg_P_n_string + ampersand + f' {CG_chg_P_N:,.2f} pp '
-    
-    CG_chg_cwb_string = CG_chg_cwb_string + ampersand + f' {CG_chg_cwb:,.2f} pp'
-    
+
     
 #%%      Creating Tables      %%#'
     
@@ -239,38 +210,7 @@ closer = ['\\bottomrule','\n', '\end{tabular}']
 #Create, write, and close file
 cwd = os.getcwd()
 os.chdir(output_path)
-file = open(f"Change_OverTime{year2}_{year1}_ByTau.tex","w")
-file.writelines(header) 
-file.writelines(table_values)   
-file.writelines(closer)   
-file.close()
-
-
-
-## Difference in Counterfactual Growth
-header = ['\\begin{tabular}{lccc}', '\n',
-          '\\FL', '\n',
-          '\t &&	 \multicolumn{1}{p{2.4cm}}{\centering Baseline}','\n', 
-          '\t &&	 \multicolumn{1}{p{2.4cm}}{\centering  Full Coverage}', '\\\\','\n', 
-          '\cmidrule{1-4}', '\n']
-
-table_values=['\\underline{Wages:}', ' \\\\\n',
-                CG_chg_w_C_string, ' \\\\\n',
-                CG_chg_w_N_string, ' \\\\\n',
-                CG_chg_cwp_string, ' \\\\\n',
-                '\\\\\n',
-                '\\underline{Employment Rate:}', ' \\\\\n',
-                CG_chg_P_c_string, ' \\\\\n',
-                CG_chg_P_n_string, ' \\\\\n',
-                '\\\\\n',
-                '\\underline{Wage Bill:}', ' \\\\\n',
-                CG_chg_cwb_string,' \\\\\n']
-
-closer = ['\\bottomrule','\n', '\end{tabular}']
-#Create, write, and close file
-cwd = os.getcwd()
-os.chdir(output_path)
-file = open(f"Diff_Change_OverTime{year2}_{year1}_ByTau.tex","w")
+file = open(f"RC1_Change_OverTime{year2}_{year1}_ByTau.tex","w")
 file.writelines(header) 
 file.writelines(table_values)   
 file.writelines(closer)   

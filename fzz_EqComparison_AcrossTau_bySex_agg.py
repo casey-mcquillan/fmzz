@@ -156,6 +156,9 @@ table_values=[tau_string, ' \\\\\n',
 
 closer = ['\\bottomrule','\n', '\end{tabular}']
 
+#Adjust dollar signs for negative values in the table
+table_values = [x.replace('\\$-', '-\\$') for x in table_values]
+
 #Create, write, and close file
 cwd = os.getcwd()
 os.chdir(output_folder)

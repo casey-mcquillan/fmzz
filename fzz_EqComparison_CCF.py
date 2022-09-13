@@ -41,7 +41,7 @@ e_c_baseline, e_n_baseline = elasticity_baseline[0], elasticity_baseline[1]
 #%%      Model Calculations:      %%#
 
 #Initialize strings for tables
-tau_string = '\\underline{Fixed Per Worker Cost, $\\tau$:} \n \t'
+tau_string = '\\underline{Change in Cost, $\\tau$:} \n \t'
 delta_w_C_string = '\\ \\ Change in College Wage, $\Delta(w_C)$ \n \t'
 delta_w_N_string = '\\ \\ Change in Non-college Wage, $\Delta(w_N)$ \n \t'
 pct_chg_cwp_string = '\\ \\ Pct. Change in College Wage Premium, \n \t'
@@ -152,6 +152,9 @@ table_values=[tau_string, ' \\\\\n',
                 '\\ \\ $\Delta(\\frac{w_C L_C}{w_N L_N+w_C L_C})$', ' \\\\\n']
 
 closer = ['\\bottomrule','\n', '\end{tabular}']
+
+#Adjust dollar signs for negative values in the table
+table_values = [x.replace('\\$-', '-\\$') for x in table_values]
 
 #Create, write, and close file
 cwd = os.getcwd()
