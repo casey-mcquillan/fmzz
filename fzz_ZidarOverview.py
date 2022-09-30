@@ -87,10 +87,11 @@ model.generate_table(file_name='EqComparison'+str(year)+"_baseline", year=year,
 
 #Save Results for Overview
 pct_chg_cwp = 100*((model.w2_c/model.w2_n)-(model.w1_c/model.w1_n))/(model.w1_c/model.w1_n -1)
+chg_w_C = (model.w2_c - model.w1_c)
 pp_chg_P_C = 100*(model.P2_c - model.P1_c)
 pp_chg_P_N = 100*(model.P2_n - model.P1_n)
 chg_employment_N = model.employment2_n - model.employment1_n
-baselines_results_string.append(f' \t & {pct_chg_cwp:,.2f}\\% & {pp_chg_P_C:,.2f} pp & {pp_chg_P_N:,.2f} pp & {chg_employment_N/1000:,.2f} & {100*((model.t)):,.2f}\\% \\\\ ')
+baselines_results_string.append(f' \t & {pct_chg_cwp:,.2f}\\% & \\${chg_w_C:,.0f}  & {pp_chg_P_C:,.2f} pp & {pp_chg_P_N:,.2f} pp & {chg_employment_N/1000:,.2f} & {100*((model.t)):,.2f}\\% \\\\ ')
 
 #%%      Vary Tau:      %%#
 #Results for Overview Table
@@ -162,10 +163,11 @@ for tau_param in tau_params:
     pct_chg_cwp = 100*((model.w2_c/model.w2_n)-(model.w1_c/model.w1_n))/(model.w1_c/model.w1_n -1)
     pp_chg_cwb = 100*(((model.L2_c*model.w2_c)/(model.L2_c*model.w2_c + model.L2_n*model.w2_n))\
                        -((model.L1_c*model.w1_c)/(model.L1_c*model.w1_c + model.L1_n*model.w1_n)))
+    chg_w_C = (model.w2_c - model.w1_c)
     pp_chg_P_C = 100*(model.P2_c - model.P1_c)
     pp_chg_P_N = 100*(model.P2_n - model.P1_n)    
     chg_employment_N = model.employment2_n - model.employment1_n
-    tau_results_string.append(f' \t & {pct_chg_cwp:,.2f}\\% & {pp_chg_P_C:,.2f} pp & {pp_chg_P_N:,.2f} pp & {chg_employment_N/1000:,.2f} & {100*((model.t)):,.2f}\\% \\\\ ')
+    tau_results_string.append(f' \t & {pct_chg_cwp:,.2f}\\% & \\${chg_w_C:,.0f}  & {pp_chg_P_C:,.2f} pp & {pp_chg_P_N:,.2f} pp & {chg_employment_N/1000:,.2f} & {100*((model.t)):,.2f}\\% \\\\ ')
     '''
     
     #Add values to strings for Eq Comparison Tables
@@ -298,10 +300,11 @@ for elasticity_value in elasticity_values:
 
     #Save Results for Overview
     pct_chg_cwp = 100*((model.w2_c/model.w2_n)-(model.w1_c/model.w1_n))/(model.w1_c/model.w1_n -1)
+    chg_w_C = (model.w2_c - model.w1_c)
     pp_chg_P_C = 100*(model.P2_c - model.P1_c)
     pp_chg_P_N = 100*(model.P2_n - model.P1_n)
     chg_employment_N = model.employment2_n - model.employment1_n
-    elasticity_results_string.append(f' \t & {pct_chg_cwp:,.2f}\\% & {pp_chg_P_C:,.2f} pp & {pp_chg_P_N:,.2f} pp & {chg_employment_N/1000:,.2f} & {100*((model.t)):,.2f}\\% \\\\ ')
+    elasticity_results_string.append(f' \t & {pct_chg_cwp:,.2f}\\% & \\${chg_w_C:,.0f}  & {pp_chg_P_C:,.2f} pp & {pp_chg_P_N:,.2f} pp & {chg_employment_N/1000:,.2f} & {100*((model.t)):,.2f}\\% \\\\ ')
 
     #Add values to strings for Eq Comparison Tables
     if i ==1: ampersand = '&'
@@ -425,10 +428,11 @@ for rho_value in rho_values:
     
     #Save Results for Overview
     pct_chg_cwp = 100*((model.w2_c/model.w2_n)-(model.w1_c/model.w1_n))/(model.w1_c/model.w1_n -1)
+    chg_w_C = (model.w2_c - model.w1_c)
     pp_chg_P_C = 100*(model.P2_c - model.P1_c)
     pp_chg_P_N = 100*(model.P2_n - model.P1_n)
     chg_employment_N = model.employment2_n - model.employment1_n
-    rho_results_string.append(f' \t & {pct_chg_cwp:,.2f}\\% & {pp_chg_P_C:,.2f} pp & {pp_chg_P_N:,.2f} pp & {chg_employment_N/1000:,.2f} & {100*((model.t)):,.2f}\\% \\\\ ')
+    rho_results_string.append(f' \t & {pct_chg_cwp:,.2f}\\% & \\${chg_w_C:,.0f}  & {pp_chg_P_C:,.2f} pp & {pp_chg_P_N:,.2f} pp & {chg_employment_N/1000:,.2f} & {100*((model.t)):,.2f}\\% \\\\ ')
     
     #Add values to strings for Eq Comparison Tables
     if i ==1: ampersand = '&'
@@ -548,11 +552,12 @@ for def_num in [1,2,3]:
     
     #Save Results for Overview
     pct_chg_cwp = 100*((model.w2_c/model.w2_n)-(model.w1_c/model.w1_n))/(model.w1_c/model.w1_n -1)
+    chg_w_C = (model.w2_c - model.w1_c)
     pp_chg_P_C = 100*(model.P2_c - model.P1_c)
     pp_chg_P_N = 100*(model.P2_n - model.P1_n)
     chg_employment_N = model.employment2_n - model.employment1_n
     
-    collegeDef_results_string.append(f' \t & {pct_chg_cwp:,.2f}\\% & {pp_chg_P_C:,.2f} pp & {pp_chg_P_N:,.2f} pp & {chg_employment_N/1000:,.2f} & {100*((model.t)):,.2f}\\% \\\\ ')
+    collegeDef_results_string.append(f' \t & {pct_chg_cwp:,.2f}\\% & \\${chg_w_C:,.0f}  & {pp_chg_P_C:,.2f} pp & {pp_chg_P_N:,.2f} pp & {chg_employment_N/1000:,.2f} & {100*((model.t)):,.2f}\\% \\\\ ')
     
     
     #Add values to strings for Eq Comparison Tables
@@ -615,14 +620,15 @@ file.close()
 
 
 #%%      Compile Overview Tables:      %%#
-header = ['\\begin{tabular}{lccccc}', ' \n',
+header = ['\\begin{tabular}{lcccccc}', ' \n',
             '\\FL', '\n',
-            '\t &    \multicolumn{1}{p{2.4cm}}{\\footnotesize \centering Percent Change \\\\ in College \\\\ Wage Premium \\\\ $\%\Delta(w_C/w_N - 1)$} ', ' \n',
+            '\t &    \multicolumn{1}{p{2.4cm}}{\\footnotesize \centering Percent Change \\\\ in College \\\\ Wage Premium}', ' \n',
+            '\t &	 \multicolumn{1}{p{2.0cm}}{\\footnotesize \centering Change in \\\\ Non-college Wages \\\\ $\Delta(w_N)$}', '\n',
             '\t &	 \multicolumn{1}{p{2.0cm}}{\\footnotesize \centering Change in \\\\ College Employment \\\\ Rate \\\\ $\Delta(P_C)$}', '\n',
             '\t &	 \multicolumn{1}{p{2.0cm}}{\\footnotesize \centering Change in \\\\ Non-College Employment \\\\ Rate \\\\ $\Delta(P_C)$}', '\n',
             '\t &	 \multicolumn{1}{p{2.0cm}}{\\footnotesize \centering Change in \\\\ Non-College \\\\ Employment (Thous.) \\\\ $\Delta(L_N)$}', '\n',
             '\t &	 \multicolumn{1}{p{2.0cm}}{\\footnotesize \centering Payroll \\\\ Tax Rate \\\\ $t$}', '\\\\', '\n',
-            '\cmidrule{1-6}', '\n',
+            '\cmidrule{1-7}', '\n',
             '\\\\' '\n']  
 
 baseline = [r'\underline{Baseline:}', ' \n', 
@@ -669,17 +675,19 @@ acrossRho = [r'\underline{Substitutability ($\rho$)} \\', ' \n',
 #     '\n', collegeDef_results_string[2], ' \n',
 #     '\\\\', ' \n'] 
 
+# Concatenate table values
+table_values = baseline + acrossRho + acrossElasticity 
+
 closer = ['\\bottomrule','\n', '\end{tabular}']
+
+#Adjust dollar signs for negative values in the table
+table_values = [x.replace('\\$-', '-\\$') for x in table_values]
 
 #Create, write, and close file
 cwd = os.getcwd()
 os.chdir(output_path)
 file = open("Overview_Robustness.tex","w")
 file.writelines(header) 
-#file.writelines(baseline)  
-#file.writelines(acrossTau)  
-file.writelines(acrossRho)  
-#file.writelines(acrossCollegeDef) 
-file.writelines(acrossElasticity)  
-file.writelines(closer)   
+file.writelines(table_values)   
+file.writelines(closer) 
 file.close()

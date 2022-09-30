@@ -106,6 +106,10 @@ chg_cwp_H = 100*(cwp_H_2 - cwp_H_1)
 chg_cwp_P = 100*(cwp_P_2 - cwp_P_1)
 diff_chg_cwp = (chg_cwp_P-chg_cwp_H)
 
+#Non-College wages
+chg_w_N_H = model_year2.w1_n - model_year1.w1_n
+chg_w_N_P = model_year2.w2_n - model_year1.w2_n
+
 #College Employment Rate
 chg_cer_H = 100*(model_year2.P1_c - model_year1.P1_c)
 chg_cer_P = 100*(model_year2.P2_c - model_year1.P2_c)
@@ -127,8 +131,8 @@ ptr_P_2 = 100*model_year2.t
 chg_ptr_P = (ptr_P_2 - ptr_P_1)
    
 #Store Results
-baseline_results_string_H.append(f' \t & {chg_cwp_H:,.2f} pp & {chg_cer_H:,.2f} pp & {chg_ncer_H:,.2f} pp & - \\\\ ')
-baseline_results_string_P.append(f' \t & {chg_cwp_P:,.2f} pp & {chg_cer_P:,.2f} pp & {chg_ncer_P:,.2f} pp & {chg_ptr_P:,.2f} pp \\\\ ')
+baseline_results_string_H.append(f' \t & {chg_cwp_H:,.2f} pp & \\${chg_w_N_H:,.0f} & {chg_cer_H:,.2f} pp & {chg_ncer_H:,.2f} pp & - \\\\ ')
+baseline_results_string_P.append(f' \t & {chg_cwp_P:,.2f} pp & \\${chg_w_N_P:,.0f} & {chg_cer_P:,.2f} pp & {chg_ncer_P:,.2f} pp & {chg_ptr_P:,.2f} pp \\\\ ')
 baseline_results_string_CG.append(f' \t & {diff_chg_cwp:,.2f} pp & {diff_chg_cer:,.2f} pp & {diff_chg_ncer:,.2f} pp \\\\ ')
 
 #%%      Vary Tau:      %%#
@@ -310,6 +314,10 @@ for elasticity_value in elasticity_values:
     chg_cwp_P = 100*(cwp_P_2 - cwp_P_1)
     diff_chg_cwp = (chg_cwp_P-chg_cwp_H)
     
+    #Non-College wages
+    chg_w_N_H = model_year2.w1_n - model_year1.w1_n
+    chg_w_N_P = model_year2.w2_n - model_year1.w2_n
+    
     #College Employment Rate
     chg_cer_H = 100*(model_year2.P1_c - model_year1.P1_c)
     chg_cer_P = 100*(model_year2.P2_c - model_year1.P2_c)
@@ -331,8 +339,8 @@ for elasticity_value in elasticity_values:
     chg_ptr_P = (ptr_P_2 - ptr_P_1)
     
     #Store Results
-    elasticity_results_string_H.append(f' \t & {chg_cwp_H:,.2f} pp & {chg_cer_H:,.2f} pp & {chg_ncer_H:,.2f} pp & - \\\\ ')
-    elasticity_results_string_P.append(f' \t & {chg_cwp_P:,.2f} pp & {chg_cer_P:,.2f} pp & {chg_ncer_P:,.2f} pp & {chg_ptr_P:,.2f} pp \\\\ ')
+    elasticity_results_string_H.append(f' \t & {chg_cwp_H:,.2f} pp & \\${chg_w_N_H:,.0f} & {chg_cer_H:,.2f} pp & {chg_ncer_H:,.2f} pp & - \\\\ ')
+    elasticity_results_string_P.append(f' \t & {chg_cwp_P:,.2f} pp & \\${chg_w_N_P:,.0f} & {chg_cer_P:,.2f} pp & {chg_ncer_P:,.2f} pp & {chg_ptr_P:,.2f} pp \\\\ ')
     elasticity_results_string_CG.append(f' \t & {diff_chg_cwp:,.2f} pp & {diff_chg_cer:,.2f} pp & {diff_chg_ncer:,.2f} pp \\\\ ')
 
 #%%      Vary Substitutabilitity:      %%#
@@ -410,6 +418,10 @@ for rho_value in rho_values:
     chg_cwp_P = 100*(cwp_P_2 - cwp_P_1)
     diff_chg_cwp = (chg_cwp_P-chg_cwp_H)
     
+    #Non-College wages
+    chg_w_N_H = model_year2.w1_n - model_year1.w1_n
+    chg_w_N_P = model_year2.w2_n - model_year1.w2_n
+
     #College Employment Rate
     chg_cer_H = 100*(model_year2.P1_c - model_year1.P1_c)
     chg_cer_P = 100*(model_year2.P2_c - model_year1.P2_c)
@@ -431,8 +443,8 @@ for rho_value in rho_values:
     chg_ptr_P = (ptr_P_2 - ptr_P_1)
     
     #Store Results
-    rho_results_string_H.append(f' \t & {chg_cwp_H:,.2f} pp & {chg_cer_H:,.2f} pp & {chg_ncer_H:,.2f} pp & - \\\\ ')
-    rho_results_string_P.append(f' \t & {chg_cwp_P:,.2f} pp & {chg_cer_P:,.2f} pp & {chg_ncer_P:,.2f} pp & {chg_ptr_P:,.2f} pp \\\\ ')
+    rho_results_string_H.append(f' \t & {chg_cwp_H:,.2f} pp & \\${chg_w_N_H:,.0f} & {chg_cer_H:,.2f} pp & {chg_ncer_H:,.2f} pp & - \\\\ ')
+    rho_results_string_P.append(f' \t & {chg_cwp_P:,.2f} pp & \\${chg_w_N_P:,.0f} & {chg_cer_P:,.2f} pp & {chg_ncer_P:,.2f} pp & {chg_ptr_P:,.2f} pp \\\\ ')
     rho_results_string_CG.append(f' \t & {diff_chg_cwp:,.2f} pp & {diff_chg_cer:,.2f} pp & {diff_chg_ncer:,.2f} pp \\\\ ')   
 
 #%%      Vary College Definition:      %%#
@@ -538,13 +550,14 @@ for def_num in [1,2,3]:
 #%%      Compile Overview Tables:      %%#
 
 ## Table 1: Results under different counterfactuals
-header = ['\\begin{tabular}{lcccc}', '\n',
+header = ['\\begin{tabular}{lccccc}', '\n',
           '\\FL', '\n',
-            '\t &    \small \multicolumn{1}{p{2.7cm}}{\\footnotesize \centering Change in College \\ Wage Premium $(w_C/w_N - 1)_{2019} - (w_C/w_N - 1)_{1977}$}', ' \n',
-            '\t &	 \small \multicolumn{1}{p{2.6cm}}{\\footnotesize \centering Change in College \\ Employment Rate $P_{C,2019}-P_{C,1977}$}', ' \n',
-            '\t &	 \small \multicolumn{1}{p{2.6cm}}{\\footnotesize \centering Change in Non-College \\ Employment Rate $P_{N,2019}-P_{N,1977}$}', ' \n',
-            '\t &	 \small \multicolumn{1}{p{2.6cm}}{\\footnotesize \centering Change in Payroll \\ Tax Rate \\ $t_{2019}-t_{1977}$}','\\\\', '\n',
-            '\cmidrule{1-5}', '\n']  
+            '\t &    \multicolumn{1}{p{2.7cm}}{\\footnotesize \centering Change in College \\\\ Wage Premium $(w_C/w_N - 1)_{2019} - (w_C/w_N - 1)_{1977}$}', ' \n',
+            '\t &	 \multicolumn{1}{p{2.6cm}}{\\footnotesize \centering Change in Non-College \\\\ Wages $w_{N,2019}-w_{N,1977}$}', ' \n',
+            '\t &	 \multicolumn{1}{p{2.6cm}}{\\footnotesize \centering Change in College \\\\ Employment Rate $P_{C,2019}-P_{C,1977}$}', ' \n',
+            '\t &	 \multicolumn{1}{p{2.6cm}}{\\footnotesize \centering Change in Non-College \\\\ Employment Rate $P_{N,2019}-P_{N,1977}$}', ' \n',
+            '\t &	 \multicolumn{1}{p{2.6cm}}{\\footnotesize \centering Change in Payroll \\\\ Tax Rate \\\\ $t_{2019}-t_{1977}$}','\\\\', '\n',
+            '\cmidrule{1-6}', '\n']  
 
 headTax = ['\\\\', ' \n',
            r'\textbf{Head Tax Equilibrium}',
@@ -565,7 +578,7 @@ headTax = ['\\\\', ' \n',
 #     '\\\\', ' \n'] 
 
 
-payrollTax = ['\cmidrule{1-5}', ' \n ',
+payrollTax = ['\cmidrule{1-6}', ' \n ',
               r'\textbf{Payroll Tax Equilibrium} \\ ', ' \n ',
               '\\\\', ' \n ']
 
@@ -611,22 +624,21 @@ acrossRho = [r'\underline{Substitutability ($\rho$)} \\', ' \n',
 #     '\n', collegeDef_results_string_P[2], ' \n',
 #     '\\\\', ' \n'] 
 
+# Concatenate table values
+table_values = headTax + payrollTax + acrossRho + acrossElasticity 
+
 closer = ['\\bottomrule','\n', '\end{tabular}']
+
+#Adjust dollar signs for negative values in the table
+table_values = [x.replace('\\$-', '-\\$') for x in table_values]
+
 
 #Create, write, and close file
 cwd = os.getcwd()
 os.chdir(output_path)
 file = open(f"Change_OverTime{year2}_{year1}_Robust.tex","w")
 file.writelines(header) 
-file.writelines(headTax)
-#file.writelines(baseline_H) 
-#file.writelines(acrossCollegeDef_H)  
-file.writelines(payrollTax)  
-#file.writelines(baseline_P)   
-#file.writelines(acrossTau)
-file.writelines(acrossRho)  
-#file.writelines(acrossCollegeDef_P) 
-file.writelines(acrossElasticity)   
+file.writelines(table_values)
 file.writelines(closer)   
 file.close()
  
