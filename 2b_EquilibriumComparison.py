@@ -15,7 +15,7 @@ exec(open("__set_directory.py").read())
 
 ### Import calibration class
 os.chdir(code_folder)
-from fzz_calibration import calibration_model 
+from _fmzz_calibration_model import fmzz_calibration_model 
 
 
 #%%      Establishing Baseline:      %%#
@@ -63,7 +63,7 @@ for tau_param in tau_params:
     label = tau2specification_Dict[tau_param]
     
     #Define Model
-    model = calibration_model(alpha_c, alpha_n,
+    model = fmzz_calibration_model(alpha_c, alpha_n,
                         rho=rho_baseline,
                         tau=df_observed.loc[year, tau_param],
                         elasticity_c=e_c_baseline, elasticity_n=e_n_baseline,
@@ -75,7 +75,7 @@ for tau_param in tau_params:
                         share_pop_c=df_observed.loc[year, 'share_pop_c'],
                         pop_count=df_observed.loc[year, 'pop_count'])
     
-    #Make sure there are no NANs in model before calibration
+    ## Make sure there are no NANs in model before calibration
     # Remove elasticities if specified to be common
     if model.elasticity_c == model.elasticity_n == 'common': 
         check = set(list(vars(model).keys())) - set(['elasticity_c', 'elasticity_n'])

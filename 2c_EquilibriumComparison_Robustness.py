@@ -15,7 +15,7 @@ exec(open("__set_directory.py").read())
 
 ### Import calibration class
 os.chdir(code_folder)
-from fzz_calibration import calibration_model
+from _fmzz_calibration_model import fmzz_calibration_model 
 
 
 #%%      Establishing Baseline:      %%#
@@ -41,7 +41,7 @@ e_c_baseline, e_n_baseline = elasticity_baseline[0], elasticity_baseline[1]
 baselines_results_string = []
 
 #Define Model
-model = calibration_model(alpha_c, alpha_n,
+model = fmzz_calibration_model(alpha_c, alpha_n,
                     rho=rho_baseline,
                     tau=df_observed.loc[year, tau_baseline],
                     elasticity_c=e_c_baseline, elasticity_n=e_n_baseline,
@@ -110,7 +110,7 @@ for elasticity_value in elasticity_values:
     label = elasticity2specification_Dict[str(elasticity_value)]
     
     #Define and calibrate model
-    model = calibration_model(alpha_c, alpha_n,
+    model = fmzz_calibration_model(alpha_c, alpha_n,
                 rho=rho_baseline,
                 tau=df_observed.loc[year, tau_baseline],
                 elasticity_c=e_c, elasticity_n=e_n,
@@ -166,13 +166,7 @@ for elasticity_value in elasticity_values:
     
     delta_cwb_string = delta_cwb_string + ampersand + \
         f' {100*(((model.L2_c*model.w2_c)/(model.L2_c*model.w2_c + model.L2_n*model.w2_n))-((model.L1_c*model.w1_c)/(model.L1_c*model.w1_c + model.L1_n*model.w1_n))):,.2f} pp'
-    
-header = [f'\ctable[caption={{Equilibrium Comparison Across Elasticity Assumptions}},', '\n',
-          '    label={EqComparison_AcrossElasticity}, pos=h!]', '\n',
-          '{lccccccc}{}{\\FL', '\n',
-          column_header_string, '\\\\',
-          '\cmidrule{1-8}', '\n']            
-
+           
 
 #%%      Construct Results by Varying Substitutabilitity      %%#
 
@@ -205,7 +199,7 @@ for rho_value in rho_values:
     label = rho2specification_Dict[str(rho_value)]
     
     #Define and calibrate model    
-    model = calibration_model(alpha_c, alpha_n,
+    model = fmzz_calibration_model(alpha_c, alpha_n,
                 rho=rho_value,
                 tau=df_observed.loc[year, tau_baseline],
                 elasticity_c=e_c_baseline, elasticity_n=e_n_baseline,

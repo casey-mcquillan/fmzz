@@ -14,10 +14,8 @@ import numpy as np
 exec(open("__set_directory.py").read())
 
 ### Import calibration class
-os.chdir(code_folder)
-
-#from fzz_calibration import calibration_model
-from fzz_calibration import calibration_model
+os.chdir(code_folder) 
+from _fmzz_calibration_model import fmzz_calibration_model
 
 #%%      Establishing Baseline:      %%#
 
@@ -45,7 +43,7 @@ baseline_results_string_P = []
 baseline_results_string_CG = []
 
 #Define Models
-model_year1 = calibration_model(alpha_c, alpha_n,
+model_year1 = fmzz_calibration_model(alpha_c, alpha_n,
                     rho=rho_baseline,
                     tau=df_observed.loc[year1, tau_baseline],
                     elasticity_c=e_c_baseline, elasticity_n=e_n_baseline,
@@ -58,7 +56,7 @@ model_year1 = calibration_model(alpha_c, alpha_n,
                     pop_count=df_observed.loc[year1, 'pop_count'])
 
 
-model_year2 = calibration_model(alpha_c, alpha_n,
+model_year2 = fmzz_calibration_model(alpha_c, alpha_n,
                     rho=rho_baseline,
                     tau=df_observed.loc[year2, tau_baseline],
                     elasticity_c=e_c_baseline, elasticity_n=e_n_baseline,
