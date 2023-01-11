@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 """
 Created on Mon Feb  7 19:14:35 2022
-
 @author: caseymcquillan
 """
 #%%  Preamble: Import packages, set directory #%%  
@@ -12,19 +11,17 @@ import pandas as pd
 import numpy as np
 
 ### Set working directory and folders
-code_folder = "/Users/caseymcquillan/Desktop/Research/FZZ/code"
-data_folder = "/Users/caseymcquillan/Desktop/Research/FZZ/data"
-output_path = '/Users/caseymcquillan/Desktop/Research/FZZ/output/Tables/Counterfactual Growth'
-
+from main import main_folder
+code_folder = main_folder+"/code"
+data_folder = main_folder+"/data"
+output_folder = main_folder+"/output/Tables/"
 
 ### Import calibration class
-os.chdir(code_folder)
-
-#from fzz_calibration import calibration_model 
+os.chdir(code_folder) 
 from fzz_calibration import calibration_model
 
 
-#%%      Establishing Baseline:      %%#
+#%%      Establishing Baseline Parameters      %%#
 
 # Importing Data
 os.chdir(data_folder)
@@ -43,8 +40,7 @@ elasticity_baseline = ['common', 'common']
 e_c_baseline, e_n_baseline = elasticity_baseline[0], elasticity_baseline[1]
 
 
-#%%      Calibration while Varying Tau      %%#'
-
+#%%      Construct Results by Varying Tau      %%#
 #Parameters to be varied:
 tau_params = ['tau_baseline', 'tau_high']
 
@@ -72,9 +68,7 @@ chg_cwb_observed = 100*(((df_observed.loc[year2,'share_pop_c']*df_observed.loc[y
                     (df_observed.loc[year1,'share_pop_c']*df_observed.loc[year1, 'P1_c']*df_observed.loc[year1, 'wage1_c'] \
                      + (1-df_observed.loc[year1,'share_pop_c'])*df_observed.loc[year1,'P1_n']*df_observed.loc[year1, 'wage1_n'])))
 
-    
 ### Initialize strings
-# Growth over Time
 chg_tau_string = '\\ \\ Change in Cost  $(\\tau_{2019}-\\tau_{1977})$ \n \t & - '
 chg_t_string = '\\ \\ Payroll Tax $(t_{2019}-t_{1977})$ \n \t & - '
 chg_w_C_string = '\\ \\ Change in College Wages $w_{C,2019}-w_{C,1977}$ \n \t '+f'& \${chg_w_C_observed:,.0f}'
@@ -87,16 +81,7 @@ chg_employment_C_string = f'\\ \\ \\small College \n \t & {chg_employment_C_obse
 chg_employment_N_string = f'\\ \\ \\small Non-College \n \t & {chg_employment_N_observed:,.2f}'
 chg_cwb_string = f'\\ \\ College Share of the Wage Bill \n \t & {chg_cwb_observed:,.2f} pp'
 
-# Difference over Time
-CG_chg_w_C_string = '\\ \\ $\Delta(w_C)$ \n \t'
-CG_chg_w_N_string = '\\ \\ $\Delta(w_N)$ \n \t'
-CG_chg_cwp_string = '\\ \\ $\Delta(w_C/w_N - 1)$ \n \t'
-CG_chg_P_c_string = '\\ \\ $\Delta(P_C)$ \n \t'
-CG_chg_P_n_string = '\\ \\ $\Delta(P_N)$ \n \t'
-CG_chg_cwb_string = '$\\ \\ \\Delta$(\\small College Share): \n \t'
-
-
-#Loop through different tau parameters
+### Loop through different tau parameters
 i = 0
 for tau_param in tau_params:
     i = i+1
@@ -150,7 +135,7 @@ for tau_param in tau_params:
     if i ==1: ampersand = '&'
     if i > 1: ampersand = ' &&'
 
-    #Calculate Change over Time in Payroll Tax counterfactual
+    #Calculate Results
     chg_tau = model_year2.tau-model_year1.tau
     chg_t = 100*(model_year2.t-model_year1.t)
     chg_w_C = model_year2.w2_c-model_year1.w2_c
@@ -163,17 +148,8 @@ for tau_param in tau_params:
     chg_employment_N = (model_year2.employment2_n-model_year1.employment2_n)/1e6
     chg_cwb = 100*(((model_year2.L2_c*model_year2.w2_c)/(model_year2.L2_c*model_year2.w2_c + model_year2.L2_n*model_year2.w2_n))\
                    -((model_year1.L2_c*model_year1.w2_c)/(model_year1.L2_c*model_year1.w2_c + model_year1.L2_n*model_year1.w2_n)))
-    
-    #Calculate Change relative to Head Tax
-    CG_chg_w_C = chg_w_C - chg_w_C_observed
-    CG_chg_w_N = chg_w_N - chg_w_N_observed
-    CG_chg_cwp = chg_cwp - chg_cwp_observed
-    CG_chg_P_C = chg_P_C - chg_P_C_observed
-    CG_chg_P_N = chg_P_N - chg_P_N_observed
-    CG_chg_cwb = chg_cwb - chg_cwb_observed
-    
-    ## Add Values to Strings
-    # Change over time
+        
+    #Save Results
     chg_tau_string = chg_tau_string + f' && \${chg_tau:,.0f} '
     chg_t_string = chg_t_string + f' && {chg_t:,.2f} pp '
     chg_w_C_string = chg_w_C_string + f' && \${chg_w_C:,.0f} '
@@ -188,21 +164,9 @@ for tau_param in tau_params:
     
     chg_cwb_string = chg_cwb_string + f' && {chg_cwb:,.2f} pp'
     
-    # Difference in Counterfactuals
-    CG_chg_w_C_string = CG_chg_w_C_string + ampersand + f' \${CG_chg_w_C:,.0f} '
-    CG_chg_w_N_string = CG_chg_w_N_string + ampersand + f' \${CG_chg_w_N:,.0f} '
-    CG_chg_cwp_string = CG_chg_cwp_string + ampersand + f' {CG_chg_cwp:,.2f} pp '
     
-    CG_chg_P_c_string = CG_chg_P_c_string + ampersand + f' {CG_chg_P_C:,.2f} pp '
-    CG_chg_P_n_string = CG_chg_P_n_string + ampersand + f' {CG_chg_P_N:,.2f} pp '
-    
-    CG_chg_cwb_string = CG_chg_cwb_string + ampersand + f' {CG_chg_cwb:,.2f} pp'
-    
-    
-#%%      Creating Tables      %%#'
-    
-    
-## Growth over Time 
+#%%      Compile and Export LaTeX file:      %%#
+## LaTeX code for header
 header = ['\\begin{tabular}{lccccc}', '\n',
           '\\FL', '\n',
           '\t & && \multicolumn{3}{c}{Payroll Tax Equilibrium} \\\\', '\n',
@@ -212,6 +176,7 @@ header = ['\\begin{tabular}{lccccc}', '\n',
           '\t &&	 \multicolumn{1}{p{2.4cm}}{\centering  Full Coverage}', '\\\\','\n', 
           '\cmidrule{1-6}', '\n']
 
+## LaTeX code for table results
 table_values=['\\underline{Employer-Sponsored Health Insurance:}', ' \\\\\n', 
               chg_tau_string, ' \\\\\n',
               chg_t_string, ' \\\\\n',
@@ -226,51 +191,17 @@ table_values=['\\underline{Employer-Sponsored Health Insurance:}', ' \\\\\n',
               chg_P_c_string, ' \\\\\n',
               chg_P_n_string, ' \\\\\n',
               '\\\\\n',
-              #chg_employment_string, ' \\\\\n',
-              #chg_employment_C_string, ' \\\\\n',
-              #chg_employment_N_string, ' \\\\\n',
-              #'\\\\\n',
               '\\underline{Wage Bill:}', ' \\\\\n',
               chg_cwb_string,' \\\\\n',
               '\\ \\ ${\\left(\\frac{w_C L_C}{w_N L_N + w_C L_C}\\right)}_{2019}-{\\left(\\frac{w_C L_C}{w_N L_N + w_C L_C}\\right)}_{1977}$', ' \\\\\n']
 
+## LaTeX code for closer
 closer = ['\\bottomrule','\n', '\end{tabular}']
 
 #Create, write, and close file
 cwd = os.getcwd()
-os.chdir(output_path)
-file = open(f"Change_OverTime{year2}_{year1}_ByTau.tex","w")
-file.writelines(header) 
-file.writelines(table_values)   
-file.writelines(closer)   
-file.close()
-
-
-
-## Difference in Counterfactual Growth
-header = ['\\begin{tabular}{lccc}', '\n',
-          '\\FL', '\n',
-          '\t &&	 \multicolumn{1}{p{2.4cm}}{\centering Baseline}','\n', 
-          '\t &&	 \multicolumn{1}{p{2.4cm}}{\centering  Full Coverage}', '\\\\','\n', 
-          '\cmidrule{1-4}', '\n']
-
-table_values=['\\underline{Wages:}', ' \\\\\n',
-                CG_chg_w_C_string, ' \\\\\n',
-                CG_chg_w_N_string, ' \\\\\n',
-                CG_chg_cwp_string, ' \\\\\n',
-                '\\\\\n',
-                '\\underline{Employment Rate:}', ' \\\\\n',
-                CG_chg_P_c_string, ' \\\\\n',
-                CG_chg_P_n_string, ' \\\\\n',
-                '\\\\\n',
-                '\\underline{Wage Bill:}', ' \\\\\n',
-                CG_chg_cwb_string,' \\\\\n']
-
-closer = ['\\bottomrule','\n', '\end{tabular}']
-#Create, write, and close file
-cwd = os.getcwd()
-os.chdir(output_path)
-file = open(f"Diff_Change_OverTime{year2}_{year1}_ByTau.tex","w")
+os.chdir(output_folder)
+file = open(f"CounterfactualGrowth.tex","w")
 file.writelines(header) 
 file.writelines(table_values)   
 file.writelines(closer)   
