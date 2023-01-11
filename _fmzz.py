@@ -85,3 +85,21 @@ exec(open("RC1_CounterfactualGrowth.py").read())
 
 
 #%%  Robustness Check 2: Decomposing Effects by Sex #%%
+
+### Clean Data
+# Clean ASEC Data
+os.chdir(code_folder)
+exec(open("RC2_clean_ASEC_data.py").read())
+
+# Compile Observed Data from ASEC and OECD
+os.chdir(code_folder)
+exec(open("RC2_compile_observed_data.py").read())
+
+### Generate Tables
+# Generate Appendix Table 4:  
+os.chdir(code_folder)
+exec(open("RC2_EquilibriumComparison_bySex.py").read())
+
+# Generate Appendix Table 5:  
+os.chdir(code_folder)
+exec(open("RC2_CounterfactualGrowth_bySex.py").read())

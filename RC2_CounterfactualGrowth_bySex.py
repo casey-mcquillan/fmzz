@@ -12,10 +12,7 @@ import pandas as pd
 import numpy as np
 
 ### Set working directory and folders
-main_folder = "/Users/caseymcquillan/Desktop/Research/FZZ"
-code_folder = main_folder+"/code"
-data_folder = main_folder+"/data"
-output_path = main_folder+"/output/Tables/Analysis by Sex"
+exec(open("__set_directory.py").read())
 
 ### Import calibration class
 os.chdir(code_folder)
@@ -59,29 +56,17 @@ for _sex in ['_m', '_f']:
     chg_employment_N_observed = ((df_observed.loc[year2, 'pop_count']*(1-df_observed.loc[year2,'share_pop_c'])*df_observed.loc[year2, 'P1_n'+_sex]) - \
                                     (df_observed.loc[year1, 'pop_count']*(1-df_observed.loc[year1,'share_pop_c'])*df_observed.loc[year1, 'P1_n'+_sex]))\
                                     /1e6
-    #chg_employment_observed = chg_employment_C_observed + chg_employment_N_observed
-    
-    # chg_cwb_observed = 100*(((df_observed.loc[year2,'share_pop_c']*df_observed.loc[year2, 'P1_c']*df_observed.loc[year2, 'wage1_c'])/\
-    #                     (df_observed.loc[year2,'share_pop_c']*df_observed.loc[year2, 'P1_c']*df_observed.loc[year2, 'wage1_c'] \
-    #                      + (1-df_observed.loc[year2,'share_pop_c'])*df_observed.loc[year2,'P1_n']*df_observed.loc[year2, 'wage1_n']))\
-    #                -((df_observed.loc[year1,'share_pop_c']*df_observed.loc[year1, 'P1_c']*df_observed.loc[year1, 'wage1_c'])/\
-    #                     (df_observed.loc[year1,'share_pop_c']*df_observed.loc[year1, 'P1_c']*df_observed.loc[year1, 'wage1_c'] \
-    #                      + (1-df_observed.loc[year1,'share_pop_c'])*df_observed.loc[year1,'P1_n']*df_observed.loc[year1, 'wage1_n'])))
-    
-        
+                                    
     ### Initialize strings
     # Growth over Time
     chg_tau_string = '\\ \\ Change in Cost  $(\\tau_{2019}-\\tau_{1977})$ \n \t & - '
     chg_t_string = '\\ \\ Payroll Tax $(t_{2019}-t_{1977})$ \n \t & - '
     chg_w_C_string = '\\ \\ Change in College Wages $w_{C,2019}-w_{C,1977}$ \n \t '+f'& \${chg_w_C_observed:,.0f}'
     chg_w_N_string = '\\ \\ Change in Non-college Wages $w_{N,2019}-w_{N,1977}$ \n \t '+f'& \${chg_w_N_observed:,.0f}'
-    #chg_cwp_string = '\\ \\ PP Change in College Wage Premium \n \t '+f'& {chg_cwp_observed:,.2f} pp'
     chg_P_c_string = '\\ \\ \\small Change in College Employment Rate $P_{C,2019}-P_{C,1977}$ \n \t '+f'& {chg_P_C_observed:,.2f} pp'
     chg_P_n_string = '\\ \\ \\small Change in Non-college Employment Rate $P_{N,2019}-P_{N,1977}$ \n \t '+f'& {chg_P_N_observed:,.2f} pp'
-    #chg_employment_string = r'\underline{Total Employment (\textit{M}):}' +f' \n \t & {chg_employment_observed:,.2f}'
     chg_employment_C_string = f'\\ \\ \\small College \n \t & {chg_employment_C_observed:,.2f}'
     chg_employment_N_string = f'\\ \\ \\small Non-College \n \t & {chg_employment_N_observed:,.2f}'
-    #chg_cwb_string = f'\\ \\ College Share of the Wage Bill \n \t & {chg_cwb_observed:,.2f} pp'
     
     
     #Loop through different tau parameters
@@ -157,14 +142,10 @@ for _sex in ['_m', '_f']:
         chg_t = 100*(model_year2.t-model_year1.t)
         exec(f'chg_w_C = model_year2.w2_c{_sex}-model_year1.w2_c{_sex}')
         exec(f'chg_w_N = model_year2.w2_n{_sex}-model_year1.w2_n{_sex}')
-        #chg_cwp = 100*((model_year2.w2_c/model_year2.w2_n)-(model_year1.w2_c/model_year1.w2_n))
         exec(f'chg_P_C=100*(model_year2.P2_c{_sex}-model_year1.P2_c{_sex})')
         exec(f'chg_P_N=100*(model_year2.P2_n{_sex}-model_year1.P2_n{_sex})')
-        #chg_employment = (model_year2.employment2-model_year1.employment2)/1e6
         exec(f'chg_employment_C = (model_year2.employment2_c{_sex}-model_year1.employment2_c{_sex})/1e6')
         exec(f'chg_employment_N = (model_year2.employment2_n{_sex}-model_year1.employment2_n{_sex})/1e6')
-        #chg_cwb = 100*(((model_year2.L2_c*model_year2.w2_c)/(model_year2.L2_c*model_year2.w2_c + model_year2.L2_n*model_year2.w2_n))\
-        #               -((model_year1.L2_c*model_year1.w2_c)/(model_year1.L2_c*model_year1.w2_c + model_year1.L2_n*model_year1.w_n)))
         
         ## Add Values to Strings
         # Change over time
@@ -172,20 +153,15 @@ for _sex in ['_m', '_f']:
         chg_t_string = chg_t_string + f' && {chg_t:,.2f} pp '
         chg_w_C_string = chg_w_C_string + f' && \${chg_w_C:,.0f} '
         chg_w_N_string = chg_w_N_string + f' && \${chg_w_N:,.0f} '
-        #chg_cwp_string = chg_cwp_string + f' && {chg_cwp:,.2f} pp '
         
         chg_P_c_string = chg_P_c_string + f' && {chg_P_C:,.2f} pp '
         chg_P_n_string = chg_P_n_string + f' && {chg_P_N:,.2f} pp '
-        #chg_employment_string = chg_employment_string + f' && {chg_employment:,.2f} '
         chg_employment_C_string = chg_employment_C_string + f' && {chg_employment_C:,.2f} '
         chg_employment_N_string = chg_employment_N_string + f' && {chg_employment_N:,.2f} '
         
-        #chg_cwb_string = chg_cwb_string + f' && {chg_cwb:,.2f} pp'
-        
         
     #%%      Creating Tables      %%#'
-        
-        
+    
     ## Growth over Time 
     header = ['\\begin{tabular}{lccccc}', '\n',
               '\\FL', '\n',
@@ -203,27 +179,18 @@ for _sex in ['_m', '_f']:
                   '\\underline{Wages:}', ' \\\\\n', 
                   chg_w_C_string, ' \\\\\n',
                   chg_w_N_string, ' \\\\\n',
-                  #chg_cwp_string, ' \\\\\n',
-                  #'\\ \\ ${(w_c/w_N - 1)}_{2019}-{(w_c/w_N - 1)}_{1977}$', ' \\\\\n',
                   '\\\\\n',
                   '\\underline{Employment Rate:}', ' \\\\\n',
                   chg_P_c_string, ' \\\\\n',
                   chg_P_n_string, ' \\\\\n',
                   '\\\\\n']
-                  #chg_employment_string, ' \\\\\n',
-                  #chg_employment_C_string, ' \\\\\n',
-                  #chg_employment_N_string, ' \\\\\n',
-                  #'\\\\\n',
-                  #'\\underline{Wage Bill:}', ' \\\\\n',
-                  #chg_cwb_string,' \\\\\n',
-                  #'\\ \\ ${\\left(\\frac{w_C L_C}{w_N L_N + w_C L_C}\\right)}_{2019}-{\\left(\\frac{w_C L_C}{w_N L_N + w_C L_C}\\right)}_{1977}$', ' \\\\\n']
     
     closer = ['\\bottomrule','\n', '\end{tabular}']
     
     #Create, write, and close file
     cwd = os.getcwd()
-    os.chdir(output_path)
-    file = open(f"Change_OverTime{year2}_{year1}_ByTau{_sex}.tex","w")
+    os.chdir(output_folder)
+    file = open(f"RC2_CounterfactualGrowth{_sex}.tex","w")
     file.writelines(header) 
     file.writelines(table_values)   
     file.writelines(closer)   

@@ -164,4 +164,4 @@ data_export = data[['N', 'N_college', 'N_FTFY', 'N_college_FTFY',
                     'share_pop_c', 'share_pop_c_m', 'share_pop_c_f',
                     'share_pop_n', 'share_pop_n_m', 'share_pop_n_f',
                     'Share ESHI policyholders']]
-data_export.to_csv('CPS_ASEC_clean_bySex.csv')
+data_export.to_csv('RC2_clean_ASEC_data_bySex.csv')

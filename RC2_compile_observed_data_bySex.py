@@ -23,7 +23,7 @@ os.chdir(data_folder)
 
 # Import data series for calibration
 OECD_data = pd.read_csv('OECD_data.csv', index_col='year')
-ASEC_data = pd.read_csv('CPS_ASEC_clean_bySex.csv', index_col=0)
+ASEC_data = pd.read_csv('RC2_clean_ASEC_data_bySex.csv', index_col=0)
 
 # Import time series data on wages, tau from Patrick Collard:
 os.chdir(data_folder + "/Time Series from Emily")
@@ -69,6 +69,6 @@ data_export = df_observed
 
 ## Export data
 os.chdir(data_folder)
-data_export.to_csv('observed_data_bySex.csv')
+data_export.to_csv('RC2_observed_data_bySex.csv')
 
 

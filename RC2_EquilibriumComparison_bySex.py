@@ -12,11 +12,7 @@ import pandas as pd
 import numpy as np
 
 ### Set working directory and folders
-main_folder = "/Users/caseymcquillan/Desktop/Research/FZZ"
-code_folder = main_folder+"/code"
-data_folder = main_folder+"/data"
-output_folder = main_folder+"/output/Tables/Analysis by Sex"
-os.chdir(code_folder)
+exec(open("__set_directory.py").read())
 
 ### Import calibration class
 os.chdir(code_folder)
@@ -258,7 +254,7 @@ table_values = [x.replace('\\$-', '-\\$') for x in table_values]
 #Create, write, and close file
 cwd = os.getcwd()
 os.chdir(output_folder)
-file = open("EqComparison_bySex.tex","w")
+file = open("RC2_EquilibriumComparison_bySex.tex","w")
 file.writelines(header) 
 file.writelines(table_values)   
 file.writelines(closer)   
