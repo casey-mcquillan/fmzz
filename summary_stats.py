@@ -155,15 +155,7 @@ for group in ['Total', 'FTFY', 'PTPY']:
         
         table_data.loc[len(table_data)]= group, column, 'Employment Rate', employment_rate
         table_data.loc[len(table_data)]= group, column, 'Avg. Annual Earnings', avg_wages
-
-#%% Inflation Adjust Wages #%%
-'''
-os.chdir(data_folder)
-price_data = pd.read_csv('PCEPI_data.csv', index_col=0)
-adj_factor = price_data.loc[year, 'PCEPI Adjustment Factor (2019 Dollars)']
-for var in ['wage1_c', 'wage1_n', 'wage1_c (weighted)', 'wage1_n (weighted)']:
-    table_data.loc[yearvar] = adj_factor*df.loc[year, var]
-'''      
+    
         
 #%% Output Latex Table #%%
 
