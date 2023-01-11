@@ -10,11 +10,10 @@ import pandas as pd
 import numpy as np
 
 ### Set working directory and folders
-main_folder = "/Users/caseymcquillan/Desktop/Research/FZZ"
+from main import main_folder
 code_folder = main_folder+"/code"
 data_folder = main_folder+"/data"
-output_folder = main_folder+"/output/Tables/SummaryStats"
-os.chdir(code_folder)
+output_folder = main_folder+"/output/Tables/"
 
 
 #%% Import Data #%%
