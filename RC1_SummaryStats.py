@@ -255,7 +255,7 @@ table_bottom = ['\end{tabular}']
 #Create, write, and close file
 cwd = os.getcwd()
 os.chdir(output_folder)
-file = open(f"RC1_summary_stats_{str(year)}.tex","w")
+file = open(f"RC1_SummaryStats.tex","w")
 file.writelines(table_header) 
 file.writelines(table_values)   
 file.writelines(table_bottom)   
