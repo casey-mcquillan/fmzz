@@ -11,7 +11,7 @@ import pandas as pd
 import numpy as np
 
 ### Set working directory and folders
-from main import main_folder
+from _fmzz_main import main_folder
 code_folder = main_folder+"/code"
 data_folder = main_folder+"/data"
 output_folder_tables = main_folder+"/output/Tables/"
