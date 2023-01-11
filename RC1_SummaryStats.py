@@ -35,10 +35,12 @@ df = df[[(not x in [10,13,14,29]) for x in df['CLASSWLY']]]
 # Adjust year bc survey data corresponds to prev year
 df['YEAR'] = df['YEAR'] - 1
 
-# Define college attendance
+##############################################################################
+# Define college attendance as Some College or More
 df['College'] = \
-    [int(x in [110, 120, 121, 122, 111, 123, 124, 125]) for x in df['EDUC']]
+    [int(x in [80, 90, 100, 110, 120, 121, 122, 81, 91, 92, 111, 123, 124, 125]) for x in df['EDUC']]
 df['Non-College'] = 1-df['College']
+###############################################################################
 
 # Define Health Insurance
 df['HI'] = 1*(df['ANYCOVLY']==2)
@@ -256,7 +258,7 @@ table_bottom = ['\end{tabular}']
 #Create, write, and close file
 cwd = os.getcwd()
 os.chdir(output_folder)
-file = open(f"summary_stats_{str(year)}.tex","w")
+file = open(f"RC1_summary_stats_{str(year)}.tex","w")
 file.writelines(table_header) 
 file.writelines(table_values)   
 file.writelines(table_bottom)   
