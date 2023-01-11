@@ -18,9 +18,17 @@ data_folder = main_folder+"/data"
     
 #%%  Clean Data  for Main Analysis #%%  
 
-
 # Clean ASEC Data
+os.chdir(code_folder)
+exec(open("clean_ASEC_data.py").read())
 
+# Pull OECD Population Data
+os.chdir(code_folder)
+exec(open("OECD_data_pull.py").read())
+
+# Compile Observed Data
+os.chdir(code_folder)
+exec(open("compile_observed_data.py").read())
 
 
 #%%  Generate Main Tables #%% 

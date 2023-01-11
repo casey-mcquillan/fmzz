@@ -26,7 +26,6 @@ from fzz_calibration import calibration_model
 # Importing Data
 os.chdir(data_folder)
 df_observed = pd.read_csv('observed_data.csv', index_col=0)
-df_observed_RC1 = pd.read_csv('observed_data_RC1.csv', index_col=0)
 
 # Parameter assumptions:
 alpha_c=1

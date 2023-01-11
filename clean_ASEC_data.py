@@ -54,7 +54,6 @@ df['ESHI_dependent'] = 1*(df['GRPDEPLY']==2)
 df['Total'] = 1
 
 
-
 #%% Create Dataframe by year #%%
 
 # Define range of years
@@ -157,8 +156,6 @@ for year in years:
             np.average(df['ESHI_dependent']*df['FTFY'], \
                        weights=df['ASECWT']*year_dummy*df['FTFY'])  
     
-c
-        
 
 #%% Export Data #%%
 os.chdir(data_folder)
@@ -177,4 +174,4 @@ data_export = data[['N', 'N_college', 'N_FTFY', 'N_college_FTFY',
                     'Share ESHI policyholders, Non-college (weighted)',
                     'Share ESHI dependents',
                     'Share ESHI dependents (weighted)']]
-data_export.to_csv('CPS_ASEC_clean.csv')    
+data_export.to_csv('clean_ASEC_data.csv')
