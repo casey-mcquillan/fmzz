@@ -151,16 +151,7 @@ for year in years:
         data.loc[year,'Share ESHI policyholders'] = np.average(df['ESHI_own'], \
                                                                weights=df['ASECWT']*year_dummy*df['FTFY'])
 
-#%% Inflation Adjust #%%
-# Adjust wages to be in 2019 dollars
-os.chdir(data_folder)
-price_data = pd.read_csv('PCEPI_data.csv', index_col=0)
-for year in data.index:
-    adj_factor = price_data.loc[year, 'PCEPI Adjustment Factor (2019 Dollars)']
-    for var in ['wage1_c', 'wage1_n', 'wage1_c_m', 'wage1_n_m', 'wage1_c_f', 'wage1_n_f']:
-        data.loc[year, var] = adj_factor*data.loc[year, var]
         
-
 #%% Export Data #%%
 os.chdir(data_folder)
 data_export = data[['N', 'N_college', 'N_FTFY', 'N_college_FTFY',
