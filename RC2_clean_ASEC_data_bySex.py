@@ -58,6 +58,16 @@ df['ESHI_dependent'] = 1*(df['GRPDEPLY']==2)
 df['Total'] = 1
 
 
+#%% Inflation Adjust #%%
+# Adjust wages to be in 2019 dollars
+os.chdir(data_folder)
+price_data = pd.read_csv('PCEPI_data.csv', index_col=0)
+for year in data.index:
+    adj_factor = price_data.loc[year, 'PCEPI Adjustment Factor (2019 Dollars)']
+    for var in ['wage1_c_m', 'wage1_n_m', 'wage1_c_f', 'wage1_n_f']:
+        data.loc[year, var] = adj_factor*data.loc[year, var]
+
+
 #%% Create Dataframe by year #%%
 
 # Define range of years
