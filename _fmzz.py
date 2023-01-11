@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 """s
 Created on Mon Jan  9 23:31:36 2023
-
 @author: caseymcquillan
 """
 #%%  Preamble: Import packages, set directory #%%  
@@ -10,12 +9,14 @@ import os as os
 import pandas as pd
 import numpy as np
 
-### Set working directory and folders
+
+#%% Set working directory #%%
 main_folder = "/Users/caseymcquillan/Desktop/Research/FZZ"
 code_folder = main_folder+"/code"
 data_folder = main_folder+"/data"
-    
-    
+output_folder = main_folder+"/output/Tables/"
+
+
 #%%  1. Clean Data  for Main Analysis #%%  
 
 # Clean ASEC Data
@@ -83,4 +84,4 @@ os.chdir(code_folder)
 exec(open("RC1_CounterfactualGrowth.py").read())
 
 
-#%%  Robustness Check 2: Decomposing Effects by Sex #%%  
+#%%  Robustness Check 2: Decomposing Effects by Sex #%%

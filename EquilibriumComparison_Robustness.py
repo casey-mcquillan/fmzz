@@ -11,10 +11,7 @@ import pandas as pd
 import numpy as np
 
 ### Set working directory and folders
-from _fmzz_main import main_folder
-code_folder = main_folder+"/code"
-data_folder = main_folder+"/data"
-output_folder = main_folder+"/output/Tables/"
+exec(open("__set_directory.py").read())
 
 ### Import calibration class
 os.chdir(code_folder)

@@ -12,10 +12,7 @@ from fredapi import Fred
 fred = Fred(api_key='d6e26ca3fc202a8c68409b1c78708331')
 
 ### Set working directory and folders
-from _fmzz_main import main_folder
-code_folder = main_folder+"/code"
-data_folder = main_folder+"/data"
-os.chdir(code_folder)
+exec(open("__set_directory.py").read())
 
 
 #%%      Constructing the Data      %%#

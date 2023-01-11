@@ -11,12 +11,7 @@ import pandas as pd
 import numpy as np
 
 ### Set working directory and folders
-from _fmzz_main import main_folder
-code_folder = main_folder+"/code"
-data_folder = main_folder+"/data"
-output_folder_tables = main_folder+"/output/Tables/"
-output_folder_graphs = main_folder+"/output/Graphs/"
-os.chdir(code_folder)
+exec(open("__set_directory.py").read())
 
 ### Import calibration class
 os.chdir(code_folder)
@@ -24,7 +19,6 @@ from fzz_calibration_CCF import calibration_model_CCF
 
 
 #%%      Importing Data:      %%#
-
 # Importing Data
 os.chdir(data_folder)
 df_observed = pd.read_csv('observed_data_CCF.csv', index_col=0)
@@ -217,7 +211,7 @@ closer = ['\\bottomrule','\n', '\end{tabular}']
 
 ## Create, write, and close file
 cwd = os.getcwd()
-os.chdir(output_folder_tables)
+os.chdir(output_folder)
 file = open(f"CostCounterfactual.tex","w")
 file.writelines(header) 
 file.writelines(table_values)   
