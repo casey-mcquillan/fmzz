@@ -11,11 +11,8 @@ import pandas as pd
 from fredapi import Fred
 fred = Fred(api_key='d6e26ca3fc202a8c68409b1c78708331')
 
-### Set working directory
-code_folder = "/Users/caseymcquillan/Desktop/Research/FZZ/code"
-data_folder = "/Users/caseymcquillan/Desktop/Research/FZZ/data"
-output_folder = "/Users/caseymcquillan/Desktop/Research/FZZ/output"
-os.chdir(code_folder)
+### Set working directory and folders
+exec(open("__set_directory.py").read())
 
 
 #%%  Data Wrangling #%%

@@ -95,8 +95,6 @@ plt.plot(df_observed['tau_baseline'].dropna(), label='Observed',
          marker='.', ms=5, color='black')
 plt.plot(df_observed['tau_CCF_Canada'].dropna(), label='Canada Counterfactual',
          marker='.', ms=5, color='maroon')
-# plt.plot(df_observed['tau_CCF_Canada2'].dropna(), label='Canada Counterfactual 1',
-#          marker='.', ms=5, color='indianred')
 plt.plot(df_observed['tau_CCF_NoGrowth'].dropna(), label='No Growth Counterfactual',
          marker='.', ms=5, color='navy')
 plt.ylim([0,8000])
@@ -106,6 +104,4 @@ plt.legend()
 plt.gca().yaxis.set_major_formatter(plt.matplotlib.ticker.StrMethodFormatter('{x:,.0f}'))
 plt.grid(axis='y', color='gainsboro')
 plt.tick_params(bottom=True, left=True)
-os.chdir(output_folder_graphs)
-plt.savefig('tau_CCF.png', dpi=500)
-plt.clf()
+plt.show()

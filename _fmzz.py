@@ -18,6 +18,10 @@ output_folder = main_folder+"/output/Tables/"
 
 
 #%%  1. Clean Data  for Main Analysis #%%  
+2
+# Clean ASEC Data
+os.chdir(code_folder)
+exec(open("PCEPI_pull.py").read())
 
 # Clean ASEC Data
 os.chdir(code_folder)
