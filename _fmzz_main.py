@@ -26,7 +26,7 @@ exec(open("clean_ASEC_data.py").read())
 os.chdir(code_folder)
 exec(open("pull_OECD_data.py").read())
 
-# Compile Observed Data
+# Compile Observed Data from ASEC and OECD
 os.chdir(code_folder)
 exec(open("compile_observed_data.py").read())
 
@@ -58,15 +58,29 @@ os.chdir(code_folder)
 exec(open("CostCounterfactual.py").read())
 
 
-#%%  Appendix: Alternative College Definition #%%  
+#%%  Robustness Check 1: Alternative College Definition #%%  
 
-
+### Clean Data
 # Clean ASEC Data
 os.chdir(code_folder)
-exec(open("clean_ASEC_data.py").read())
+exec(open("RC1_clean_ASEC_data.py").read())
 
+# Compile Observed Data from ASEC and OECD
+os.chdir(code_folder)
+exec(open("RC1_compile_observed_data.py").read())
+
+### Generate Tables
 # Generate Appendix Table 1:  
 os.chdir(code_folder)
 exec(open("RC1_SummaryStats.py").read())
 
-#%%  Appendix: Decomposing Effects by Sex #%%  
+# Generate Appendix Table 2:  
+os.chdir(code_folder)
+exec(open("RC1_EquilibriumComparison.py").read())
+
+# Generate Appendix Table 3:  
+os.chdir(code_folder)
+exec(open("RC1_CounterfactualGrowth.py").read())
+
+
+#%%  Robustness Check 2: Decomposing Effects by Sex #%%  

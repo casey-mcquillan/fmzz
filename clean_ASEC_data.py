@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 """
 Created on Tue Nov  9 16:47:40 2021
-
 @author: caseymcquillan
 """
 #%%  Preamble: Import packages, set directory #%%  
@@ -11,7 +10,7 @@ import pandas as pd
 import numpy as np
 
 ### Set working directory and folders
-from main import main_folder
+from _fmzz_main import main_folder
 code_folder = main_folder+"/code"
 data_folder = main_folder+"/data"
 os.chdir(code_folder)

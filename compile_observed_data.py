@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 """
 Created on Fri Sep 24 22:34:36 2021
-
 @author: caseymcquillan
 """
 #%%  Preamble: Import packages, set directory #%%  
@@ -11,8 +10,8 @@ import os
 import pandas as pd
 import numpy as np
 
-### Set working directory
-main_folder = "/Users/caseymcquillan/Desktop/Research/FZZ"
+### Set working directory and folders
+from _fmzz_main import main_folder
 code_folder = main_folder+"/code"
 data_folder = main_folder+"/data"
 os.chdir(code_folder)
