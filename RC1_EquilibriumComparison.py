@@ -151,7 +151,7 @@ table_values = [x.replace('\\$-', '-\\$') for x in table_values]
 ## Create, write, and close file
 cwd = os.getcwd()
 os.chdir(output_folder)
-file = open("EquilibriumComparison.tex","w")
+file = open("RC1_EquilibriumComparison.tex","w")
 file.writelines(header) 
 file.writelines(table_values)   
 file.writelines(closer)   

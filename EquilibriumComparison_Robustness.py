@@ -304,7 +304,7 @@ acrossRho = [r'\underline{Substitutability ($\rho$)} \\', ' \n',
     ' \n', rho_results_string[2], ' \n',
     '\\\\', ' \n'] 
 # Concatenate table values
-table_values = baseline + acrossRho + acrossElasticity 
+table_values = baseline + acrossElasticity + acrossRho 
 
 ## LaTeX code for closer
 closer = ['\\bottomrule','\n', '\end{tabular}']

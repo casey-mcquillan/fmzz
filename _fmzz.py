@@ -36,7 +36,7 @@ exec(open("compile_observed_data.py").read())
 
 # Generate Table 1:  
 os.chdir(code_folder)
-exec(open("summary_stats.py").read())
+exec(open("SummaryStats.py").read())
 
 # Generate Table 3:  
 os.chdir(code_folder)
@@ -89,11 +89,11 @@ exec(open("RC1_CounterfactualGrowth.py").read())
 ### Clean Data
 # Clean ASEC Data
 os.chdir(code_folder)
-exec(open("RC2_clean_ASEC_data.py").read())
+exec(open("RC2_clean_ASEC_data_bySex.py").read())
 
 # Compile Observed Data from ASEC and OECD
 os.chdir(code_folder)
-exec(open("RC2_compile_observed_data.py").read())
+exec(open("RC2_compile_observed_data_bySex.py").read())
 
 ### Generate Tables
 # Generate Appendix Table 4:  
