@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 """
 Created on Thu Jun 23 15:02:18 2022
-
 @author: caseymcquillan
 """
 #%%  Preamble: Import packages, set directory #%%  
@@ -12,11 +11,11 @@ import pandas as pd
 import numpy as np
 
 ### Set working directory and folders
-main_folder = "/Users/caseymcquillan/Desktop/Research/FZZ"
+from main import main_folder
 code_folder = main_folder+"/code"
 data_folder = main_folder+"/data"
-output_folder_tables = main_folder+"/output/Tables/Cost Counterfactual"
-output_folder_graphs = main_folder+"/output/Graphs/Cost Counterfactual"
+output_folder_tables = main_folder+"/output/Tables/"
+output_folder_graphs = main_folder+"/output/Graphs/"
 os.chdir(code_folder)
 
 ### Import calibration class
@@ -72,9 +71,6 @@ chg_cwb_observed = 100*(((df_observed.loc[year2,'share_pop_c']*df_observed.loc[y
                     (df_observed.loc[year1,'share_pop_c']*df_observed.loc[year1, 'P1_c']*df_observed.loc[year1, 'wage1_c'] \
                      + (1-df_observed.loc[year1,'share_pop_c'])*df_observed.loc[year1,'P1_n']*df_observed.loc[year1, 'wage1_n'])))
     
-    
-#%%      Calculations for Counterfactual Path      %%#'
-
 ### Initialize strings
 chg_tau_string = '\\ \\ Change in Cost  $(\\tau_{2019}-\\tau_{1977})$ \n \t '+f'& \${chg_tau_observed:,.0f}'
 chg_w_C_string = '\\ \\ Change in College Wages $w_{C,2019}-w_{C,1977}$ \n \t '+f'& \${chg_w_C_observed:,.0f}'
@@ -86,7 +82,8 @@ chg_employment_string = r'\underline{Total Employment (\textit{M}):}' +f' \n \t 
 chg_employment_C_string = f'\\ \\ \\small College \n \t & {chg_employment_C_observed:,.2f}'
 chg_employment_N_string = f'\\ \\ \\small Non-College \n \t & {chg_employment_N_observed:,.2f}'
 chg_cwb_string = f'\\ \\ College Share of the Wage Bill \n \t & {chg_cwb_observed:,.2f} pp'  
-    
+
+#%%      Calculations for Counterfactual Path      %%#'
 #Parameters to be varied:
 CCFs = ['NoGrowth', 'Canada']
 alpha_params = [0, 0.75, 1, 1.25]
@@ -146,9 +143,7 @@ for cost_CCF in CCFs:
         model_year1.calibrate()
         model_year2.calibrate()
         
-        
-        ####   Calculations and Strings   ####
-        #Add values to strings for Eq Comparison Table
+        ####   Calculations and Sotring Results   ###
         if i ==1: ampersand = '&'
         if i > 1: ampersand = ' &&'
     
@@ -166,7 +161,6 @@ for cost_CCF in CCFs:
                       -((model_year1.L_c_CCF*model_year1.w_c_CCF)/(model_year1.L_c_CCF*model_year1.w_c_CCF + model_year1.L_n_CCF*model_year1.w_n_CCF)))
         
         ## Add Values to Strings
-        # Change over time
         chg_tau_string = chg_tau_string + f' && \${chg_tau:,.0f} '
         chg_w_C_string = chg_w_C_string + f' && \${chg_w_C:,.0f} '
         chg_w_N_string = chg_w_N_string + f' && \${chg_w_N:,.0f} '
@@ -181,8 +175,8 @@ for cost_CCF in CCFs:
         chg_cwb_string = chg_cwb_string + f' && {chg_cwb:,.2f} pp'
         
         
-#%%      Output Latex Tables:      %%#
-
+#%%      Compile and Export LaTeX file      %%#        
+## LaTeX code for header
 header = ['\\begin{tabular}{lcccccccccccccccccc}', '\n',
           '\\FL', '\n',
           '\t &', '\n', 
@@ -200,6 +194,7 @@ header = ['\\begin{tabular}{lcccccccccccccccccc}', '\n',
           '\t &&	 $\\alpha=1.25$', '\\\\','\n',  
           '\cmidrule{1-18}', '\n']
 
+## LaTeX code for table results
 table_values=['\\underline{Employer-Sponsored Health Insurance:}', ' \\\\\n', 
               chg_tau_string, ' \\\\\n',
               '\\\\\n',
@@ -213,20 +208,17 @@ table_values=['\\underline{Employer-Sponsored Health Insurance:}', ' \\\\\n',
               chg_P_c_string, ' \\\\\n',
               chg_P_n_string, ' \\\\\n',
               '\\\\\n',
-              # chg_employment_string, ' \\\\\n',
-              # chg_employment_C_string, ' \\\\\n',
-              # chg_employment_N_string, ' \\\\\n',
-              # '\\\\\n',
               '\\underline{Wage Bill:}', ' \\\\\n',
               chg_cwb_string,' \\\\\n',
               '\\ \\ ${\\left(\\frac{w_C L_C}{w_N L_N + w_C L_C}\\right)}_{2019}-{\\left(\\frac{w_C L_C}{w_N L_N + w_C L_C}\\right)}_{1977}$', ' \\\\\n']
 
+## LaTeX code for closer
 closer = ['\\bottomrule','\n', '\end{tabular}']
 
-#Create, write, and close file
+## Create, write, and close file
 cwd = os.getcwd()
 os.chdir(output_folder_tables)
-file = open(f"Change_OverTime{year2}_{year1}_CCF.tex","w")
+file = open(f"CostCounterfactual.tex","w")
 file.writelines(header) 
 file.writelines(table_values)   
 file.writelines(closer)   

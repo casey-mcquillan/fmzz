@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 """
 Created on Thu Jan  5 14:39:40 2022
-
 @author: caseymcquillan
 """
 #%%  Preamble: Import packages, set directory #%%  

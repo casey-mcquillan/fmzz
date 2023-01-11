@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 """
 Created on Thu Jan  5 14:39:40 2022
-
 @author: caseymcquillan
 """
 #%%  Preamble: Import packages, set directory #%%  
@@ -27,7 +26,6 @@ from fzz_calibration import calibration_model
 # Importing Data
 os.chdir(data_folder)
 df_observed = pd.read_csv('observed_data.csv', index_col=0)
-df_observed_RC1 = pd.read_csv('observed_data_RC1.csv', index_col=0)
 
 # Parameter assumptions:
 alpha_c=1
@@ -314,10 +312,10 @@ table_values = baseline + acrossRho + acrossElasticity
 ## LaTeX code for closer
 closer = ['\\bottomrule','\n', '\end{tabular}']
 
-#Adjust dollar signs for negative values in the table
+## Adjust dollar signs for negative values in the table
 table_values = [x.replace('\\$-', '-\\$') for x in table_values]
 
-#Create, write, and close file
+## Create, write, and close file
 cwd = os.getcwd()
 os.chdir(output_folder)
 file = open("EquilibriumComparison_Robustness.tex","w")
