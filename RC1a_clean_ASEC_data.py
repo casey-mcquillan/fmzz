@@ -9,21 +9,17 @@ import os as os
 import pandas as pd
 import numpy as np
 
-### Set working directory and folders
-## Import function to define project folder
-from __fmzz import project_folder_plus
-
-## Define project directory folders
-main_folder = project_folder_plus('')
-code_folder = project_folder_plus("/code")
-data_folder = project_folder_plus("/data")
-output_folder = project_folder_plus("/output/Tables/")
-appendix_output_folder = project_folder_plus("/output/Tables/Appendix")
+### Set working directory #%%
+from _set_directory import main_folder
+from _set_directory import code_folder
+from _set_directory import data_folder
+from _set_directory import output_folder
+from _set_directory import appendix_output_folder
 
 
 #%% Import Data #%%
 os.chdir(data_folder)
-df = pd.read_csv('cps_00026.csv')
+df = pd.read_csv('raw_ASEC_data.csv')
 
 
 #%% Data Wrangling #%%
