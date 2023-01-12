@@ -8,32 +8,29 @@ Created on Thu Jan  5 14:39:40 2022
 ### Import Packages
 import os
 import pandas as pd
-import numpy as np
 
-### Set working directory and folders
-exec(open("__set_directory.py").read())
+### Set working directory
+from _set_directory import code_folder
+from _set_directory import data_folder
+from _set_directory import output_folder
 
-### Import calibration class
+### Import calibration model
 os.chdir(code_folder)
 from _fmzz_calibration_model import fmzz_calibration_model 
 
 
-#%%      Establishing Baseline:      %%#
+#%%      Baseline Specifications      %%#
+from _baseline_specifications import alpha_diff_baseline
+from _baseline_specifications import year_baseline as year
+from _baseline_specifications import past_year_baseline
+from _baseline_specifications import tau_baseline
+from _baseline_specifications import rho_baseline
+from _baseline_specifications import elasticities_baseline
 
-# Importing Data
+
+#%%      Importing Data      %%#
 os.chdir(data_folder)
 df_observed = pd.read_csv('observed_data.csv', index_col=0)
-
-# Parameter assumptions:
-alpha_c=1
-alpha_n=1
-year = 2019
-
-#Baseline Parameters
-tau_baseline = 'tau_baseline'
-rho_baseline = 0.3827
-elasticity_baseline = ['common', 'common']
-e_c_baseline, e_n_baseline = elasticity_baseline[0], elasticity_baseline[1]
 
 
 #%%      Baseline Estimate      %%#
@@ -41,10 +38,10 @@ e_c_baseline, e_n_baseline = elasticity_baseline[0], elasticity_baseline[1]
 baselines_results_string = []
 
 #Define Model
-model = fmzz_calibration_model(alpha_c, alpha_n,
+model = fmzz_calibration_model(alpha_diff=alpha_diff_baseline,
                     rho=rho_baseline,
                     tau=df_observed.loc[year, tau_baseline],
-                    elasticity_c=e_c_baseline, elasticity_n=e_n_baseline,
+                    elasticities='implied',
                     w1_c=df_observed.loc[year, 'wage1_c'], 
                     w1_n=df_observed.loc[year, 'wage1_n'],
                     P1_c=df_observed.loc[year, 'P1_c'], 
@@ -52,18 +49,6 @@ model = fmzz_calibration_model(alpha_c, alpha_n,
                     share_workers1_c=df_observed.loc[year, 'share_workers1_c'],
                     share_pop_c=df_observed.loc[year, 'share_pop_c'],
                     pop_count=df_observed.loc[year, 'pop_count'])
-
-#Make sure there are no NANs in model before calibration
-# Remove elasticities if specified to be common
-if model.elasticity_c == model.elasticity_n == 'common': 
-    check = set(list(vars(model).keys())) - set(['elasticity_c', 'elasticity_n'])
-else: check = vars(model).keys()
-#And now check
-if any(np.isnan([vars(model)[x] for x in check])):
-    print("NAN value entered into calibration model for:")
-    for var in check:
-        if np.isnan(vars(model)[var])==True: print("    "+var)
-    print("for year: " + str(year))
 
 #Calibrate Model
 model.calibrate()
@@ -83,8 +68,8 @@ baselines_results_string.append(f' \t & {pct_chg_cwp:,.2f}\\% & \\${chg_w_C:,.0f
 elasticity_results_string = []
 
 # Parameter to be varied:
-elasticity_values = [['common','common'], [0.15,0.15],[0.3,0.3],[0.45,0.45]]
-elasticity2specification_Dict ={str(['common','common']):'Common $\kappa$',
+elasticity_values = ['implied', [0.15,0.15],[0.3,0.3],[0.45,0.45]]
+elasticity2specification_Dict ={'implied':'Common $\kappa$',
                          str([0.15,0.15]): 'Low (0.15)',
                          str([0.3,0.3]): 'Medium (0.30)',
                          str([0.45,0.45]): 'High (0.45)'}
@@ -110,10 +95,10 @@ for elasticity_value in elasticity_values:
     label = elasticity2specification_Dict[str(elasticity_value)]
     
     #Define and calibrate model
-    model = fmzz_calibration_model(alpha_c, alpha_n,
+    model = fmzz_calibration_model(alpha_diff=alpha_diff_baseline,
                 rho=rho_baseline,
                 tau=df_observed.loc[year, tau_baseline],
-                elasticity_c=e_c, elasticity_n=e_n,
+                elasticities=elasticity_value,
                 w1_c=df_observed.loc[year, 'wage1_c'], 
                 w1_n=df_observed.loc[year, 'wage1_n'],
                 P1_c=df_observed.loc[year, 'P1_c'], 
@@ -121,17 +106,6 @@ for elasticity_value in elasticity_values:
                 share_workers1_c=df_observed.loc[year, 'share_workers1_c'],
                 share_pop_c=df_observed.loc[year, 'share_pop_c'],
                 pop_count=df_observed.loc[year, 'pop_count'])
-    
-    #Make sure there are no NANs in model before calibration
-    if model.elasticity_c == model.elasticity_n == 'common': 
-        check = set(list(vars(model).keys())) - set(['elasticity_c', 'elasticity_n'])
-    else: check = vars(model).keys()
-    #And now check
-    if any(np.isnan([vars(model)[x] for x in check])):
-        print("NAN value entered into calibration model for:")
-        for var in check:
-            if np.isnan(vars(model)[var])==True: print("    "+var)
-        print("for year: " + str(year))
     
     #Calibrate Model
     model.calibrate()
@@ -199,10 +173,10 @@ for rho_value in rho_values:
     label = rho2specification_Dict[str(rho_value)]
     
     #Define and calibrate model    
-    model = fmzz_calibration_model(alpha_c, alpha_n,
+    model = fmzz_calibration_model(alpha_diff=alpha_diff_baseline,
                 rho=rho_value,
                 tau=df_observed.loc[year, tau_baseline],
-                elasticity_c=e_c_baseline, elasticity_n=e_n_baseline,
+                elasticities='implied',
                 w1_c=df_observed.loc[year, 'wage1_c'], 
                 w1_n=df_observed.loc[year, 'wage1_n'],
                 P1_c=df_observed.loc[year, 'P1_c'], 
@@ -210,17 +184,6 @@ for rho_value in rho_values:
                 share_workers1_c=df_observed.loc[year, 'share_workers1_c'],
                 share_pop_c=df_observed.loc[year, 'share_pop_c'],
                 pop_count=df_observed.loc[year, 'pop_count'])
-    
-    #Make sure there are no NANs in model before calibration
-    if model.elasticity_c == model.elasticity_n == 'common': 
-        check = set(list(vars(model).keys())) - set(['elasticity_c', 'elasticity_n'])
-    else: check = vars(model).keys()
-    #And now check
-    if any(np.isnan([vars(model)[x] for x in check])):
-        print("NAN value entered into calibration model for:")
-        for var in check:
-            if np.isnan(vars(model)[var])==True: print("    "+var)
-        print("for year: " + str(year))
     
     #Calibrate Model
     model.calibrate()

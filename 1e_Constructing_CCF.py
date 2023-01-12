@@ -4,37 +4,36 @@
 Created on Sat Jul  9 22:44:00 2022
 @author: caseymcquillan
 """
-#%%  Preamble: Import packages, set directory #%%  
+#%%  Preamble: Import packages #%%  
 ### Import Packages
 import os
 import pandas as pd
 import numpy as np
 
-### Set working directory and folders
-main_folder = "/Users/caseymcquillan/Desktop/Research/FZZ"
-code_folder = main_folder+"/code"
-data_folder = main_folder+"/data"
-output_folder_graphs = main_folder+"/output/Graphs/Cost Counterfactual"
-os.chdir(code_folder)
 
-#%%      Calculating Counterfactual Paths:      %%#
+#%% Set working directory #%%
+from _set_directory import main_folder
+from _set_directory import code_folder
+from _set_directory import data_folder
+from _set_directory import output_folder
+from _set_directory import appendix_output_folder
 
-# Importing Data
+
+#%%      Importing Data:      %%#
 os.chdir(data_folder)
 df_observed = pd.read_csv('observed_data.csv', index_col=0)
 
 
-#%%      Establishing Baseline:      %%#
+#%%      Baseline Specifications      %%#
+from _baseline_specifications import alpha_diff_baseline
+from _baseline_specifications import year_baseline as year2
+from _baseline_specifications import past_year_baseline as year1
+from _baseline_specifications import tau_baseline
+from _baseline_specifications import rho_baseline
+from _baseline_specifications import elasticities_baseline
 
-# Parameter assumptions:
-year1 = 1977
-year2 = 2019
-
-#Baseline Parameters
-tau_baseline = 'tau_baseline'
 
 #%%      Calculating Counterfactual Paths:      %%#
-
 ### No Growth CCF
 years = [1977,1987] + list(range(1996, 2020))
 df_observed['tau_CCF_NoGrowth'] = np.nan
@@ -79,8 +78,8 @@ os.chdir(data_folder)
 df_observed.to_csv('observed_data_CCF.csv')   
 
 
-#%%      Output Graph with CF Tau:      %%#
-        
+'''
+#%%      Output Graph with CF Tau:      %%# 
 # Import Packages
 import matplotlib
 import matplotlib.pyplot as plt
@@ -104,3 +103,4 @@ plt.gca().yaxis.set_major_formatter(plt.matplotlib.ticker.StrMethodFormatter('{x
 plt.grid(axis='y', color='gainsboro')
 plt.tick_params(bottom=True, left=True)
 plt.show()
+'''

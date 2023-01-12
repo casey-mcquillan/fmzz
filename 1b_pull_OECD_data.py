@@ -5,14 +5,18 @@ Created on Tue Sep  7 23:31:09 2021
 
 @author: caseymcquillan
 """
-#%%  Preamble: Import packages, set directory #%%  
+#%%  Preamble: Import packages #%%  
 import os as os
 import pandas as pd
 from fredapi import Fred
 fred = Fred(api_key='d6e26ca3fc202a8c68409b1c78708331')
 
-### Set working directory and folders
-exec(open("__set_directory.py").read())
+#%% Set working directory #%%
+from _set_directory import main_folder
+from _set_directory import code_folder
+from _set_directory import data_folder
+from _set_directory import output_folder
+from _set_directory import appendix_output_folder
 
 
 #%%      Constructing the Data      %%#

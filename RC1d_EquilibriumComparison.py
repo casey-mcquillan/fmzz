@@ -11,11 +11,11 @@ import pandas as pd
 import numpy as np
 
 ### Set working directory and folders
-exec(open("__set_directory.py").read())
+exec(open("_set_directory.py").read())
 
-### Import calibration class
+### Import calibration model
 os.chdir(code_folder)
-from fzz_calibration import calibration_model 
+from _fmzz_calibration_model import fmzz_calibration_model 
 
 
 #%%      Establishing Baseline:      %%#
@@ -25,19 +25,16 @@ os.chdir(data_folder)
 df_observed = pd.read_csv('RC1_observed_data.csv', index_col=0)
 
 # Parameter assumptions:
-alpha_c=1
-alpha_n=1
+alpha_diff_baseline=0
 year = 2019
 
 #Baseline Parameters
 tau_baseline = 'tau_baseline'
 rho_baseline = 0.3827
-elasticity_baseline = ['common', 'common']
-e_c_baseline, e_n_baseline = elasticity_baseline[0], elasticity_baseline[1]
+elasticities_baseline = 'implied'
 
 
 #%%      Construct Results by Varying Tau      %%#
-
 #Parameters to be varied:
 tau_params = ['tau_baseline', 'tau_high']
 tau2specification_Dict ={'tau_baseline':'Total Cost with Incomplete Takeup',
@@ -63,10 +60,10 @@ for tau_param in tau_params:
     label = tau2specification_Dict[tau_param]
     
     #Define Model
-    model = calibration_model(alpha_c, alpha_n,
+    model = fmzz_calibration_model(alpha_diff=alpha_diff_baseline,
                         rho=rho_baseline,
                         tau=df_observed.loc[year, tau_param],
-                        elasticity_c=e_c_baseline, elasticity_n=e_n_baseline,
+                        elasticities='implied',
                         w1_c=df_observed.loc[year, 'wage1_c'], 
                         w1_n=df_observed.loc[year, 'wage1_n'],
                         P1_c=df_observed.loc[year, 'P1_c'], 
@@ -74,18 +71,6 @@ for tau_param in tau_params:
                         share_workers1_c=df_observed.loc[year, 'share_workers1_c'],
                         share_pop_c=df_observed.loc[year, 'share_pop_c'],
                         pop_count=df_observed.loc[year, 'pop_count'])
-    
-    #Make sure there are no NANs in model before calibration
-    # Remove elasticities if specified to be common
-    if model.elasticity_c == model.elasticity_n == 'common': 
-        check = set(list(vars(model).keys())) - set(['elasticity_c', 'elasticity_n'])
-    else: check = vars(model).keys()
-    #And now check
-    if any(np.isnan([vars(model)[x] for x in check])):
-        print("NAN value entered into calibration model for:")
-        for var in check:
-            if np.isnan(vars(model)[var])==True: print("    "+var)
-        print("for year: " + str(year))
     
     #Calibrate Model
     model.calibrate()

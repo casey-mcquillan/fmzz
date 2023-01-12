@@ -4,44 +4,42 @@
 Created on Thu Jan  5 14:39:40 2022
 @author: caseymcquillan
 """
-#%%  Preamble: Import packages, set directory #%%  
+#%%     Preamble        #%%  
 ### Import Packages
 import os
 import pandas as pd
-import numpy as np
 
-### Set working directory and folders
-exec(open("__set_directory.py").read())
+### Set working directory
+from _set_directory import main_folder
+from _set_directory import code_folder
+from _set_directory import data_folder
+from _set_directory import output_folder
+from _set_directory import appendix_output_folder
 
-### Import calibration class
+### Import calibration model
 os.chdir(code_folder)
 from _fmzz_calibration_model import fmzz_calibration_model 
 
 
-#%%      Establishing Baseline:      %%#
+#%%      Baseline Specifications      %%#
+from _baseline_specifications import alpha_diff_baseline
+from _baseline_specifications import year_baseline as year
+from _baseline_specifications import past_year_baseline
+from _baseline_specifications import tau_baseline
+from _baseline_specifications import rho_baseline
+from _baseline_specifications import elasticities_baseline
 
-# Importing Data
+
+#%%      Importing Data      %%#
 os.chdir(data_folder)
 df_observed = pd.read_csv('observed_data.csv', index_col=0)
 
-# Parameter assumptions:
-alpha_c=1
-alpha_n=1
-year = 2019
-
-#Baseline Parameters
-tau_baseline = 'tau_baseline'
-rho_baseline = 0.3827
-elasticity_baseline = ['common', 'common']
-e_c_baseline, e_n_baseline = elasticity_baseline[0], elasticity_baseline[1]
-
 
 #%%      Construct Results by Varying Tau      %%#
-
 #Parameters to be varied:
-tau_params = ['tau_baseline', 'tau_high']
+tau_params = ['tau_baseline', 'tau_fullcoverage']
 tau2specification_Dict ={'tau_baseline':'Total Cost with Incomplete Takeup',
-                         'tau_high':'Total Cost with Complete Takeup'}
+                         'tau_fullcoverage':'Total Cost with Complete Takeup'}
 
 #Initialize strings for tables
 tau_string = '\\underline{Fixed Per Worker Cost, $\\tau$:} \n \t'
@@ -63,10 +61,10 @@ for tau_param in tau_params:
     label = tau2specification_Dict[tau_param]
     
     #Define Model
-    model = fmzz_calibration_model(alpha_c, alpha_n,
+    model = fmzz_calibration_model(alpha_diff=alpha_diff_baseline,
                         rho=rho_baseline,
                         tau=df_observed.loc[year, tau_param],
-                        elasticity_c=e_c_baseline, elasticity_n=e_n_baseline,
+                        elasticities='implied',
                         w1_c=df_observed.loc[year, 'wage1_c'], 
                         w1_n=df_observed.loc[year, 'wage1_n'],
                         P1_c=df_observed.loc[year, 'P1_c'], 
@@ -74,18 +72,6 @@ for tau_param in tau_params:
                         share_workers1_c=df_observed.loc[year, 'share_workers1_c'],
                         share_pop_c=df_observed.loc[year, 'share_pop_c'],
                         pop_count=df_observed.loc[year, 'pop_count'])
-    
-    ## Make sure there are no NANs in model before calibration
-    # Remove elasticities if specified to be common
-    if model.elasticity_c == model.elasticity_n == 'common': 
-        check = set(list(vars(model).keys())) - set(['elasticity_c', 'elasticity_n'])
-    else: check = vars(model).keys()
-    #And now check
-    if any(np.isnan([vars(model)[x] for x in check])):
-        print("NAN value entered into calibration model for:")
-        for var in check:
-            if np.isnan(vars(model)[var])==True: print("    "+var)
-        print("for year: " + str(year))
     
     #Calibrate Model
     model.calibrate()

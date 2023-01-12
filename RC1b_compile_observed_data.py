@@ -11,7 +11,15 @@ import pandas as pd
 import numpy as np
 
 ### Set working directory and folders
-exec(open("__set_directory.py").read())
+## Import function to define project folder
+from __fmzz import project_folder_plus
+
+## Define project directory folders
+main_folder = project_folder_plus('')
+code_folder = project_folder_plus("/code")
+data_folder = project_folder_plus("/data")
+output_folder = project_folder_plus("/output/Tables/")
+appendix_output_folder = project_folder_plus("/output/Tables/Appendix")
 
 
 #%%  Importing Data #%%  

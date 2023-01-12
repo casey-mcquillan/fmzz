@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 """
 Created on Sat Jul  9 21:39:02 2022
-
 @author: caseymcquillan
 """
 #%%  Preamble: Import packages, set directory #%%  
@@ -11,30 +10,30 @@ import os
 import pandas as pd
 import numpy as np
 
-### Set working directory and folders
-exec(open("__set_directory.py").read())
+### Set working directory
+from _set_directory import code_folder
+from _set_directory import data_folder
+from _set_directory import output_folder
 
 ### Import calibration class
-os.chdir(code_folder)
-from fzz_calibration_CCF import calibration_model_CCF
+from _fmzz_calibration_model_CCF import fmzz_calibration_model_CCF
 
 
-#%%      Establishing Baseline:      %%#
+#%%      Baseline Specifications      %%#
+from _baseline_specifications import alpha_diff_baseline
+from _baseline_specifications import year_baseline as year
+from _baseline_specifications import past_year_baseline
+from _baseline_specifications import tau_baseline
+from _baseline_specifications import rho_baseline
+from _baseline_specifications import elasticities_baseline
 
-# Importing Data
+
+#%%      Importing Data:      %%#
 os.chdir(data_folder)
 df_observed = pd.read_csv('observed_data_CCF.csv', index_col=0)
 
-# Parameter assumptions:
-year = 2019
-tau_baseline = 'tau_baseline'
-rho_baseline = 0.3827
-elasticity_baseline = ['common', 'common']
-e_c_baseline, e_n_baseline = elasticity_baseline[0], elasticity_baseline[1]
-
 
 #%%      Model Calculations:      %%#
-
 #Initialize strings for tables
 tau_string = '\\underline{Change in Cost, $\\tau$:} \n \t'
 delta_w_C_string = '\\ \\ Change in College Wage, $\Delta(w_C)$ \n \t'
@@ -58,13 +57,14 @@ for cost_CCF in CCFs:
 
     #Loop through alpha parameters
     for alpha in alpha_params:
+        alpha_c, alpha_n = alpha, alpha
         i = i+1
         #Define Model
-        model = calibration_model_CCF(alpha, alpha,
+        model = fmzz_calibration_model_CCF(alpha_c, alpha_n,
                         rho=rho_baseline,
                         tau=df_observed.loc[year, tau_baseline],
                         tau_CCF=df_observed.loc[year, tau_param_CCF],
-                        elasticity_c=e_c_baseline, elasticity_n=e_n_baseline,
+                        elasticities=elasticities_baseline,
                         w_c=df_observed.loc[year, 'wage1_c'], 
                         w_n=df_observed.loc[year, 'wage1_n'],
                         P_c=df_observed.loc[year, 'P1_c'], 
@@ -72,18 +72,6 @@ for cost_CCF in CCFs:
                         share_workers_c=df_observed.loc[year, 'share_workers1_c'],
                         share_pop_c=df_observed.loc[year, 'share_pop_c'],
                         pop_count=df_observed.loc[year, 'pop_count'])
-            
-        #Make sure there are no NANs in model before calibration
-        # Remove elasticities if specified to be common
-        if model.elasticity_c == model.elasticity_n == 'common': 
-            check = set(list(vars(model).keys())) - set(['elasticity_c', 'elasticity_n'])
-        else: check = vars(model).keys()
-        #And now check
-        if any(np.isnan([vars(model)[x] for x in check])):
-            print("NAN value entered into calibration model for:")
-            for var in check:
-                if np.isnan(vars(model)[var])==True: print("    "+var)
-            print("for year: " + str(year))
         
         #Calibrate Model
         model.calibrate()
@@ -109,9 +97,9 @@ for cost_CCF in CCFs:
         
         delta_cwb_string = delta_cwb_string + ampersand + \
             f' {100*(((model.L_c_CCF*model.w_c_CCF)/(model.L_c_CCF*model.w_c_CCF + model.L_n_CCF*model.w_n_CCF))-((model.L_c*model.w_c)/(model.L_c*model.w_c + model.L_n*model.w_n))):,.2f} pp'
+
    
 #%%      Output Latex Tables:      %%#
-
 header = ['\\begin{tabular}{lcccccccccccccccc}', '\n',
           '\\FL', '\n',
           '\t &	\multicolumn{7}{c}{No Growth Counterfactual}','\n', 
@@ -138,9 +126,6 @@ table_values=[tau_string, ' \\\\\n',
                 '\\underline{Employment Rate:}', ' \\\\\n',
                 delta_P_c_string, ' \\\\\n',
                 delta_P_n_string, ' \\\\\n',
-                # delta_employment_string, ' \\\\\n',
-                # delta_employment_C_string, ' \\\\\n',
-                # delta_employment_N_string, ' \\\\\n',
                 '\\\\\n',
                 '\\underline{Wage Bill:}', ' \\\\\n',
                 delta_cwb_string,' \\\\\n',
@@ -148,10 +133,10 @@ table_values=[tau_string, ' \\\\\n',
 
 closer = ['\\bottomrule','\n', '\end{tabular}']
 
-#Adjust dollar signs for negative values in the table
+## Adjust dollar signs for negative values in the table
 table_values = [x.replace('\\$-', '-\\$') for x in table_values]
 
-#Create, write, and close file
+## Create, write, and close file
 cwd = os.getcwd()
 os.chdir(output_folder)
 file = open(f"EquilibriumComparison_CCF.tex","w")

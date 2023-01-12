@@ -12,12 +12,6 @@ import pandas as pd
 import numpy as np
 from scipy.optimize import fsolve
 
-### Set working directory
-main_folder = "/Users/caseymcquillan/Desktop/Research/FZZ"
-code_folder = main_folder+"/code"
-data_folder = main_folder+"/data"
-os.chdir(code_folder)
-
 
 #%%  Define Class #%%
 class calibration_model_bySex:

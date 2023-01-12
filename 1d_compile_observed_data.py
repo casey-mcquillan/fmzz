@@ -4,21 +4,26 @@
 Created on Fri Sep 24 22:34:36 2021
 @author: caseymcquillan
 """
-#%%  Preamble: Import packages, set directory #%%  
+#%%  Preamble: Import packages #%%  
 ### Import Packages
 import os
 import pandas as pd
 import numpy as np
 
-### Set working directory and folders
-exec(open("__set_directory.py").read())
+
+#%% Set working directory #%%
+from _set_directory import main_folder
+from _set_directory import code_folder
+from _set_directory import data_folder
+from _set_directory import output_folder
+from _set_directory import appendix_output_folder
 
 
 #%%  Importing Data #%%  
 os.chdir(data_folder)
 
 # Import data series for calibration
-OECD_data = pd.read_csv('OECD_data.csv', index_col='year')
+OECD_data = pd.read_csv('clean_OECD_data.csv', index_col='year')
 ASEC_data = pd.read_csv('clean_ASEC_data.csv', index_col=0)
 
 # Import time series data on wages, tau from Patrick Collard:
@@ -35,9 +40,8 @@ df_observed = pd.DataFrame({
                 'wage1_n': ASEC_data['wage1_n (weighted)'],
                 'P1_c': ASEC_data['P1_c (weighted)'],
                 'P1_n': ASEC_data['P1_n (weighted)'],
-                'tau_high': premium_data['Avg Enr Cost'],
+                'tau_fullcoverage': premium_data['Avg Enr Cost'],
                 'tau_baseline': premium_data['Avg Enr Cost']*ASEC_data.loc[2019,'Share ESHI policyholders (weighted)'],
-                'tau_low': premium_data['Avg Emp Cost']*ASEC_data.loc[2019,'Share ESHI policyholders (weighted)'],
                 'Share ESHI policyholders':ASEC_data['Share ESHI policyholders (weighted)'],
                 'Share ESHI policyholders, College':ASEC_data['Share ESHI policyholders, College (weighted)'],
                 'Share ESHI policyholders, Non-college':ASEC_data['Share ESHI policyholders, Non-college (weighted)']

@@ -10,31 +10,30 @@ import os
 import pandas as pd
 import numpy as np
 
-### Set working directory and folders
-exec(open("__set_directory.py").read())
+### Set working directory
+from _set_directory import main_folder
+from _set_directory import code_folder
+from _set_directory import data_folder
+from _set_directory import output_folder
+from _set_directory import appendix_output_folder
 
-### Import calibration class
-os.chdir(code_folder) 
-from fzz_calibration import calibration_model
+### Import calibration model
+os.chdir(code_folder)
+from _fmzz_calibration_model import fmzz_calibration_model 
 
 
-#%%      Establishing Baseline Parameters      %%#
+#%%      Baseline Specifications      %%#
+from _baseline_specifications import alpha_diff_baseline
+from _baseline_specifications import year_baseline as year2
+from _baseline_specifications import past_year_baseline as year1
+from _baseline_specifications import tau_baseline
+from _baseline_specifications import rho_baseline
+from _baseline_specifications import elasticities_baseline
 
-# Importing Data
+
+#%%      Importing Data     %%#
 os.chdir(data_folder)
 df_observed = pd.read_csv('observed_data.csv', index_col=0)
-
-# Parameter assumptions:
-alpha_c=1
-alpha_n=1
-year1 = 1977
-year2 = 2019
-
-#Baseline Parameters
-tau_baseline = 'tau_baseline'
-rho_baseline = 0.3827
-elasticity_baseline = ['common', 'common']
-e_c_baseline, e_n_baseline = elasticity_baseline[0], elasticity_baseline[1]
 
 
 #%%      Construct Results by Varying Tau      %%#
@@ -84,10 +83,10 @@ for tau_param in tau_params:
     i = i+1
     
     #Define Model
-    model_year1 = calibration_model(alpha_c, alpha_n,
+    model_year1 = fmzz_calibration_model(alpha_diff=alpha_diff_baseline,
                         rho=rho_baseline,
-                        tau=df_observed.loc[year1, tau_param],
-                        elasticity_c=e_c_baseline, elasticity_n=e_n_baseline,
+                        tau=df_observed.loc[year1, tau_baseline],
+                        elasticities='implied',
                         w1_c=df_observed.loc[year1, 'wage1_c'], 
                         w1_n=df_observed.loc[year1, 'wage1_n'],
                         P1_c=df_observed.loc[year1, 'P1_c'], 
@@ -96,10 +95,10 @@ for tau_param in tau_params:
                         share_pop_c=df_observed.loc[year1, 'share_pop_c'],
                         pop_count=df_observed.loc[year1, 'pop_count'])
     
-    model_year2 = calibration_model(alpha_c, alpha_n,
+    model_year2 = fmzz_calibration_model(alpha_diff=alpha_diff_baseline,
                     rho=rho_baseline,
-                    tau=df_observed.loc[year2, tau_param],
-                    elasticity_c=e_c_baseline, elasticity_n=e_n_baseline,
+                    tau=df_observed.loc[year2, tau_baseline],
+                    elasticities='implied',
                     w1_c=df_observed.loc[year2, 'wage1_c'], 
                     w1_n=df_observed.loc[year2, 'wage1_n'],
                     P1_c=df_observed.loc[year2, 'P1_c'], 
@@ -107,22 +106,6 @@ for tau_param in tau_params:
                     share_workers1_c=df_observed.loc[year2, 'share_workers1_c'],
                     share_pop_c=df_observed.loc[year2, 'share_pop_c'],
                     pop_count=df_observed.loc[year2, 'pop_count'])
-    
-    ## Make sure there are no NANs in model before calibration
-    # Remove elasticities if specified to be common
-    for model_num in [1, 2]:
-        exec(f'model = model_year{model_num}')
-        exec(f'year = year{model_num}')
-        if model.elasticity_c == model.elasticity_n == 'common': 
-            check = set(list(vars(model).keys())) - set(['elasticity_c', 'elasticity_n'])
-        else: check = vars(model).keys()
-        #And now check
-        if any(np.isnan([vars(model)[x] for x in check])):
-            print("NAN value entered into calibration model for:")
-            for var in check:
-                if np.isnan(vars(model)[var])==True: print("    "+var)
-            print("for year: " + str(year))
-            continue
             
     ## Calibrate Models
     model_year1.calibrate()

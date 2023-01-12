@@ -9,13 +9,17 @@ import os as os
 import pandas as pd
 import numpy as np
 
-### Set working directory and folders
-exec(open("__set_directory.py").read())
+### Set working directory
+from _set_directory import main_folder
+from _set_directory import code_folder
+from _set_directory import data_folder
+from _set_directory import output_folder
+from _set_directory import appendix_output_folder
 
 
 #%% Import Data #%%
 os.chdir(data_folder)
-df = pd.read_csv('cps_00012.csv')
+df = pd.read_csv('cps_00029.csv')
 OECD_data = pd.read_csv('OECD_data.csv', index_col='year')
 
 #%% Data Cleaning #%%

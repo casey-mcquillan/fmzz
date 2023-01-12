@@ -4,13 +4,18 @@
 Created on Tue Nov  9 16:47:40 2021
 @author: caseymcquillan
 """
-#%%  Preamble: Import packages, set directory #%%  
+#%%  Preamble: Import packages #%%  
 import os as os
 import pandas as pd
 import numpy as np
 
-### Set working directory and folders
-exec(open("__set_directory.py").read())
+
+#%% Set working directory #%%
+from _set_directory import main_folder
+from _set_directory import code_folder
+from _set_directory import data_folder
+from _set_directory import output_folder
+from _set_directory import appendix_output_folder
 
 
 #%% Import Data #%%
@@ -51,7 +56,6 @@ df['Total'] = 1
 
 
 #%% Create Dataframe by year #%%
-
 # Define range of years
 years = range(1975,2021)
 
@@ -102,12 +106,10 @@ for year in years:
                                        weights=year_dummy*df['College'])
     data.loc[year,'P1_c (weighted)'] = np.average(df['College']*df['FTFY'], \
                                         weights=df['ASECWT']*year_dummy*df['College'])
-    
     data.loc[year,'P1_n'] = np.average(df['Non-College']*df['FTFY'], \
                                        weights=year_dummy*df['Non-College'])
     data.loc[year,'P1_n (weighted)'] = np.average(df['Non-College']*df['FTFY'], \
                                         weights=df['ASECWT']*year_dummy*df['Non-College'])
-
 
     ## Wage Data
     data.loc[year,'wage1_c'] = np.average(df['INCWAGE']*df['College']*df['FTFY'], \

@@ -4,17 +4,15 @@
 Created on Mon Jan  9 23:31:36 2023
 @author: caseymcquillan
 """
-#%%  Preamble: Import packages, set directory #%%  
+#%%  Preamble: Import packages #%%  
 import os as os
-import pandas as pd
-import numpy as np
-
 
 #%% Set working directory #%%
-main_folder = "/Users/caseymcquillan/Desktop/Research/FZZ"
-code_folder = main_folder+"/code"
-data_folder = main_folder+"/data"
-output_folder = main_folder+"/output/Tables/"
+from _set_directory import main_folder
+from _set_directory import code_folder
+from _set_directory import data_folder
+from _set_directory import output_folder
+from _set_directory import appendix_output_folder
 
 
 #%%  1. Clean Data  for Main Analysis #%%  
