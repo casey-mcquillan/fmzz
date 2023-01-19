@@ -9,29 +9,20 @@ Created on Tue Jul  5 14:03:16 2022
 ### Import Packages
 import os
 import pandas as pd
-import numpy as np
 
-### Set working directory and folders
-## Import function to define project folder
-from __fmzz import project_folder_plus
-
-## Define project directory folders
-main_folder = project_folder_plus('')
-code_folder = project_folder_plus("/code")
-data_folder = project_folder_plus("/data")
-output_folder = project_folder_plus("/output/Tables/")
-appendix_output_folder = project_folder_plus("/output/Tables/Appendix")
+### Set working directory #%%
+from _set_directory import code_folder
+from _set_directory import data_folder
 
 
 #%%  Importing Data #%%  
 os.chdir(data_folder)
 
 # Import data series for calibration
-OECD_data = pd.read_csv('OECD_data.csv', index_col='year')
+OECD_data = pd.read_csv('clean_OECD_data.csv', index_col='year')
 ASEC_data = pd.read_csv('RC2_clean_ASEC_data_bySex.csv', index_col=0)
 
-# Import time series data on wages, tau from Patrick Collard:
-os.chdir(data_folder + "/Time Series from Emily")
+# Import time series data on wages:
 premium_data = pd.read_excel('premium_series.xlsx', index_col=0)
 
 # Create dataframe with necessary observed variables
@@ -62,9 +53,8 @@ df_observed = pd.DataFrame({
                 'share_pop_n_m': ASEC_data['share_pop_n_m'],
                 'share_pop_n_f': ASEC_data['share_pop_n_f'],
                 "Share ESHI policyholders": ASEC_data["Share ESHI policyholders"],
-                'tau_high': premium_data['Avg Enr Cost'],
-                'tau_baseline': premium_data['Avg Enr Cost']*ASEC_data.loc[2019,'Share ESHI policyholders'],
-                'tau_low': premium_data['Avg Emp Cost']*ASEC_data.loc[2019,'Share ESHI policyholders']
+                'tau_fullcoverage': premium_data['Avg Enr Cost'],
+                'tau_baseline': premium_data['Avg Enr Cost']*ASEC_data.loc[2019,'Share ESHI policyholders']
             })
 
 
@@ -77,3 +67,5 @@ os.chdir(data_folder)
 data_export.to_csv('RC2_observed_data_bySex.csv')
 
 
+#%% Return to code directory #%%
+os.chdir(code_folder)

@@ -24,10 +24,11 @@ from _fmzz_calibration_model import fmzz_calibration_model
 #%%      Baseline Specifications      %%#
 from _baseline_specifications import alpha_diff_baseline
 from _baseline_specifications import year_baseline as year
-from _baseline_specifications import past_year_baseline
-from _baseline_specifications import tau_baseline
 from _baseline_specifications import rho_baseline
 from _baseline_specifications import elasticities_baseline
+
+#Parameter(s) to be varied
+from _varying_parameters import tau_params, tau2specification_Dict
 
 
 #%%      Importing Data      %%#
@@ -36,17 +37,13 @@ df_observed = pd.read_csv('observed_data.csv', index_col=0)
 
 
 #%%      Construct Results by Varying Tau      %%#
-#Parameters to be varied:
-tau_params = ['tau_baseline', 'tau_fullcoverage']
-tau2specification_Dict ={'tau_baseline':'Total Cost with Incomplete Takeup',
-                         'tau_fullcoverage':'Total Cost with Complete Takeup'}
 
 #Initialize strings for tables
 tau_string = '\\underline{Fixed Per Worker Cost, $\\tau$:} \n \t'
 payroll_tax_string = '\\underline{Payroll Tax Rate, $t$:} \n \t'
 delta_w_C_string = '\\ \\ Change in College Wage, $\Delta(w_C)$ \n \t'
 delta_w_N_string = '\\ \\ Change in Non-college Wage, $\Delta(w_N)$ \n \t'
-pct_chg_cwp_string = '\\ \\ Pct. Change in College Wage Premium, $\\%\\Delta(w_C/w_N - 1)$ \n \t'
+pct_chg_cwp_string = '\\ \\ Pct. Change in College Wage Premium \n \t'
 delta_P_c_string = '\\ \\ Change in College Employment Rate, $\Delta(P_C)$ \n \t'
 delta_P_n_string = '\\ \\ Change in Non-college Employment Rate, $\Delta(P_N)$ \n \t'
 delta_employment_string = 'Change in Total Employment, $\Delta(L)$ \n \t'
@@ -64,7 +61,7 @@ for tau_param in tau_params:
     model = fmzz_calibration_model(alpha_diff=alpha_diff_baseline,
                         rho=rho_baseline,
                         tau=df_observed.loc[year, tau_param],
-                        elasticities='implied',
+                        elasticities=elasticities_baseline,
                         w1_c=df_observed.loc[year, 'wage1_c'], 
                         w1_n=df_observed.loc[year, 'wage1_n'],
                         P1_c=df_observed.loc[year, 'P1_c'], 
@@ -142,3 +139,7 @@ file.writelines(header)
 file.writelines(table_values)   
 file.writelines(closer)   
 file.close()
+
+
+#%% Return to code directory #%%
+os.chdir(code_folder)

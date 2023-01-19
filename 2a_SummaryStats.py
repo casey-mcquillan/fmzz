@@ -10,11 +10,9 @@ import pandas as pd
 import numpy as np
 
 ### Set working directory
-from _set_directory import main_folder
 from _set_directory import code_folder
 from _set_directory import data_folder
 from _set_directory import output_folder
-from _set_directory import appendix_output_folder
 
 
 #%% Import Data #%%
@@ -150,9 +148,9 @@ for group in ['Total', 'FTFY', 'PTPY']:
         table_data.loc[len(table_data)]= group, column, 'None', No_HI
         
         table_data.loc[len(table_data)]= group, column, 'Offered Employer-Sponsored Health Insurance', ESHI_offered
-        table_data.loc[len(table_data)]= group, column, 'Take-up | ESHI Offered', ESHI_offered_takeup
+        table_data.loc[len(table_data)]= group, column, 'Take-up | Offered', ESHI_offered_takeup
         table_data.loc[len(table_data)]= group, column, 'ESHI Eligible', ESHI_eligible
-        table_data.loc[len(table_data)]= group, column, 'Take-up | ESHI Eligible', ESHI_eligible_takeup
+        table_data.loc[len(table_data)]= group, column, 'Take-up | Eligible', ESHI_eligible_takeup
         
         table_data.loc[len(table_data)]= group, column, 'Employment Rate', employment_rate
         table_data.loc[len(table_data)]= group, column, 'Avg. Annual Earnings', avg_wages
@@ -178,7 +176,7 @@ variables_B = ['Employer-Sponsored',
                'Public',
                'None']
 variables_C = ['Offered Employer-Sponsored Health Insurance',
-               'Take-up | ESHI Offered']
+               'Take-up | Offered']
 
 #Dictionaries for each group to panel title
 panel2title_Dict={'A':'Panel A: Labor Market Outcomes', 
@@ -228,14 +226,14 @@ for panel in ['A', 'B', 'C']:
             string = f'\t {var} ($w_g$) & \${var_t:,.0f} & \${var_c:,.0f} & \${var_n:,.0f} & \\\\ \n'
         
         #Indent subcategories;
-        if var in ['Policyholder', 'Dependent', 'Take-up | ESHI Offered', 'Take-up | ESHI Eligible']:
+        if var in ['Policyholder', 'Dependent', 'Take-up | Offered', 'Take-up | Eligible']:
             string = '\t \\ \\ \\ \\ \\small '+ string[2:] 
         
         #Vertical bar is math symbol
-        if var in ['Take-up | ESHI Offered', 'Take-up | ESHI Eligible']:
+        if var in ['Take-up | Offered', 'Take-up | Eligible']:
             string=string.replace('|','$|$')
             
-        if var == 'Take-up | ESHI Offered':
+        if var == 'Take-up | Offered':
             string=string.replace(' & \\\\ \n',' & \\medskip \\\\ \n')
         
         #Add row to panel values
@@ -270,3 +268,7 @@ file.writelines(table_header)
 file.writelines(table_values)   
 file.writelines(table_bottom)   
 file.close()
+
+
+#%% Return to code directory #%%
+os.chdir(code_folder)

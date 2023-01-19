@@ -8,14 +8,11 @@ Created on Mon Feb  7 19:14:35 2022
 ### Import Packages
 import os
 import pandas as pd
-import numpy as np
 
 ### Set working directory
-from _set_directory import main_folder
 from _set_directory import code_folder
 from _set_directory import data_folder
 from _set_directory import output_folder
-from _set_directory import appendix_output_folder
 
 ### Import calibration model
 os.chdir(code_folder)
@@ -30,6 +27,9 @@ from _baseline_specifications import tau_baseline
 from _baseline_specifications import rho_baseline
 from _baseline_specifications import elasticities_baseline
 
+# Parameter(s) to be varied
+from _varying_parameters import tau_params, tau2specification_Dict
+
 
 #%%      Importing Data     %%#
 os.chdir(data_folder)
@@ -37,8 +37,6 @@ df_observed = pd.read_csv('observed_data.csv', index_col=0)
 
 
 #%%      Construct Results by Varying Tau      %%#
-#Parameters to be varied:
-tau_params = ['tau_baseline', 'tau_high']
 
 #Calculate Observed Change over Time
 chg_w_C_observed = df_observed.loc[year2, 'wage1_c']-df_observed.loc[year1, 'wage1_c']
@@ -85,8 +83,8 @@ for tau_param in tau_params:
     #Define Model
     model_year1 = fmzz_calibration_model(alpha_diff=alpha_diff_baseline,
                         rho=rho_baseline,
-                        tau=df_observed.loc[year1, tau_baseline],
-                        elasticities='implied',
+                        tau=df_observed.loc[year1, tau_param],
+                        elasticities=elasticities_baseline,
                         w1_c=df_observed.loc[year1, 'wage1_c'], 
                         w1_n=df_observed.loc[year1, 'wage1_n'],
                         P1_c=df_observed.loc[year1, 'P1_c'], 
@@ -97,8 +95,8 @@ for tau_param in tau_params:
     
     model_year2 = fmzz_calibration_model(alpha_diff=alpha_diff_baseline,
                     rho=rho_baseline,
-                    tau=df_observed.loc[year2, tau_baseline],
-                    elasticities='implied',
+                    tau=df_observed.loc[year2, tau_param],
+                    elasticities=elasticities_baseline,
                     w1_c=df_observed.loc[year2, 'wage1_c'], 
                     w1_n=df_observed.loc[year2, 'wage1_n'],
                     P1_c=df_observed.loc[year2, 'P1_c'], 
@@ -165,7 +163,6 @@ table_values=['\\underline{Employer-Sponsored Health Insurance:}', ' \\\\\n',
               chg_w_C_string, ' \\\\\n',
               chg_w_N_string, ' \\\\\n',
               chg_cwp_string, ' \\\\\n',
-              '\\ \\ ${(w_c/w_N - 1)}_{2019}-{(w_c/w_N - 1)}_{1977}$', ' \\\\\n',
               '\\\\\n',
               '\\underline{Employment Rate:}', ' \\\\\n',
               chg_P_c_string, ' \\\\\n',
@@ -186,3 +183,7 @@ file.writelines(header)
 file.writelines(table_values)   
 file.writelines(closer)   
 file.close()
+
+
+#%% Return to code directory #%%
+os.chdir(code_folder)

@@ -22,10 +22,14 @@ from _fmzz_calibration_model import fmzz_calibration_model
 #%%      Baseline Specifications      %%#
 from _baseline_specifications import alpha_diff_baseline
 from _baseline_specifications import year_baseline as year
-from _baseline_specifications import past_year_baseline
 from _baseline_specifications import tau_baseline
 from _baseline_specifications import rho_baseline
 from _baseline_specifications import elasticities_baseline
+
+#Parameter(s) to be varied
+from _varying_parameters import tau_params, tau2specification_Dict
+from _varying_parameters import elasticity_values, elasticity2specification_Dict
+from _varying_parameters import rho_values, rho2specification_Dict
 
 
 #%%      Importing Data      %%#
@@ -41,7 +45,7 @@ baselines_results_string = []
 model = fmzz_calibration_model(alpha_diff=alpha_diff_baseline,
                     rho=rho_baseline,
                     tau=df_observed.loc[year, tau_baseline],
-                    elasticities='implied',
+                    elasticities=elasticities_baseline,
                     w1_c=df_observed.loc[year, 'wage1_c'], 
                     w1_n=df_observed.loc[year, 'wage1_n'],
                     P1_c=df_observed.loc[year, 'P1_c'], 
@@ -66,13 +70,6 @@ baselines_results_string.append(f' \t & {pct_chg_cwp:,.2f}\\% & \\${chg_w_C:,.0f
 
 # String to save results
 elasticity_results_string = []
-
-# Parameter to be varied:
-elasticity_values = ['implied', [0.15,0.15],[0.3,0.3],[0.45,0.45]]
-elasticity2specification_Dict ={'implied':'Common $\kappa$',
-                         str([0.15,0.15]): 'Low (0.15)',
-                         str([0.3,0.3]): 'Medium (0.30)',
-                         str([0.45,0.45]): 'High (0.45)'}
 
 #Initialize strings for tables
 column_header_string = '$(\epsilon^H_C, \epsilon^H_N)$ '
@@ -147,12 +144,6 @@ for elasticity_value in elasticity_values:
 # String to save results
 rho_results_string = []
 
-# Parameter to be varied:
-rho_values = [1, 0.3827, 0.01]
-rho2specification_Dict ={str(1):'Perfect Substitutes',
-                         str(0.3827): 'Gross Substitutes',
-                         str(0.01): 'Cobb-Douglas'}
-
 #Initialize strings for tables
 column_header_string = ''
 delta_w_C_string = '\\ \\ $\Delta(w_C)$ \n \t'
@@ -176,7 +167,7 @@ for rho_value in rho_values:
     model = fmzz_calibration_model(alpha_diff=alpha_diff_baseline,
                 rho=rho_value,
                 tau=df_observed.loc[year, tau_baseline],
-                elasticities='implied',
+                elasticities=elasticities_baseline,
                 w1_c=df_observed.loc[year, 'wage1_c'], 
                 w1_n=df_observed.loc[year, 'wage1_n'],
                 P1_c=df_observed.loc[year, 'P1_c'], 
@@ -277,3 +268,7 @@ file.writelines(header)
 file.writelines(table_values)   
 file.writelines(closer) 
 file.close()
+
+
+#%% Return to code directory #%%
+os.chdir(code_folder)

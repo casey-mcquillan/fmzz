@@ -14,7 +14,7 @@ from scipy.optimize import fsolve
 
 
 #%%  Define Class #%%
-class calibration_model_bySex:
+class fmzz_calibration_model_bySex:
     def __init__(self, alpha_diff, rho, tau, 
                      elasticities,
                      w1_c_m, w1_n_m, w1_c_f, w1_n_f, 
@@ -117,7 +117,7 @@ class calibration_model_bySex:
         lambda_n = coef*lambda_c
         
         # Solve for kappa parameters
-        if elasticities =='common':
+        if elasticities =='implied':
             kappa_dist_m = (w1_c_m - w1_n_m + alpha_diff*tau)/(P1_c_m - P1_n_m)
             kappa_dist_f = (w1_c_f - w1_n_f + alpha_diff*tau)/(P1_c_f - P1_n_f)
             

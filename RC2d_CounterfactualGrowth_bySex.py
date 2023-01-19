@@ -11,34 +11,32 @@ import os
 import pandas as pd
 import numpy as np
 
-### Set working directory and folders
-exec(open("__set_directory.py").read())
+### Set working directory #%%
+from _set_directory import code_folder
+from _set_directory import data_folder
+from _set_directory import appendix_output_folder
 
 ### Import calibration class
-os.chdir(code_folder)
-from fzz_calibration_bySex import calibration_model_bySex
+from _fmzz_calibration_model_bySex import fmzz_calibration_model_bySex
 
 
-#%%      Establishing Baseline:      %%#
+#%%      Baseline Specifications      %%#
+from _baseline_specifications import alpha_diff_baseline
+from _baseline_specifications import year_baseline as year2
+from _baseline_specifications import past_year_baseline as year1
+from _baseline_specifications import rho_baseline
+from _baseline_specifications import elasticities_baseline
 
-# Importing Data
+#Parameter(s) to be varied
+from _varying_parameters import tau_params, tau2specification_Dict
+
+
+#%%      Importing Data      %%#
 os.chdir(data_folder)
-df_observed = pd.read_csv('observed_data_bySex.csv', index_col=0)
-
-# Parameter assumptions:
-alpha_diff=0
-year1 = 1977
-year2 = 2019
-
-#Baseline Parameters
-rho_baseline = 0.3827
+df_observed = pd.read_csv('RC2_observed_data_bySex.csv', index_col=0)
 
 
 #%%      Calibration while Varying Tau      %%#'
-
-#Parameters to be varied:
-tau_params = ['tau_baseline', 'tau_high']
-
 for _sex in ['_m', '_f']:
 
     #Calculate Observed Change over Time
@@ -75,10 +73,10 @@ for _sex in ['_m', '_f']:
         i = i+1
         
         #Define Model
-        model_year1 = calibration_model_bySex(alpha_diff=0,
+        model_year1 = fmzz_calibration_model_bySex(alpha_diff=alpha_diff_baseline,
                         rho=rho_baseline,
                         tau=df_observed.loc[year1, tau_param],
-                        elasticities='common',
+                        elasticities=elasticities_baseline,
                         w1_c_m=df_observed.loc[year1, 'wage1_c_m'], 
                         w1_n_m=df_observed.loc[year1, 'wage1_n_m'],
                         w1_c_f=df_observed.loc[year1, 'wage1_c_f'], 
@@ -95,10 +93,10 @@ for _sex in ['_m', '_f']:
                         share_pop_n_m=df_observed.loc[year1, 'share_pop_n_m'],
                         pop_count=df_observed.loc[year1, 'pop_count'])
         
-        model_year2 = calibration_model_bySex(alpha_diff=0,
+        model_year2 = fmzz_calibration_model_bySex(alpha_diff=alpha_diff_baseline,
                         rho=rho_baseline,
                         tau=df_observed.loc[year2, tau_param],
-                        elasticities='common',
+                        elasticities=elasticities_baseline,
                         w1_c_m=df_observed.loc[year2, 'wage1_c_m'], 
                         w1_n_m=df_observed.loc[year2, 'wage1_n_m'],
                         w1_c_f=df_observed.loc[year2, 'wage1_c_f'], 
@@ -114,21 +112,7 @@ for _sex in ['_m', '_f']:
                         share_workers1_n_m=df_observed.loc[year2, 'share_workers1_n_m'],
                         share_pop_n_m=df_observed.loc[year2, 'share_pop_n_m'],
                         pop_count=df_observed.loc[year2, 'pop_count'])
-        
-        ## Make sure there are no NANs in model before calibration
-        # Remove elasticities if specified to be common
-        for model_num in [1, 2]:
-            exec(f'model = model_year{model_num}')
-            exec(f'year = year{model_num}')
-            check = set(list(vars(model).keys())) - set(['elasticities'])
-            #And now check
-            if any(np.isnan([vars(model)[x] for x in check])):
-                print("NAN value entered into calibration model for:")
-                for var in check:
-                    if np.isnan(vars(model)[var])==True: print("    "+var)
-                print("for year: " + str(year))
-                continue
-                
+                    
         ## Calibrate Models
         model_year1.calibrate()
         model_year2.calibrate()
@@ -189,9 +173,13 @@ for _sex in ['_m', '_f']:
     
     #Create, write, and close file
     cwd = os.getcwd()
-    os.chdir(output_folder)
+    os.chdir(appendix_output_folder)
     file = open(f"RC2_CounterfactualGrowth{_sex}.tex","w")
     file.writelines(header) 
     file.writelines(table_values)   
     file.writelines(closer)   
     file.close()
+
+
+#%% Return to code directory #%%
+os.chdir(code_folder)

@@ -8,44 +8,38 @@ Created on Thu Jan  5 14:39:40 2022
 ### Import Packages
 import os
 import pandas as pd
-import numpy as np
 
-### Set working directory and folders
-exec(open("_set_directory.py").read())
+### Set working directory #%%
+from _set_directory import code_folder
+from _set_directory import data_folder
+from _set_directory import appendix_output_folder
 
 ### Import calibration model
-os.chdir(code_folder)
 from _fmzz_calibration_model import fmzz_calibration_model 
 
 
-#%%      Establishing Baseline:      %%#
+#%%      Baseline Specifications      %%#
+from _baseline_specifications import alpha_diff_baseline
+from _baseline_specifications import year_baseline as year
+from _baseline_specifications import rho_baseline
+from _baseline_specifications import elasticities_baseline
 
-# Importing Data
+#Parameter(s) to be varied
+from _varying_parameters import tau_params, tau2specification_Dict
+
+
+#%%      Importing Data:      %%#
 os.chdir(data_folder)
 df_observed = pd.read_csv('RC1_observed_data.csv', index_col=0)
 
-# Parameter assumptions:
-alpha_diff_baseline=0
-year = 2019
-
-#Baseline Parameters
-tau_baseline = 'tau_baseline'
-rho_baseline = 0.3827
-elasticities_baseline = 'implied'
-
 
 #%%      Construct Results by Varying Tau      %%#
-#Parameters to be varied:
-tau_params = ['tau_baseline', 'tau_high']
-tau2specification_Dict ={'tau_baseline':'Total Cost with Incomplete Takeup',
-                         'tau_high':'Total Cost with Complete Takeup'}
-
 #Initialize strings for tables
 tau_string = '\\underline{Fixed Per Worker Cost, $\\tau$:} \n \t'
 payroll_tax_string = '\\underline{Payroll Tax Rate, $t$:} \n \t'
 delta_w_C_string = '\\ \\ Change in College Wage, $\Delta(w_C)$ \n \t'
 delta_w_N_string = '\\ \\ Change in Non-college Wage, $\Delta(w_N)$ \n \t'
-pct_chg_cwp_string = '\\ \\ Pct. Change in College Wage Premium, $\\%\\Delta(w_C/w_N - 1)$ \n \t'
+pct_chg_cwp_string = '\\ \\ Pct. Change in College Wage Premium \n \t'
 delta_P_c_string = '\\ \\ Change in College Employment Rate, $\Delta(P_C)$ \n \t'
 delta_P_n_string = '\\ \\ Change in Non-college Employment Rate, $\Delta(P_N)$ \n \t'
 delta_employment_string = 'Change in Total Employment, $\Delta(L)$ \n \t'
@@ -63,7 +57,7 @@ for tau_param in tau_params:
     model = fmzz_calibration_model(alpha_diff=alpha_diff_baseline,
                         rho=rho_baseline,
                         tau=df_observed.loc[year, tau_param],
-                        elasticities='implied',
+                        elasticities=elasticities_baseline,
                         w1_c=df_observed.loc[year, 'wage1_c'], 
                         w1_n=df_observed.loc[year, 'wage1_n'],
                         P1_c=df_observed.loc[year, 'P1_c'], 
@@ -135,9 +129,13 @@ table_values = [x.replace('\\$-', '-\\$') for x in table_values]
 
 ## Create, write, and close file
 cwd = os.getcwd()
-os.chdir(output_folder)
+os.chdir(appendix_output_folder)
 file = open("RC1_EquilibriumComparison.tex","w")
 file.writelines(header) 
 file.writelines(table_values)   
 file.writelines(closer)   
 file.close()
+
+
+#%% Return to code directory #%%
+os.chdir(code_folder)

@@ -8,7 +8,6 @@ Created on Sat Jul  9 21:39:02 2022
 ### Import Packages
 import os
 import pandas as pd
-import numpy as np
 
 ### Set working directory
 from _set_directory import code_folder
@@ -20,9 +19,7 @@ from _fmzz_calibration_model_CCF import fmzz_calibration_model_CCF
 
 
 #%%      Baseline Specifications      %%#
-from _baseline_specifications import alpha_diff_baseline
 from _baseline_specifications import year_baseline as year
-from _baseline_specifications import past_year_baseline
 from _baseline_specifications import tau_baseline
 from _baseline_specifications import rho_baseline
 from _baseline_specifications import elasticities_baseline
@@ -121,7 +118,6 @@ table_values=[tau_string, ' \\\\\n',
                 delta_w_C_string, ' \\\\\n',
                 delta_w_N_string, ' \\\\\n',
                 pct_chg_cwp_string, ' \\\\\n',
-                '\\ \\ $\\%\\Delta(w_C/w_N - 1)$', ' \\\\\n',
                 '\\\\\n',
                 '\\underline{Employment Rate:}', ' \\\\\n',
                 delta_P_c_string, ' \\\\\n',
@@ -144,3 +140,7 @@ file.writelines(header)
 file.writelines(table_values)   
 file.writelines(closer)   
 file.close()
+
+
+#%% Return to code directory #%%
+os.chdir(code_folder)

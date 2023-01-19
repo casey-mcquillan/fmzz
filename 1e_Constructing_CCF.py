@@ -10,13 +10,9 @@ import os
 import pandas as pd
 import numpy as np
 
-
-#%% Set working directory #%%
-from _set_directory import main_folder
+### Set working directory
 from _set_directory import code_folder
 from _set_directory import data_folder
-from _set_directory import output_folder
-from _set_directory import appendix_output_folder
 
 
 #%%      Importing Data:      %%#
@@ -25,12 +21,8 @@ df_observed = pd.read_csv('observed_data.csv', index_col=0)
 
 
 #%%      Baseline Specifications      %%#
-from _baseline_specifications import alpha_diff_baseline
-from _baseline_specifications import year_baseline as year2
 from _baseline_specifications import past_year_baseline as year1
 from _baseline_specifications import tau_baseline
-from _baseline_specifications import rho_baseline
-from _baseline_specifications import elasticities_baseline
 
 
 #%%      Calculating Counterfactual Paths:      %%#
@@ -54,7 +46,7 @@ df_canada_CF['Canada-US Ratio'] = df_canada_CF['Canada']/df_canada_CF['United St
 years = [1977,1987] + list(range(1996, 2020))
 df_observed['tau_CCF_Canada'] = np.nan
 for year in years:
-    if year ==1977: scale=1
+    if year==1977: scale=1
     else: scale=df_canada_CF.loc[year,'Canada-US Ratio']
     df_observed.loc[year,'tau_CCF_Canada'] = \
         df_observed.loc[year,tau_baseline]*scale
@@ -78,8 +70,8 @@ os.chdir(data_folder)
 df_observed.to_csv('observed_data_CCF.csv')   
 
 
-'''
 #%%      Output Graph with CF Tau:      %%# 
+'''
 # Import Packages
 import matplotlib
 import matplotlib.pyplot as plt
@@ -104,3 +96,7 @@ plt.grid(axis='y', color='gainsboro')
 plt.tick_params(bottom=True, left=True)
 plt.show()
 '''
+
+
+#%% Return to code directory #%%
+os.chdir(code_folder)

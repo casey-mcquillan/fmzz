@@ -8,14 +8,11 @@ Created on Fri Jan  7 19:53:26 2022
 ### Import Packages
 import os
 import pandas as pd
-import numpy as np
 
 ### Set working directory
-from _set_directory import main_folder
 from _set_directory import code_folder
 from _set_directory import data_folder
 from _set_directory import output_folder
-from _set_directory import appendix_output_folder
 
 ### Import calibration model
 from _fmzz_calibration_model import fmzz_calibration_model
@@ -33,6 +30,10 @@ from _baseline_specifications import elasticities_baseline
 #%%      Importing Data:      %%#
 os.chdir(data_folder)
 df_observed = pd.read_csv('observed_data.csv', index_col=0)
+
+#Parameter(s) to be varied
+from _varying_parameters import elasticity_values, elasticity2specification_Dict
+from _varying_parameters import rho_values, rho2specification_Dict
 
 
 #%%      Baseline Estimate      %%#
@@ -119,13 +120,6 @@ elasticity_results_string_H = []
 elasticity_results_string_P = []
 elasticity_results_string_CG = []
 
-# Parameter to be varied:
-elasticity_values = ['implied', [0.15,0.15],[0.3,0.3],[0.45,0.45]]
-elasticity2specification_Dict ={'implied':'Common $\kappa$',
-                         str([0.15,0.15]): 'Low (0.15)',
-                         str([0.3,0.3]): 'Medium (0.30)',
-                         str([0.45,0.45]): 'High (0.45)'}
-
 # Loop through elasticity pairs in calibration process
 i = 0
 for elasticity_value in elasticity_values:
@@ -208,12 +202,6 @@ rho_results_string_H = []
 rho_results_string_P = []
 rho_results_string_CG = []
 
-# Parameter to be varied:
-rho_values = [1, 0.3827, 0.01]
-rho2specification_Dict ={str(1):'Perfect Substitutes',
-                         str(0.3827): 'Gross Substitutes',
-                         str(0.01): 'Cobb-Douglas'}
-
 # Loop through rho values in calibration process
 i = 0
 for rho_value in rho_values:
@@ -223,7 +211,7 @@ for rho_value in rho_values:
     #Define and calibrate model    
     model_year1 = fmzz_calibration_model(alpha_diff=alpha_diff_baseline,
                                     rho=rho_value,
-                                    tau=df_observed.loc[year2, tau_baseline],
+                                    tau=df_observed.loc[year1, tau_baseline],
                                     elasticities=elasticities_baseline,
                                     w1_c=df_observed.loc[year1, 'wage1_c'], 
                                     w1_n=df_observed.loc[year1, 'wage1_n'],
@@ -295,7 +283,7 @@ for rho_value in rho_values:
 ## LaTeX code for header
 header = ['\\begin{tabular}{lccccc}', '\n',
           '\\FL', '\n',
-            '\t &    \multicolumn{1}{p{2.7cm}}{\\footnotesize \centering Change in College \\\\ Wage Premium $(w_C/w_N - 1)_{2019} - (w_C/w_N - 1)_{1977}$}', ' \n',
+            '\t &    \multicolumn{1}{p{2.7cm}}{\\footnotesize \centering Change in College \\\\ Wage Premium}', ' \n',
             '\t &	 \multicolumn{1}{p{2.6cm}}{\\footnotesize \centering Change in Non-College \\\\ Wages $w_{N,2019}-w_{N,1977}$}', ' \n',
             '\t &	 \multicolumn{1}{p{2.6cm}}{\\footnotesize \centering Change in College \\\\ Employment Rate $P_{C,2019}-P_{C,1977}$}', ' \n',
             '\t &	 \multicolumn{1}{p{2.6cm}}{\\footnotesize \centering Change in Non-College \\\\ Employment Rate $P_{N,2019}-P_{N,1977}$}', ' \n',
@@ -338,7 +326,7 @@ acrossRho = [r'\underline{Substitutability ($\rho$)} \\', ' \n',
     ' \n', rho_results_string_P[2], ' \n',
     '\\\\', ' \n'] 
 # Concatenate table values
-table_values = headTax + payrollTax + acrossRho + acrossElasticity 
+table_values = headTax + payrollTax + acrossElasticity + acrossRho 
 
 ## LaTeX code for closer
 closer = ['\\bottomrule','\n', '\end{tabular}']
@@ -354,3 +342,7 @@ file.writelines(header)
 file.writelines(table_values)
 file.writelines(closer)   
 file.close()
+
+
+#%% Return to code directory #%%
+os.chdir(code_folder)

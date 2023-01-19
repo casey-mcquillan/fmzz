@@ -2,44 +2,34 @@
 # -*- coding: utf-8 -*-
 """
 Created on Sat Jul  9 21:39:02 2022
-
 @author: caseymcquillan
 """
 #%%  Preamble: Import packages, set directory #%%  
 ### Import Packages
 import os
 import pandas as pd
-import numpy as np
 
-### Set working directory and folders
-## Import function to define project folder
-from __fmzz import project_folder_plus
-
-## Define project directory folders
-main_folder = project_folder_plus('')
-code_folder = project_folder_plus("/code")
-data_folder = project_folder_plus("/data")
-output_folder = project_folder_plus("/output/Tables/")
-appendix_output_folder = project_folder_plus("/output/Tables/Appendix")
+### Set working directory #%%
+from _set_directory import code_folder
+from _set_directory import data_folder
+from _set_directory import appendix_output_folder
 
 ### Import calibration class
-os.chdir(code_folder)
-from fzz_calibration import calibration_model 
-from fzz_calibration_bySex import calibration_model_bySex
+from _fmzz_calibration_model import fmzz_calibration_model 
+from _fmzz_calibration_model_bySex import fmzz_calibration_model_bySex
 
 
-#%%      Establishing Baseline:      %%#
+#%%      Baseline Specifications      %%#
+from _baseline_specifications import alpha_diff_baseline
+from _baseline_specifications import year_baseline as year
+from _baseline_specifications import tau_baseline
+from _baseline_specifications import rho_baseline
+from _baseline_specifications import elasticities_baseline
 
-# Importing Data
+
+#%%       Importing Data:      %%#
 os.chdir(data_folder)
-df_observed = pd.read_csv('observed_data_bySex.csv', index_col=0)
-
-# Parameter assumptions:
-year = 2019
-tau_baseline = 'tau_baseline'
-rho_baseline = 0.3827
-elasticity_baseline = ['common', 'common']
-e_c_baseline, e_n_baseline = elasticity_baseline[0], elasticity_baseline[1]
+df_observed = pd.read_csv('RC2_observed_data_bySex.csv', index_col=0)
 
 
 #%%      Results by Sex:      %%#
@@ -58,30 +48,18 @@ delta_employment_N_string = '\\ \\ \\small Change in Non-college Employment, $\D
 delta_cwb_string = 'Change in College Share of Wage Bill, $\Delta(\\frac{w_C L_C}{w_N L_N+w_C L_C})$: \n \t'
 
 
-# Results for Baseline Model
-model = calibration_model(alpha_c=1, alpha_n=1,
-                        rho=rho_baseline,
-                        tau=df_observed.loc[year, tau_baseline],
-                        elasticity_c=e_c_baseline, elasticity_n=e_n_baseline,
-                        w1_c=df_observed.loc[year, 'wage1_c'], 
-                        w1_n=df_observed.loc[year, 'wage1_n'],
-                        P1_c=df_observed.loc[year, 'P1_c'], 
-                        P1_n=df_observed.loc[year, 'P1_n'],
-                        share_workers1_c=df_observed.loc[year, 'share_workers1_c'],
-                        share_pop_c=df_observed.loc[year, 'share_pop_c'],
-                        pop_count=df_observed.loc[year, 'pop_count'])
-    
-# Make sure there are no NANs in model before calibration
-# Remove elasticities if specified to be common
-if model.elasticity_c == model.elasticity_n == 'common': 
-    check = set(list(vars(model).keys())) - set(['elasticity_c', 'elasticity_n'])
-else: check = vars(model).keys()
-#And now check
-if any(np.isnan([vars(model)[x] for x in check])):
-    print("NAN value entered into calibration model for:")
-    for var in check:
-        if np.isnan(vars(model)[var])==True: print("    "+var)
-    print("for year: " + str(year))
+### Results for Baseline Model
+model = fmzz_calibration_model(alpha_diff=alpha_diff_baseline,
+                    rho=rho_baseline,
+                    tau=df_observed.loc[year, tau_baseline],
+                    elasticities=elasticities_baseline,
+                    w1_c=df_observed.loc[year, 'wage1_c'], 
+                    w1_n=df_observed.loc[year, 'wage1_n'],
+                    P1_c=df_observed.loc[year, 'P1_c'], 
+                    P1_n=df_observed.loc[year, 'P1_n'],
+                    share_workers1_c=df_observed.loc[year, 'share_workers1_c'],
+                    share_pop_c=df_observed.loc[year, 'share_pop_c'],
+                    pop_count=df_observed.loc[year, 'pop_count'])
 
 # Calibrate Model
 model.calibrate()
@@ -121,12 +99,11 @@ delta_employment_N_string = delta_employment_N_string + ampersand + f' {chg_empl
 delta_cwb_string = delta_cwb_string + ampersand + f' {chg_cwb:,.2f} pp'
 
 
-
 ### Results for Aggregated Model
-model = calibration_model_bySex(alpha_diff=0,
+model = fmzz_calibration_model_bySex(alpha_diff=0,
             rho=rho_baseline,
             tau=df_observed.loc[year, tau_baseline],
-            elasticities='common',
+            elasticities=elasticities_baseline,
             w1_c_m=df_observed.loc[year, 'wage1_c_m'], 
             w1_n_m=df_observed.loc[year, 'wage1_n_m'],
             w1_c_f=df_observed.loc[year, 'wage1_c_f'], 
@@ -142,16 +119,6 @@ model = calibration_model_bySex(alpha_diff=0,
             share_workers1_n_m=df_observed.loc[year, 'share_workers1_n_m'],
             share_pop_n_m=df_observed.loc[year, 'share_pop_n_m'],
             pop_count=df_observed.loc[year, 'pop_count'])
-
-#Make sure there are no NANs in model before calibration
-# Remove elasticities if specified to be common
-check = set(list(vars(model).keys())) - set(['elasticities'])
-#And now check
-if any(np.isnan([vars(model)[x] for x in check])):
-    print("NAN value entered into calibration model for:")
-    for var in check:
-        if np.isnan(vars(model)[var])==True: print("    "+var)
-    print("for year: " + str(year))
 
 # Calibrate Model
 model.calibrate()
@@ -191,7 +158,6 @@ delta_employment_C_string = delta_employment_C_string + ampersand + f' {chg_empl
 delta_employment_N_string = delta_employment_N_string + ampersand + f' {chg_employment_N:,.0f} '
 
 delta_cwb_string = delta_cwb_string + ampersand + f' {chg_cwb:,.2f} pp'
-
 
 
 ### Results for Each Sex
@@ -261,9 +227,13 @@ table_values = [x.replace('\\$-', '-\\$') for x in table_values]
 
 #Create, write, and close file
 cwd = os.getcwd()
-os.chdir(output_folder)
+os.chdir(appendix_output_folder)
 file = open("RC2_EquilibriumComparison_bySex.tex","w")
 file.writelines(header) 
 file.writelines(table_values)   
 file.writelines(closer)   
 file.close()
+
+
+#%% Return to code directory #%%
+os.chdir(code_folder)

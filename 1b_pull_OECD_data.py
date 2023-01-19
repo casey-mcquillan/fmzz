@@ -8,15 +8,15 @@ Created on Tue Sep  7 23:31:09 2021
 #%%  Preamble: Import packages #%%  
 import os as os
 import pandas as pd
-from fredapi import Fred
-fred = Fred(api_key='d6e26ca3fc202a8c68409b1c78708331')
 
-#%% Set working directory #%%
-from _set_directory import main_folder
+### Set working directory
 from _set_directory import code_folder
 from _set_directory import data_folder
-from _set_directory import output_folder
-from _set_directory import appendix_output_folder
+
+### Set up Fred for data pull
+from fredapi import Fred
+from _fred_api_key import fred_api_key
+fred = Fred(api_key=fred_api_key)
 
 
 #%%      Constructing the Data      %%#
@@ -60,3 +60,7 @@ data_export = data[['Employment Rate (25-64)','Population (25-64)']]
 ## Export data
 os.chdir(data_folder)
 data_export.to_csv('clean_OECD_data.csv')
+
+
+#%% Return to code directory #%%
+os.chdir(code_folder)

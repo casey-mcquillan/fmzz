@@ -8,15 +8,10 @@ Created on Fri Sep 24 22:34:36 2021
 ### Import Packages
 import os
 import pandas as pd
-import numpy as np
 
-
-#%% Set working directory #%%
-from _set_directory import main_folder
+### Set working directory #%%
 from _set_directory import code_folder
 from _set_directory import data_folder
-from _set_directory import output_folder
-from _set_directory import appendix_output_folder
 
 
 #%%  Importing Data #%%  
@@ -26,8 +21,7 @@ os.chdir(data_folder)
 OECD_data = pd.read_csv('clean_OECD_data.csv', index_col='year')
 ASEC_data = pd.read_csv('clean_ASEC_data.csv', index_col=0)
 
-# Import time series data on wages, tau from Patrick Collard:
-os.chdir(data_folder + "/Time Series from Emily")
+# Import time series data on wages:
 premium_data = pd.read_excel('premium_series.xlsx', index_col=0)
 
 # Create dataframe with necessary observed variables
@@ -55,3 +49,7 @@ data_export = df_observed
 ## Export data
 os.chdir(data_folder)
 data_export.to_csv('observed_data.csv')
+
+
+#%% Return to code directory #%%
+os.chdir(code_folder)

@@ -11,11 +11,8 @@ import pandas as pd
 import numpy as np
 
 ### Set working directory #%%
-from _set_directory import main_folder
 from _set_directory import code_folder
 from _set_directory import data_folder
-from _set_directory import output_folder
-from _set_directory import appendix_output_folder
 
 
 #%% Import Data #%%
@@ -43,7 +40,7 @@ df['College'] = \
 df['Non-College'] = 1-df['College']
 
 # Define working
-hours_requirement =  1*(df['UHRSWORKLY'] >= 35)
+hours_requirement =  1*(df['UHRSWORKLY'] >= 30)
 weeks_requirement =  1*(df['WKSWORK2'] >= 4)
 df['FTFY'] = hours_requirement * weeks_requirement
 
@@ -57,17 +54,6 @@ df['ESHI_dependent'] = 1*(df['GRPDEPLY']==2)
 
 # Constant column
 df['Total'] = 1
-
-
-#%% Inflation Adjust #%%
-# Adjust wages to be in 2019 dollars
-os.chdir(data_folder)
-price_data = pd.read_csv('PCEPI_data.csv', index_col=0)
-for year in data.index:
-    adj_factor = price_data.loc[year, 'PCEPI Adjustment Factor (2019 Dollars)']
-    for var in ['wage1_c_m', 'wage1_n_m', 'wage1_c_f', 'wage1_n_f']:
-        data.loc[year, var] = adj_factor*data.loc[year, var]
-
 
 #%% Create Dataframe by year #%%
 
@@ -162,6 +148,16 @@ for year in years:
         data.loc[year,'Share ESHI policyholders'] = np.average(df['ESHI_own'], \
                                                                weights=df['ASECWT']*year_dummy*df['FTFY'])
 
+
+#%% Inflation Adjust #%%
+# Adjust wages to be in 2019 dollars        
+os.chdir(data_folder)
+price_data = pd.read_csv('PCEPI_data.csv', index_col=0)
+for year in data.index:
+    adj_factor = price_data.loc[year, 'PCEPI Adjustment Factor (2019 Dollars)']
+    for var in ['wage1_c_m', 'wage1_n_m', 'wage1_c_f', 'wage1_n_f']:
+        data.loc[year, var] = adj_factor*data.loc[year, var]
+        
         
 #%% Export Data #%%
 os.chdir(data_folder)
@@ -176,3 +172,7 @@ data_export = data[['N', 'N_college', 'N_FTFY', 'N_college_FTFY',
                     'share_pop_n', 'share_pop_n_m', 'share_pop_n_f',
                     'Share ESHI policyholders']]
 data_export.to_csv('RC2_clean_ASEC_data_bySex.csv')
+
+
+#%% Return to code directory #%%
+os.chdir(code_folder)

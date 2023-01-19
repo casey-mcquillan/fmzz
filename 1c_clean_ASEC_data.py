@@ -10,11 +10,8 @@ import pandas as pd
 import numpy as np
 
 ### Set working directory #%%
-from _set_directory import main_folder
 from _set_directory import code_folder
 from _set_directory import data_folder
-from _set_directory import output_folder
-from _set_directory import appendix_output_folder
 
 
 #%% Import Data #%%
@@ -42,7 +39,7 @@ df['College'] = \
 df['Non-College'] = 1-df['College']
 
 # Define working
-hours_requirement =  1*(df['UHRSWORKLY'] >= 35)
+hours_requirement =  1*(df['UHRSWORKLY'] >= 30)
 weeks_requirement =  1*(df['WKSWORK2'] >= 4)
 df['FTFY'] = hours_requirement * weeks_requirement
 
@@ -182,3 +179,7 @@ data_export = data[['N', 'N_college', 'N_FTFY', 'N_college_FTFY',
                     'Share ESHI dependents',
                     'Share ESHI dependents (weighted)']]
 data_export.to_csv('clean_ASEC_data.csv')
+
+
+#%% Return to code directory #%%
+os.chdir(code_folder)
