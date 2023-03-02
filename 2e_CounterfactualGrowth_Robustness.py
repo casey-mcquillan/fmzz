@@ -26,14 +26,13 @@ from _baseline_specifications import tau_baseline
 from _baseline_specifications import rho_baseline
 from _baseline_specifications import elasticities_baseline
 
+#Parameter(s) to be varied
+from _varying_parameters import elasticity_values, elasticity2specification_Dict
+from _varying_parameters import rho_values, rho2specification_Dict
 
 #%%      Importing Data:      %%#
 os.chdir(data_folder)
 df_observed = pd.read_csv('observed_data.csv', index_col=0)
-
-#Parameter(s) to be varied
-from _varying_parameters import elasticity_values, elasticity2specification_Dict
-from _varying_parameters import rho_values, rho2specification_Dict
 
 
 #%%      Baseline Estimate      %%#
@@ -322,7 +321,7 @@ acrossRho = [r'\underline{Substitutability ($\rho$)} \\', ' \n',
     ' \n', rho_results_string_P[0], ' \n',
     '\ \ \ \ \small{Gross Substitutes ($\\rho=0.38$, Baseline)}', 
     '\n', rho_results_string_P[1], ' \n',
-    '\ \ \ \ \small{Cobb-Douglas ($\\rho=0$)}', 
+    '\ \ \ \ \small{Cobb-Douglas ($\\rho=0.01$)}', 
     ' \n', rho_results_string_P[2], ' \n',
     '\\\\', ' \n'] 
 # Concatenate table values

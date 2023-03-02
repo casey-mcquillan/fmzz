@@ -27,7 +27,6 @@ from _baseline_specifications import rho_baseline
 from _baseline_specifications import elasticities_baseline
 
 #Parameter(s) to be varied
-from _varying_parameters import tau_params, tau2specification_Dict
 from _varying_parameters import elasticity_values, elasticity2specification_Dict
 from _varying_parameters import rho_values, rho2specification_Dict
 
@@ -248,7 +247,7 @@ acrossRho = [r'\underline{Substitutability ($\rho$)} \\', ' \n',
     ' \n', rho_results_string[0], ' \n',
     '\ \ \small{Gross Substitutes ($\\rho=0.38$, Baseline)}', 
     '\n', rho_results_string[1], ' \n',
-    '\ \ \small{Cobb-Douglas ($\\rho=0$)}', 
+    '\ \ \small{Cobb-Douglas ($\\rho=0.01$)}', 
     ' \n', rho_results_string[2], ' \n',
     '\\\\', ' \n'] 
 # Concatenate table values

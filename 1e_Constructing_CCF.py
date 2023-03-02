@@ -14,15 +14,14 @@ import numpy as np
 from _set_directory import code_folder
 from _set_directory import data_folder
 
+#%%      Baseline Specifications      %%#
+from _baseline_specifications import past_year_baseline as year1
+from _baseline_specifications import tau_baseline
+
 
 #%%      Importing Data:      %%#
 os.chdir(data_folder)
 df_observed = pd.read_csv('observed_data.csv', index_col=0)
-
-
-#%%      Baseline Specifications      %%#
-from _baseline_specifications import past_year_baseline as year1
-from _baseline_specifications import tau_baseline
 
 
 #%%      Calculating Counterfactual Paths:      %%#

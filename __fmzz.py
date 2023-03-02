@@ -30,7 +30,7 @@ exec(open("1d_compile_observed_data.py").read())
 exec(open("1e_Constructing_CCF.py").read())
 
 
-#%%  2. Generate Main Tables #%% 
+#%%  2. Generate Main Results #%% 
 
 # Generate Table 1:Summarty Statistics
 exec(open("2a_SummaryStats.py").read())
@@ -49,6 +49,9 @@ exec(open("2e_CounterfactualGrowth_Robustness.py").read())
 
 # Generate Table 7: Equilibrium Comparison with Cost Counterfactual
 exec(open("2f_EquilibriumComparison_CCF.py").read())
+
+# Generate Data for Figure 1
+exec(open("2g_gen_figure1.py").read())
 
 
 #%%  Robustness Check 1: Alternative College Definition #%%  
@@ -69,6 +72,9 @@ exec(open("RC1d_EquilibriumComparison.py").read())
 
 # Generate Appendix Table 3: Changes over Time with Some College or More
 exec(open("RC1e_CounterfactualGrowth.py").read())
+
+# Generate Data for Figure A3
+exec(open("RC1f_gen_figureA3.py").read())
 
 
 #%%  Robustness Check 2: Decomposing Effects by Sex #%%

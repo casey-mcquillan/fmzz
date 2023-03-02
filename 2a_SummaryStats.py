@@ -59,7 +59,7 @@ df['ESHI_eligible'] = 1*(df['HIELIG']==2) + \
     1*((1-1*(df['HIELIG']==2))*(1*df['GRPOWNLY']==2))
 
 ## Define Full-Time, Full-Year
-hours_requirement_FTFY =  1*(df['UHRSWORKLY'] >= 35)
+hours_requirement_FTFY =  1*(df['UHRSWORKLY'] >= 30)
 weeks_requirement_FTFY =  1*(df['WKSWORK2'] >= 4)
 df['FTFY'] = hours_requirement_FTFY * weeks_requirement_FTFY
 df_FTFY = df[df['FTFY']==1]

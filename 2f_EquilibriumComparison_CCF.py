@@ -35,7 +35,7 @@ df_observed = pd.read_csv('observed_data_CCF.csv', index_col=0)
 tau_string = '\\underline{Change in Cost, $\\tau$:} \n \t'
 delta_w_C_string = '\\ \\ Change in College Wage, $\Delta(w_C)$ \n \t'
 delta_w_N_string = '\\ \\ Change in Non-college Wage, $\Delta(w_N)$ \n \t'
-pct_chg_cwp_string = '\\ \\ Pct. Change in College Wage Premium, \n \t'
+pct_chg_cwp_string = '\\ \\ Pct. Change in College Wage Premium \n \t'
 delta_P_c_string = '\\ \\ Change in College Employment Rate, $\Delta(P_C)$ \n \t'
 delta_P_n_string = '\\ \\ Change in Non-college Employment Rate, $\Delta(P_N)$ \n \t'
 delta_employment_string = 'Change in Total Employment, $\Delta(L)$ \n \t'
@@ -72,7 +72,7 @@ for cost_CCF in CCFs:
         
         #Calibrate Model
         model.calibrate()
-            
+        print(model.tau_CCF)
         #Add values to strings for Eq Comparison Tables
         if i ==1: ampersand = '&'
         if i > 1: ampersand = ' &&'

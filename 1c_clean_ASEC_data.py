@@ -79,12 +79,17 @@ data = pd.DataFrame(index=years, columns=variables)
 for year in years:
     year_dummy = 1*(df['YEAR']==year)
         
+        
     ### Calculations
     ## Number of observations
     data.loc[year,'N'] = np.sum(df['Total']*year_dummy)
     data.loc[year,'N_college'] = np.sum(df['College']*year_dummy)
     data.loc[year,'N_FTFY'] = np.sum(df['FTFY']*year_dummy)
     data.loc[year,'N_college_FTFY'] = np.sum(df['College']*df['FTFY']*year_dummy)
+    
+    ## Share FTFY
+    data.loc[year,'share_FTFY'] = np.average(df['FTFY'], \
+                                   weights=df['ASECWT']*year_dummy)
     
     ## College Share of population
     data.loc[year,'share_pop_c'] = np.average(df['College'], \
@@ -178,6 +183,15 @@ data_export = data[['N', 'N_college', 'N_FTFY', 'N_college_FTFY',
                     'Share ESHI policyholders, Non-college (weighted)',
                     'Share ESHI dependents',
                     'Share ESHI dependents (weighted)']]
+data_export.to_csv('clean_ASEC_data.csv')
+
+
+
+    data.loc[year,'share_pop_c (weighted)'] = np.average(df['College'], \
+                                                weights=df['ASECWT']*year_dummy)
+        
+        
+data_for_emily = data_export['N', 'N_college', 'N_FTFY']
 data_export.to_csv('clean_ASEC_data.csv')
 
 
