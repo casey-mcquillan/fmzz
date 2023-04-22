@@ -10,11 +10,9 @@ import os
 import pandas as pd
 
 ### Set working directory
-from _set_directory import main_folder
 from _set_directory import code_folder
 from _set_directory import data_folder
 from _set_directory import output_folder
-from _set_directory import appendix_output_folder
 
 ### Import calibration model
 os.chdir(code_folder)
