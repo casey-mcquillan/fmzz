@@ -72,7 +72,6 @@ for cost_CCF in CCFs:
         
         #Calibrate Model
         model.calibrate()
-        print(model.tau_CCF)
         #Add values to strings for Eq Comparison Tables
         if i ==1: ampersand = '&'
         if i > 1: ampersand = ' &&'
