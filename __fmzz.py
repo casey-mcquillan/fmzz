@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""s
+"""
 Created on Mon Jan  9 23:31:36 2023
 @author: caseymcquillan
 """
@@ -92,3 +92,36 @@ exec(open("RC2c_EquilibriumComparison_bySex.py").read())
 
 # Generate Appendix Table 5: Changes over Time by Sex
 exec(open("RC2d_CounterfactualGrowth_bySex.py").read())
+
+
+#%%  Robustness Check 3: #%%
+
+# Pull OECD Population Data
+exec(open("RC3a_pull_OECD_data.py").read())
+
+# Clean ASEC Data
+exec(open("RC3b_clean_ASEC_data.py").read())
+
+# Compile Observed Data from ASEC and OECD
+exec(open("RC3c_compile_observed_data.py").read())
+
+# Compile Observed Data for Cost Counterfactual
+exec(open("RC3d_Constructing_CCF.py").read())
+
+# Generate Table 1:Summarty Statistics
+exec(open("RC3e_SummaryStats.py").read())
+
+# Generate Table 3: Equilibrium Comparison
+exec(open("RC3f_EquilibriumComparison.py").read())
+
+# Generate Table 4: Sensitivity Analysis for Equilibrium Comparison 
+exec(open("RC3g_EquilibriumComparison_Robustness.py").read())
+
+# Generate Table 5: Changes over Time
+exec(open("RC3h_CounterfactualGrowth.py").read())
+
+# Generate Table 6: Sensitivity Analysis for Changes over Time
+exec(open("RC3i_CounterfactualGrowth_Robustness.py").read())
+
+# Generate Table 7: Equilibrium Comparison with Cost Counterfactual
+exec(open("RC3j_EquilibriumComparison_CCF.py").read())
