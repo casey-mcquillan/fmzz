@@ -58,11 +58,11 @@ model.calibrate()
 
 #Save Results for Overview
 pct_chg_cwp = 100*((model.w2_c/model.w2_n)-(model.w1_c/model.w1_n))/(model.w1_c/model.w1_n -1)
-chg_w_C = (model.w2_c - model.w1_c)
+chg_w_N = (model.w2_n - model.w1_n)
 pp_chg_P_C = 100*(model.P2_c - model.P1_c)
 pp_chg_P_N = 100*(model.P2_n - model.P1_n)
 chg_employment_N = model.employment2_n - model.employment1_n
-baselines_results_string.append(f' \t & {pct_chg_cwp:,.2f}\\% & \\${chg_w_C:,.0f}  & {pp_chg_P_C:,.2f} pp & {pp_chg_P_N:,.2f} pp & {chg_employment_N/1000:,.2f} & {100*((model.t)):,.2f}\\% \\\\ ')
+baselines_results_string.append(f' \t & {pct_chg_cwp:,.2f}\\% & \\${chg_w_N:,.0f}  & {pp_chg_P_C:,.2f} pp & {pp_chg_P_N:,.2f} pp & {chg_employment_N/1000:,.2f} & {100*((model.t)):,.2f}\\% \\\\ ')
 
 
 #%%      Construct Results by Varying Labor Supply Elasticities      %%#
@@ -108,11 +108,11 @@ for elasticity_value in elasticity_values:
 
     #Save Results
     pct_chg_cwp = 100*((model.w2_c/model.w2_n)-(model.w1_c/model.w1_n))/(model.w1_c/model.w1_n -1)
-    chg_w_C = (model.w2_c - model.w1_c)
+    chg_w_N = (model.w2_n - model.w1_n)
     pp_chg_P_C = 100*(model.P2_c - model.P1_c)
     pp_chg_P_N = 100*(model.P2_n - model.P1_n)
     chg_employment_N = model.employment2_n - model.employment1_n
-    elasticity_results_string.append(f' \t & {pct_chg_cwp:,.2f}\\% & \\${chg_w_C:,.0f}  & {pp_chg_P_C:,.2f} pp & {pp_chg_P_N:,.2f} pp & {chg_employment_N/1000:,.2f} & {100*((model.t)):,.2f}\\% \\\\ ')
+    elasticity_results_string.append(f' \t & {pct_chg_cwp:,.2f}\\% & \\${chg_w_N:,.0f}  & {pp_chg_P_C:,.2f} pp & {pp_chg_P_N:,.2f} pp & {chg_employment_N/1000:,.2f} & {100*((model.t)):,.2f}\\% \\\\ ')
 
     #Add values to strings for Eq Comparison Tables
     if i ==1: ampersand = '&'
@@ -180,11 +180,11 @@ for rho_value in rho_values:
     
     #Save Results
     pct_chg_cwp = 100*((model.w2_c/model.w2_n)-(model.w1_c/model.w1_n))/(model.w1_c/model.w1_n -1)
-    chg_w_C = (model.w2_c - model.w1_c)
+    chg_w_N = (model.w2_n - model.w1_n)
     pp_chg_P_C = 100*(model.P2_c - model.P1_c)
     pp_chg_P_N = 100*(model.P2_n - model.P1_n)
     chg_employment_N = model.employment2_n - model.employment1_n
-    rho_results_string.append(f' \t & {pct_chg_cwp:,.2f}\\% & \\${chg_w_C:,.0f}  & {pp_chg_P_C:,.2f} pp & {pp_chg_P_N:,.2f} pp & {chg_employment_N/1000:,.2f} & {100*((model.t)):,.2f}\\% \\\\ ')
+    rho_results_string.append(f' \t & {pct_chg_cwp:,.2f}\\% & \\${chg_w_N:,.0f}  & {pp_chg_P_C:,.2f} pp & {pp_chg_P_N:,.2f} pp & {chg_employment_N/1000:,.2f} & {100*((model.t)):,.2f}\\% \\\\ ')
     
     #Add values to strings for Eq Comparison Tables
     if i ==1: ampersand = '&'
