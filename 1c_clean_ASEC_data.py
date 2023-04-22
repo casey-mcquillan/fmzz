@@ -186,14 +186,5 @@ data_export = data[['N', 'N_college', 'N_FTFY', 'N_college_FTFY',
 data_export.to_csv('clean_ASEC_data.csv')
 
 
-
-    data.loc[year,'share_pop_c (weighted)'] = np.average(df['College'], \
-                                                weights=df['ASECWT']*year_dummy)
-        
-        
-data_for_emily = data_export['N', 'N_college', 'N_FTFY']
-data_export.to_csv('clean_ASEC_data.csv')
-
-
 #%% Return to code directory #%%
 os.chdir(code_folder)
