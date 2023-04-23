@@ -44,7 +44,7 @@ df_export.rename(columns={'wage1_c':'Real Earnings, College',
 
 #%%      Data Export      %%#
 os.chdir(appendix_output_folder)
-df_export.to_excel("fmzz_RC1_figA3.xlsx")
+df_export.to_excel("fig_a3.xlsx")
 
 
 #%% Return to code directory #%%

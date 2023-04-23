@@ -21,10 +21,3 @@ rho_values = [1, 0.3827, 0.01]
 rho2specification_Dict ={str(1):'Perfect Substitutes',
                          str(0.3827): 'Gross Substitutes',
                          str(0.01): 'Cobb-Douglas'}
-
-'''
-#Parameter(s) to be varied
-from _varying_parameters import tau_params, tau2specification_Dict
-from _varying_parameters import elasticity_values, elasticity2specification_Dict
-from _varying_parameters import rho_values, rho2specification_Dict
-'''

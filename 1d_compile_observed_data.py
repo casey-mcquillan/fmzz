@@ -50,6 +50,5 @@ data_export = df_observed
 os.chdir(data_folder)
 data_export.to_csv('observed_data.csv')
 
-
 #%% Return to code directory #%%
 os.chdir(code_folder)
